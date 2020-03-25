@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS Restaurants CASCADE;
 DROP TABLE IF EXISTS Food CASCADE;
 DROP TABLE IF EXISTS Categories CASCADE;
+/*DROP TABLE IF EXISTS Belongs CASCADE;*/
 DROP TABLE IF EXISTS Menu CASCADE;
 DROP TABLE IF EXISTS FromMenu CASCADE;
 DROP TABLE IF EXISTS Orders CASCADE;
@@ -70,6 +71,14 @@ CREATE TABLE Food (
 	FOREIGN KEY (RestaurantID) REFERENCES Restaurants (RestaurantID) ON DELETE CASCADE,
 	FOREIGN KEY	(category) REFERENCES Categories (category)
 );
+
+
+/*CREATE TABLE Belongs (
+	category VARCHAR(100),
+	foodName VARCHAR(100),
+	PRIMARY KEY (foodName),
+	FOREIGN KEY (foodName) REFERENCES Food (foodName) ON DELETE CASCADE
+);*/
 
 CREATE TABLE Menu (
 	restaurantID    INTEGER         NOT NULL,
@@ -192,7 +201,7 @@ CREATE TABLE  WorkingWeeks (
 	uid             INTEGER,
 	workDate        DATE NOT NULL,
 	shiftID         INTEGER NOT NULL,
-	PRIMARY KEY (uid, workDate),
+	PRIMARY KEY (uid,shiftID,workDate),
 	FOREIGN KEY (uid) REFERENCES FullTime ON DELETE CASCADE,
 	FOREIGN KEY (shiftID) REFERENCES ShiftOptions(shiftID)
 );
@@ -203,7 +212,7 @@ CREATE TABLE MonthlyDeliveryBonus (
 	monthYear       DATE NOT NULL,
 	numCompleted    INTEGER NOT NULL default 0,
 	deliveryBonus   INTEGER NOT NULL default 0,
-	PRIMARY KEY (uid, monthYear),
+	PRIMARY KEY (uid,monthYear,numCompleted),
 	FOREIGN KEY (uid) REFERENCES DeliveryRiders(uid) ON DELETE CASCADE
 ); 
 
