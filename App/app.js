@@ -5,7 +5,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-/* --- IMPT: Adding Web Pages --- */
+/* --- IMPT(Section 1): Adding Web Pages --- */
 var indexRouter = require('./routes/index');
 var selectRouter = require('./routes/select');
 
@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-/* --- IMPT: Adding Web Pages --- */
+/* --- IMPT(Section 2): Adding Web Pages --- */
 app.use('/', indexRouter);
 app.use('/select', selectRouter);
 

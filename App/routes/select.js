@@ -13,7 +13,7 @@ const pool = new Pool({
 
 router.get('/', function(req, res, next) {
 	pool.query('SELECT uid, name, username FROM Users', (err, data) => {
-		res.render('select', { title: 'Database Connect', data: data.rows });
+		res.render('select', { title: 'Database Connect', usersInfo: data.rows });
 	});
 });
 
