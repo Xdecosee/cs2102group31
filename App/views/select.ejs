@@ -2,7 +2,7 @@
 <html>
   <head>
 		<!-- Page Title -->
-    <title>CS2102 Starter Guide</title>
+    <title>CS2102 Database Connect</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
 		
 		<!-- CSS for Styling -->
@@ -14,7 +14,24 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
   </head>
   <body>
-    <h1>Welcome to FDS Application</h1>
-    <p> This is <%= title%> from CS2102 <p>
+    <h1>CS2102: <%= title%></h1>
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Uid</th>
+					<th scope="col">Name</th>
+					<th scope="col">Username</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% for(var i=0; i<data.length; i++) { %>
+				<tr>
+					<td><%= data[i].uid%></td>
+					<td><%= data[i].name%></td>
+					<td><%= data[i].username%></td>
+				</tr>
+				<% } %>
+			</tbody>
+		</table>
   </body>
 </html>
