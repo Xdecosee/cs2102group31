@@ -2,7 +2,7 @@
 ## Tutorial for Team
 
 ### IMPORTANT NOTE
-So far completed up to section 5 of past sem guide. Left with section 6 and 7. The tutorials below only cover some selected stuff between section 1 and section 5.
+So far completed up to section 5 of past sem guide. Left with section 6 and 7. The tutorials below only cover some selected stuff between section 1 and section 5. Not adding database folder stuff into App/db folder yet until queries settled and stuff under the below section "still need to figure out" are done.
 
 ### Setting Up this repo
 1. Download NodeJS at https://nodejs.org/en/
@@ -10,7 +10,7 @@ So far completed up to section 5 of past sem guide. Left with section 6 and 7. T
 
 A "node_modules" folder should be created in your directory and as this folder shouldn't be pushed to github, I have added it in a gitignore file. 
 
-3. Go to select.js and change the password field at the Pool code to your postgres password. Remember not to push your password into github and change it back to ****.
+3. Go to select.js and change the password field at the Pool code to your postgres password. Change the database name as well. Remember not to push your password into github and change it back to ****.
 
 ### Ejs and js file Tutorial
 1. Ejs file are like the front end pages (i.e. html page). Stored under views folder.

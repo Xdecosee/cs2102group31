@@ -5,8 +5,9 @@ const { Pool } = require('pg')
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
-  database: 'cs2102',
-  /*IMPORTANT: Swap **** with your own password*/
+  /* IMPORTANT: Swap **** with your own password and Swap #### with your database name that you
+  use to store the project data e.g. postgres */
+  database: '####',
   password: '****',
   port: 5432,
 })
