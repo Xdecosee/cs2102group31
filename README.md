@@ -38,6 +38,7 @@ Read the past sem guide for more detailed stuff.
 1. How to structure the folders such that Pool and Queries can be accessed from db folder instead of individual js files (those codes in select.js)
 2. How to do session values for userid i.e. how pass session values from page to page. User id need to be used in many js files in the sql statement parameters.
 3. How to retreive user input from html forms into sql parameters. 
+4. How to link page to page. 
 
 Hopefully the guide can address some of these ^
 
