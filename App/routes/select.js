@@ -7,7 +7,7 @@ const pool = new Pool({
   host: 'localhost',
   database: 'cs2102',
   /*IMPORTANT: Swap **** with your own password*/
-  password: 'Xdeco1998',
+  password: '****',
   port: 5432,
 })
 
