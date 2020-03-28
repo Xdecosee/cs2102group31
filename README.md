@@ -1,5 +1,5 @@
 #  FDS Applicaion AY2019/20 Sem 1
-## CS2102 Team 31
+## Tutorial for Team
 
 ### Setting Up this repo
 1. Download NodeJS at https://nodejs.org/en/
