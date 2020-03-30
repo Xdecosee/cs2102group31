@@ -35,18 +35,9 @@ This .env should be ignored through .gitignore and not pushed to github.
 8. The current nav bar can be edited under ../views/partials/navbar.ejs. I used this: https://medium.com/@henslejoseph/ejs-partials-f6f102cb7433 so that we don't to repeat a chunk of code for every new page created. Temporarily is just one navbar for now as guide. We will need create multiple nav bars for different user roles. The only code to repeat on every page is:
 
 ```
-<!DOCTYPE html>
-<html>
-	<head>
-		<%- include('partials/header') %>
-	</head>
-	<body style="height:1500px">
-		<%- include('partials/navbar') %>
-        <div class="container-fluid" style="margin-top:80px">
-        <!-- Your HTML Forms and Content Here -->
-        </div>
-    </body>
-</html>  
+<%- include('partials/navbar') %>
+<!-- Your HTML Forms and Content Here -->
+<%- include('partials/footer') %>
 ```
 
 Read the past sem guide for more detailed stuff. 
