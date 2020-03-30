@@ -36,12 +36,12 @@ Read the past sem guide for more detailed stuff.
 
 ### Running the App
 1. In your terminal (at .../App), type 'npm start'. I added a 'console.log' in App.js that will show your database connection string at your terminal if successful connected to postgres. 
-2. Open http://localhost:3001 in your browser for index.ejs. You can use the nav bar to traverse pages too.
-3. Go to http://localhost:3001/insert to insert some fake data into users table. Created entries are Customers. Postgres may not generate warnings at your terminal if the data inserted was wrong. (Guide section 6 and 7 explains how the code work.)
-4. Opening http://localhost:3001/select to see your data inserted.
+2. Open http://localhost:3000 in your browser for index.ejs. You can use the nav bar to traverse pages too.
+3. Go to http://localhost:3000/insert to insert some fake data into users table. Created entries are Customers. Postgres may not generate warnings at your terminal if the data inserted was wrong. (Guide section 6 and 7 explains how the code work.)
+4. Opening http://localhost:3000/select to see your data inserted.
 5. To stop running the app, aside from closing your browser, remember to Ctrl + C in your terminal to terminate the server. 
 
-Supposedly, you forget to Ctrl + C, just kill the process at port 3001. For windows, go your task manager
+Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For windows, go your task manager
 select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
 
 ### Still need to Figure Out [Stuff that will apply to everyone]
