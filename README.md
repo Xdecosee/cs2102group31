@@ -47,7 +47,6 @@ This .env should be ignored through .gitignore and not pushed to github.
         </div>
     </body>
 </html>  
-</pre>
 ```
 
 Read the past sem guide for more detailed stuff. 
