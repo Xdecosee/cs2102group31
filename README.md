@@ -2,7 +2,7 @@
 ## Tutorial for Team
 
 ### IMPORTANT NOTE
-So far completed up to section 5 of past sem guide. Left with section 6 and 7. The tutorials below only cover some selected stuff between section 1 and section 5. Not adding database folder stuff into App/db folder yet until queries settled and stuff under the below section "still need to figure out" are done.
+Completed the guide. The tutorials below only cover some selected stuff in all sections of the guide. Not adding database folder stuff into App/db folder yet until queries settled and stuff under the below section "still need to figure out" are done.
 
 ### Setting Up this repo
 1. Download NodeJS at https://nodejs.org/en/
@@ -10,7 +10,12 @@ So far completed up to section 5 of past sem guide. Left with section 6 and 7. T
 
 A "node_modules" folder should be created in your directory and as this folder shouldn't be pushed to github, I have added it in a gitignore file. 
 
-3. Go to select.js and change the password field at the Pool code to your postgres password. Change the database name as well. Remember not to push your password into github and change it back to ****.
+If gitignore isn't working for you, do these steps: http://www.codeblocq.com/2016/01/Untrack-files-already-added-to-git-repository-based-on-gitignore/. In vscode, the ignored files should be greyed out
+
+3. Following section 8 of the guide, create a .env file under the /App folder and insert with a single line: DATABASE URL=postgres://username:password@host address:port/database_name
+For example. DATABASE_URL=postgres://postgres:1@localhost:5432/postgres
+
+This .env should be ignored through .gitignore and not pushed to github. 
 
 ### Ejs and js file Tutorial
 1. Ejs file are like the front end pages (i.e. html page). Stored under views folder.
@@ -29,16 +34,22 @@ A "node_modules" folder should be created in your directory and as this folder s
 Read the past sem guide for more detailed stuff. 
 
 ### Running the App
-1. In your terminal (at .../App), type 'node bin\www'. 
-2. Open http://localhost:3001 in your browser for index.ejs. 
-3. To run select.ejs, go to psql to insert some fake data in users table before opening http://localhost:3001/select 
-4. To stop running the app, aside from closing your browser, remember to Ctrl + C in your terminal to terminate the server. 
+1. In your terminal (at .../App), type 'npm start'. I added a 'console.log' in App.js that will show your database connection string at your terminal if successful connected to postgres. 
+2. Open http://localhost:3001 in your browser for index.ejs. You can use the nav bar to traverse pages too.
+3. Go to http://localhost:3001/insert to insert some fake data into users table. Created entries are Customers. Postgres may not generate warnings at your terminal if the data inserted was wrong. (Guide section 6 and 7 explains how the code work.)
+4. Opening http://localhost:3001/select to see your data inserted.
+5. To stop running the app, aside from closing your browser, remember to Ctrl + C in your terminal to terminate the server. 
 
-### Still need to Figure Out
+Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For windows, go your task manager
+select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
+
+### Still need to Figure Out [Stuff that will apply to everyone]
 1. How to structure the folders such that Pool and Queries can be accessed from db folder instead of individual js files (those codes in select.js)
 2. How to do session values for userid i.e. how pass session values from page to page. User id need to be used in many js files in the sql statement parameters.
-3. How to retreive user input from html forms into sql parameters. 
-4. How to link page to page. 
+3. How to retreive user input from html forms into sql parameters. [DONE - See Insert.js, Insert.ejs and InsertScript.js]
+4. How to link page to page. [DONE? - see the nav section of each ejs the "a href" and "app.get" in app.js is what connects pages together]
+
+BootStrap SideBar Reference: https://www.w3schools.com/bootstrap4/bootstrap_navbar.asp
 
 Hopefully the guide can address some of these ^
 

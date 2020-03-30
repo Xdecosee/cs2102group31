@@ -12,4 +12,5 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'GROUP31' });
 });
 
+
 module.exports = router;

@@ -5,11 +5,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+/* --- To load .env connection string    --- */
+require('dotenv').config();
+
 /* --- IMPT(Section 1): Adding Web Pages --- */
 var indexRouter = require('./routes/index');
 var selectRouter = require('./routes/select');
 var insertRouter = require('./routes/insert');
-
 
 /* --- Don't need to touch: view engine setup ----*/
 var app = express();
@@ -46,6 +48,22 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+/*Will log in your terminal whether you are connected to the db*/
+console.log("Your database connection: " + process.env.DATABASE_URL);
+
+
+app.get('/', (req, res) => {
+	res.render('index');
+});
+  
+app.get('/select', (req, res) => {
+	res.render('select');
+});
+
+app.get('/insert', (req, res) => {
+	res.render('insert');
 });
 
 module.exports = app;

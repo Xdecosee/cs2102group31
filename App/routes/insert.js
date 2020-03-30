@@ -7,26 +7,28 @@ const pool = new Pool({
 });
 
 /* SQL Query */
-var sql_query = 'INSERT INTO student_info VALUES';
+var sql_query = 'INSERT INTO Users(name, username, password, type) Values';
 
 // GET
 router.get('/', function(req, res, next) {
-	res.render('insert', { title: 'Modifying Database' });
+	res.render('insert', { title: 'Customer Sign Up' });
 });
 
 // POST
 router.post('/', function(req, res, next) {
 	// Retrieve Information
-	var matric  = req.body.matric;
-	var name    = req.body.name;
-	var faculty = req.body.faculty;
+	var name  = req.body.name;
+	var username    = req.body.username;
+	var password = req.body.password;
 	
 	// Construct Specific SQL Query
-	var insert_query = sql_query + "('" + matric + "','" + name + "','" + faculty + "')";
+	var insert_query = sql_query + "('" + name + "','" + username + "','" + password + "', 'Customers')";
 	
+	//Redirect after database success
 	pool.query(insert_query, (err, data) => {
 		res.redirect('/select')
 	});
 });
+
 
 module.exports = router;
