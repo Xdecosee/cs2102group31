@@ -2,7 +2,7 @@
 ## Tutorial for Team
 
 ### IMPORTANT NOTE
-Completed the guide. The tutorials below only cover some selected stuff in all sections of the guide. Not adding database folder stuff into App/db folder yet until queries settled and stuff under the below section "still need to figure out" are done.
+Completed the guide. The tutorials below only cover some selected stuff in all sections of the guide. Not adding database folder stuff into App/db folder yet until queries settled and stuff under the below section "still need to figure out" are done. 
 
 ### Setting Up this repo
 1. Download NodeJS at https://nodejs.org/en/
@@ -24,13 +24,30 @@ This .env should be ignored through .gitignore and not pushed to github.
 
 4. At app.js in under comments of "IMPT(Section 1):" and "IMPT(Section 2):" have to write 
 *var (page)Router = require('./routes/(page)');* and *app.use('/(page)', (page)Router);* RESPECTIVELY.
-app.get under "IMPT(Section 3):" is required to render the various pages when traversing through nav bar.
+*app.get* under "IMPT(Section 3):" is required to render the various pages when traversing through nav bar.
 
 5. The guide js files use *res.render(’/’, {title: ’Page’});* Additional ARGUMENTS are pass in after "title". Since we gonna use sql tables, in select.js, res.render is enclosed in a pool function and the "usersInfo: data.rows" will retrieve all data from the select statement. "usersInfo" is an argument I give to store the data retrieved.  
 
 6. The guide ejs files references arguments from js files through these <%%> . 
 
 7. Links to bootstrap is included in every ejs. I think that the file design are automatically linked through them? 
+
+8. The current nav bar can be edited under ../views/partials/navbar.ejs. I used this: https://medium.com/@henslejoseph/ejs-partials-f6f102cb7433 so that we don't to repeat a chunk of code for every new page created. Temporarily is just one navbar for now as guide. We will need create multiple nav bars for different user roles. The only code to repeat on every page is:
+
+```
+<!DOCTYPE html>
+<html>
+	<head>
+		<%- include('partials/header') %>
+	</head>
+	<body style="height:1500px">
+		<%- include('partials/navbar') %>
+        <div class="container-fluid" style="margin-top:80px">
+        <!-- Your HTML Forms and Content Here -->
+        </div>
+    </body>
+</html>  
+```
 
 Read the past sem guide for more detailed stuff. 
 
@@ -51,7 +68,7 @@ select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select
 4. How to link page to page. [DONE? - see the nav section of each ejs the "a href" and "app.get" in app.js is what connects pages together]
 
 
-### REFERENCES
+### OTHER USEFUL REFERENCES
 1. BootStrap Nav Reference(if want additional stuff
 like dropdown can refer here to): https://www.w3schools.com/bootstrap4/bootstrap_navbar.asp
 2. Node js navigation between pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
