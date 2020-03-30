@@ -73,14 +73,13 @@ CREATE TABLE Food (
 	FOREIGN KEY	(category) REFERENCES Categories (category)
 );
 
-CREATE TABLE Menu (
+/*CREATE TABLE Menu (
 	restaurantID    uuid         NOT NULL,
 	foodName        VARCHAR(100)    NOT NULL,
 	Unique (restaurantID, foodName),
-	/*THIS TWO PARTS*/
 	FOREIGN KEY	(restaurantID) REFERENCES Restaurants (restaurantID) ON DELETE CASCADE,
 	FOREIGN KEY	(restaurantID, foodName) REFERENCES Food (restaurantID,foodname) ON DELETE CASCADE
-);
+);*/
 
 CREATE TABLE PaymentOption (
     payOption   VARCHAR(100),
@@ -114,7 +113,7 @@ CREATE TABLE FromMenu (
 	PRIMARY KEY (restaurantID,foodName,orderID),
 	FOREIGN KEY (promotionID) REFERENCES Restpromo (promoID),
 	FOREIGN KEY (orderID) REFERENCES Orders (orderID),
-	FOREIGN KEY (restaurantID, foodName) REFERENCES Menu (restaurantID, foodName) ON DELETE CASCADE
+	FOREIGN KEY (restaurantID, foodName) REFERENCES Food (restaurantID, foodName) ON DELETE CASCADE
 );
 
 CREATE TABLE Users (
