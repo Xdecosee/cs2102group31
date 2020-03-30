@@ -41,7 +41,7 @@ Read the past sem guide for more detailed stuff.
 4. Opening http://localhost:3001/select to see your data inserted.
 5. To stop running the app, aside from closing your browser, remember to Ctrl + C in your terminal to terminate the server. 
 
-Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For windows, go your task manager
+Supposedly, you forget to Ctrl + C, just kill the process at port 3001. For windows, go your task manager
 select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
 
 ### Still need to Figure Out [Stuff that will apply to everyone]
