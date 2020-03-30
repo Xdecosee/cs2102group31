@@ -50,8 +50,11 @@ select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select
 3. How to retreive user input from html forms into sql parameters. [DONE - See Insert.js, Insert.ejs and InsertScript.js]
 4. How to link page to page. [DONE? - see the nav section of each ejs the "a href" and "app.get" in app.js is what connects pages together]
 
-BootStrap SideBar Reference: https://www.w3schools.com/bootstrap4/bootstrap_navbar.asp
-Node js navigation between pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
+
+### REFERENCES
+1. BootStrap Nav Reference(if want additional stuff
+like dropdown can refer here to): https://www.w3schools.com/bootstrap4/bootstrap_navbar.asp
+2. Node js navigation between pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
 
 Hopefully the guide can address some of these ^
 
