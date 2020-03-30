@@ -1,13 +1,11 @@
 /*Compulsory Header */
 var express = require('express');
 var router = express.Router();
+const sql_query = require('../database/sqlList');
 const { Pool } = require('pg')
 const pool = new Pool({
 	connectionString: process.env.DATABASE_URL
 });
-
-/* SQL Query */
-var sql_query = 'INSERT INTO Users(name, username, password, type) Values';
 
 // GET
 router.get('/', function(req, res, next) {
@@ -21,12 +19,14 @@ router.post('/', function(req, res, next) {
 	var username    = req.body.username;
 	var password = req.body.password;
 	
-	// Construct Specific SQL Query
-	var insert_query = sql_query + "('" + name + "','" + username + "','" + password + "', 'Customers')";
-	
 	//Redirect after database success
-	pool.query(insert_query, (err, data) => {
-		res.redirect('/select')
+	pool.query(sql_query.query.insert_customer,[name, username, password], (err, data) => {
+		if(err) {
+			console.error("Error in adding customer");
+		} else {
+			res.redirect('/select');
+		}
+
 	});
 });
 

@@ -1,6 +1,7 @@
 /*Compulsory Header */
 var express = require('express');
 var router = express.Router();
+const sql_query = require('../database/sqlList');
 const { Pool } = require('pg')
 const pool = new Pool({
 	connectionString: process.env.DATABASE_URL

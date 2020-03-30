@@ -62,8 +62,11 @@ Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For wind
 select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
 
 ### Still need to Figure Out [Stuff that will apply to everyone]
-1. How to structure the folders such that Pool and Queries can be accessed from db folder instead of individual js files (those codes in complusory statements in js files)
-2. How to do session values for userid i.e. how pass session values from page to page. User id need to be used in many js files in the sql statement parameters.
+1. How to structure the folders such that Pool and Queries can be accessed from db folder instead of individual js files (those codes in complusory statements in js files) [Done a little - sort of figure out from
+[this](https://github.com/thisisadiyoga/cs2102_ay1819_s2/blob/master/sql/index.js) and 
+[this](https://github.com/thisisadiyoga/cs2102_ay1819_s2/blob/master/routes/init.js) but need
+to learn how to structure the js files to  respond to different multiple queries/actions on page]
+2. How to do session values for userid i.e. how pass session values from page to page. User id need to be used in many js files in the sql statement parameters!
 3. How to retreive user input from html forms into sql parameters. [DONE - See Insert.js, Insert.ejs and InsertScript.js]
 4. How to link page to page. [DONE? - see the nav section of each ejs the "a href" and "app.get" in app.js is what connects pages together]
 
