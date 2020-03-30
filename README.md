@@ -24,6 +24,7 @@ This .env should be ignored through .gitignore and not pushed to github.
 
 4. At app.js in under comments of "IMPT(Section 1):" and "IMPT(Section 2):" have to write 
 *var (page)Router = require('./routes/(page)');* and *app.use('/(page)', (page)Router);* RESPECTIVELY.
+app.get under "IMPT(Section 3):" is required to render the various pages when traversing through nav bar.
 
 5. The guide js files use *res.render(’/’, {title: ’Page’});* Additional ARGUMENTS are pass in after "title". Since we gonna use sql tables, in select.js, res.render is enclosed in a pool function and the "usersInfo: data.rows" will retrieve all data from the select statement. "usersInfo" is an argument I give to store the data retrieved.  
 
@@ -44,12 +45,13 @@ Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For wind
 select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
 
 ### Still need to Figure Out [Stuff that will apply to everyone]
-1. How to structure the folders such that Pool and Queries can be accessed from db folder instead of individual js files (those codes in select.js)
+1. How to structure the folders such that Pool and Queries can be accessed from db folder instead of individual js files (those codes in complusory statements in js files)
 2. How to do session values for userid i.e. how pass session values from page to page. User id need to be used in many js files in the sql statement parameters.
 3. How to retreive user input from html forms into sql parameters. [DONE - See Insert.js, Insert.ejs and InsertScript.js]
 4. How to link page to page. [DONE? - see the nav section of each ejs the "a href" and "app.get" in app.js is what connects pages together]
 
 BootStrap SideBar Reference: https://www.w3schools.com/bootstrap4/bootstrap_navbar.asp
+Node js navigation between pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
 
 Hopefully the guide can address some of these ^
 
