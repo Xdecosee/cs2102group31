@@ -54,6 +54,8 @@ app.use(function(err, req, res, next) {
 console.log("Your database connection: " + process.env.DATABASE_URL);
 
 
+/* --- IMPT(Section 3): Traverse Sections --- */
+
 app.get('/', (req, res) => {
 	res.render('index');
 });
