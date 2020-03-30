@@ -35,18 +35,9 @@ This .env should be ignored through .gitignore and not pushed to github.
 8. The current nav bar can be edited under ../views/partials/navbar.ejs. I used this: https://medium.com/@henslejoseph/ejs-partials-f6f102cb7433 so that we don't to repeat a chunk of code for every new page created. Temporarily is just one navbar for now as guide. We will need create multiple nav bars for different user roles. The only code to repeat on every page is:
 
 ```
-<!DOCTYPE html>
-<html>
-	<head>
-		<%- include('partials/header') %>
-	</head>
-	<body style="height:1500px">
-		<%- include('partials/navbar') %>
-        <div class="container-fluid" style="margin-top:80px">
-        <!-- Your HTML Forms and Content Here -->
-        </div>
-    </body>
-</html>  
+<%- include('partials/navbar') %>
+<!-- Your HTML Forms and Content Here -->
+<%- include('partials/footer') %>
 ```
 
 Read the past sem guide for more detailed stuff. 
@@ -62,8 +53,11 @@ Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For wind
 select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
 
 ### Still need to Figure Out [Stuff that will apply to everyone]
-1. How to structure the folders such that Pool and Queries can be accessed from db folder instead of individual js files (those codes in complusory statements in js files)
-2. How to do session values for userid i.e. how pass session values from page to page. User id need to be used in many js files in the sql statement parameters.
+1. How to structure the folders such that Pool and Queries can be accessed from db folder instead of individual js files (those codes in complusory statements in js files) [Done a little - sort of figure out from
+[this](https://github.com/thisisadiyoga/cs2102_ay1819_s2/blob/master/sql/index.js) and 
+[this](https://github.com/thisisadiyoga/cs2102_ay1819_s2/blob/master/routes/init.js) but need
+to learn how to structure the js files to  respond to different multiple queries/actions on page]
+2. How to do session values for userid i.e. how pass session values from page to page. User id need to be used in many js files in the sql statement parameters!
 3. How to retreive user input from html forms into sql parameters. [DONE - See Insert.js, Insert.ejs and InsertScript.js]
 4. How to link page to page. [DONE? - see the nav section of each ejs the "a href" and "app.get" in app.js is what connects pages together]
 
