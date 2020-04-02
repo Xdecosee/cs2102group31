@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
   <head>
 		<!-- Page Title -->
-    <title>CS2102 Database Connect</title>
+    <title>CS2102 Starter Guide</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" href="/stylesheets/bootstrap.min.css" />
 		
 		<!-- CSS for Styling -->
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
@@ -14,24 +18,14 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
   </head>
   <body>
-    <h1>CS2102: <%= title%></h1>
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col">Uid</th>
-					<th scope="col">Name</th>
-					<th scope="col">Username</th>
-				</tr>
-			</thead>
-			<tbody>
-				<% for(var i=0; i< usersInfo.length; i++) { %>
-				<tr>
-					<td><%= usersInfo[i].uid%></td>
-					<td><%= usersInfo[i].name%></td>
-					<td><%= usersInfo[i].username%></td>
-				</tr>
-				<% } %>
-			</tbody>
-		</table>
+    <h1>Welcome to FDS Application</h1>
+    <p> This is <%= title%> from CS2102 <p>
   </body>
 </html>
+=======
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+<h1>Welcome to FDS Application</h1>
+<p> This is <%= title%> from CS2102 <p>
+<%- include('partials/footer') %>
+>>>>>>> 61255d73ad0d888b104e94e82859c886dd460afb

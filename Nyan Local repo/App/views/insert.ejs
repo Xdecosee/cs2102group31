@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+<h1><%= title%></h1>
+<form id="html_form" action="insert" role="form" method="post">
+	<div class="form-group">
+		<label for="name">Name</label>
+		<input type="text" class="form-control" id="name" name="name" placeholder="Enter your name">
+	</div>
+	<div class="form-group">
+		<label for="username">Username</label>
+		<input type="text" class="form-control" id="username" name="username" placeholder="Enter your username">
+	</div>
+	<div class="form-group">
+		<label for="password">Password</label>
+		<input type="text" class="form-control" id="password" name="password" aria-describedby="passwordHelp" placeholder="Enter your password">
+		<small id="passwordHelp" class="form-text text-muted">Password should contain only numbers</small>
+	</div>
+	<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<script>
+	(function() {
+		window.addEventListener('load', function() {
+			var forms = [document.getElementById('html_form')];
+			var validation = Array.prototype.filter.call(forms, function(form) {
+				/**check is a function in insertScript.js**/
+				form.addEventListener('submit', check, false);
+
+			});
+		}, false);
+	})();
+</script>
+<%- include('partials/footer') %>

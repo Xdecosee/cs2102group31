@@ -1,0 +1,5 @@
+#Ignore node modules folder
+**/App/node_modules/
+
+#Ignore .env file
+.env
