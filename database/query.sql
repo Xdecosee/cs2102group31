@@ -1,63 +1,93 @@
 /* I will just follow the example code when they insert values into it*/
 
+/* Create views */
+
+/*PARTTIME. Consolidate shows for each parttime rider, how many weeks they actually worked in a month (If they
+work one day in a week, it will be counted in totalWeeksWorked) and how many deliveries completed in a month */
+CREATE VIEW ConsolidateP AS (
+SELECT distinct P1.uid as pUid, 
+P1.weeklyBasePay as pBasePay, 
+EXTRACT(YEAR FROM WD1.workDate) as pYear, 
+EXTRACT(Month FROM WD1.workDate) as pMonth, 
+count( distinct EXTRACT(WEEK FROM WD1.workDate)) as totalWeeksWorked, 
+sum(WD1.numCompleted) as pComplete
+FROM PartTime P1
+INNER JOIN WorkingDays WD1 on P1.uid = WD1.uid
+WHERE WD1.numCompleted > 0 /**Filter out weeks without any worked days at all for count(Extract(WEEK FROM WD.workDate))**/
+GROUP BY P1.uid, EXTRACT(YEAR FROM WD1.workDate), EXTRACT(Month FROM WD1.workDate)
+);
+
+/*FULLTIME. ConsolidateF shows for each fulltime rider, how many months they actually worked (even if they worked one day in a month) 
+and how many deliveries completed in a month */
+CREATE VIEW ConsolidateF AS (
+SELECT distinct F1.uid as fUid,
+F1.monthlyBasePay as fBasePay,
+EXTRACT(YEAR FROM WW1.workDate) as fYear,
+EXTRACT(MONTH FROM WW1.workDate) as fMonth,
+sum(WW1.numCompleted) as fCompleted
+FROM FullTime F1
+INNER JOIN WorkingWeeks WW1 on F1.uid = WW1.uid
+WHERE WW1.numCompleted > 0  /**Filter out months without any worked days at all**/
+GROUP BY F1.uid, EXTRACT(YEAR FROM WW1.workDate), EXTRACT(MONTH FROM WW1.workDate)
+);
+
 
 /* General Functions*/
-
-/* add_user      */ INSERT INTO Users(uid,name,username,password) VALUES ($1,$2,$3,$4);
-/* add_cust      */ INSERT INTO Customers(uid,signUpDate,cardDetails) VALUES ($1,$2,$3);
+/* add_user      */ INSERT INTO Users(name,username,password,type) VALUES ($1,$2,$3,$4);
+/* add_cust      */ INSERT INTO Customers(uid,cardDetails) VALUES ($1,$2);
 /* add_FDSman    */ INSERT INTO FDSManagers(uid) VALUES ($1);
-/* add_reststaff */ INSERT INTO RestaurantStaff(uid) VALUES ($1);
-
+/* add_reststaff */ INSERT INTO RestaurantStaff(uid,restaurantID) VALUES ($1,$2);
+/* add_riders    */ INSERT INTO DeliveryRiders(uid, type) VALUES ($1,$2);
+/* add_PTriders  */ INSERT INTO PartTime(uid) VALUES ($1);
+/* add_FTriders  */ INSERT INTO FullTime(uid) VALUES ($1);
 /* del_users     */ DELETE FROM Users WHERE uid = $1;
 
 
 /* Customer Functions*/
-
-/* view_pastreview*/ SELECT (R.name, P.review,P.star) FROM Place P JOIN Order USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1;
-/* view_pastorders*/ SELECT (O.date,R.name,F.foodName,F.quantity) FROM Place P JOIN Order O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1;
-/* view_restaurant*/ SELECT (name,location,minThreshold) FROM Restaurants;
-/* view_restreview*/ SELECT (P.review,P.star) FROM Restaurants R JOIN FromMenu USING (restaurantID) JOIN Order USING (orderID) JOIN Place P USING (orderID) WHERE R.restaurantID = $1;
-/* view_restmenue*/  SELECT (foodName) FROM Menu WHERE restaurantID = $1; 
-/* view_catfood*/    SELECT (R.name,F.foodName) FROM Food F JOIN Restaurants R USING (restaurantID) WHERE F.category = $1; 
+/* view_pastreview*/ SELECT DISTINCT O.date as orderDate, R.name as Restaurant, P.review as Review ,P.star as Rating FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1;
+/* view_pastorders*/ SELECT DISTINCT O.date as orderDate ,R.name as Restaurant, F.foodName as Food, F.quantity as Quantity FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1;
+/* view_restaurant*/ SELECT DISTINCT name as Restaurant,location as Location, minThreshold as MinimumOrder FROM Restaurants;
+/* view_restreview*/ SELECT DISTINCT O.Date as orderDate, P.review as Review,P.star as Rating FROM Restaurants R JOIN FromMenu USING (restaurantID) JOIN Orders O USING (orderID) JOIN Place P USING (orderID) WHERE R.restaurantID = $1;
+/* view_restmenue*/  SELECT DISTINCT foodName as Food,category as Category FROM Food WHERE restaurantID = $1; 
+/* view_catfood*/    SELECT R.name as Restaurant,F.foodName as Food FROM Food F JOIN Restaurants R USING (restaurantID) WHERE F.category = $1; 
 /* view_rewardp*/    SELECT (rewardPts) FROM Customers WHERE uid=$1;
-/* view_5lateloc*/   SELECT (O.location) Place P JOIN Orders O USING (orderID) WHERE P.uid = $1 ORDER BY O.Date DESC LIMIT 5;
-
-
+/* view_5lateloc*/   SELECT (O.location) FROM Place P JOIN Orders O USING (orderID) WHERE P.uid = $1 ORDER BY O.Date DESC LIMIT 5;
 /* update_card*/     UPDATE Customers SET cardDetails = $2 WHERE uid = $1;
 /* del_card */       UPDATE Customers SET cardDetauks = NULL WHERE uid = $1; 
-/* add_order */      INSERT INTO Order(orderID,cost,location,date,deliveryDuration) VALUES ($1,$2,$3,$4);
-/* add_fromMenu*/    INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES ($1,$2,$3,$4,$5);
-/* add_payby*/       INSERT INTO Payby (orderID,payOption) VALUES ($1,$2);
 
-/* Have an issue with order and menu, head and tail problem, which one come first
-   Step 1: compile food and cost
-   Step 2: Generate orderID
-   Step 3: Link both?
-*/
+ /* add_order,add_from Menu,add_place*/
+INSERT INTO Orders(cost,location,date,deliveryDuration,payOption) VALUES (0,$1,$2,0,$3); /* orderID auto generaetd */
+INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES ($1,$2,$3,$4,$5);
+INSERT INTO Place (uid,orderID,review,star,promoid) VALUES ($1,$2,$3,$4,$5); /* Insert data into place */
+/* Update costs*/
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = $1) WHERE orderID = $1; /*Food costs*/
+UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = $1 LIMIT 1)) WHERE orderID = $1; /*For percentage promo*/
+UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = $1 LIMIT 1) WHERE orderID = $1; /*For amt promo*/
+UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = $1; /* after driver is assigned to order*/
+
 
 /* Delivery Riders Function*/
-
-/*Part Time*/ 
-/* view_futsched*/   SELECT * FROM WorkingDays WHERE workDate>=$1;
-/* view_pastsched*/  SELECT * FROM WorkingDays WHERE workDate<$1;
-/* view_salary*/     SELECT (M.monthYear,P.weeklyBasePay*4 as Basepay,D.baseDeliveryfee*M.numCompleted as Bonus,Bonus+basepay as Totalpay) FROM PartTime P JOIN DeliveryRiders D USING (uid) JOIN MonthlyDeliveryBonus M USING (uid) WHERE P.uid = $1 GROUP BY (M.monthYear);
-/*need to find out when he worked to know the n for weeklybasepay*/
-/* add_schedule*/    INSERT INTO WorkingDays(uid,workDate,intervalStart,intervalEnd) VALUES ($1,$2,$3,$4); 
-
-/*Full Time*/
-/* view_futsched*/   SELECT * FROM WorkingWeeks W JOIN ShiftOptions S WHERE W.workDate>=$1;
-/* view_pastsched*/  SELECT * FROM WorkingWeeks W JOIN ShiftOptions S WHERE W.workDate<$1;
-/* view_salary*/     SELECT (M.monthYear,F.monthlyBasePay as Basepay,D.baseDeliveryfee*M.numCompleted as Bonus, Bonus+basepay as Totalpay) FROM FullTime F JOIN DeliveryRiders D USING (uid) JOIN MonthlyDeliveryBonus M USING (uid) WHERE P.uid = $1 GROUP BY (M.monthYear);
-/* add_schedule*/    INSERT INTO WorkingWeeks(uid,workDate,shiftID) VALUES ($1,$2,$3); 
-
-
-/* view_numOrder*/   SELECT (monthYear,numCompleted) FROM MonthlyDeliveryBonus WHERE uid = $1;
-/* view_ratings*/    SELECT (avg(rating)) FROM DELIVERS GROUP BY (uid) HAVING uid = $1;
-/* view_hourswork*/  SELECT 
-
+/* view_ratings*/     SELECT CAST(avg(rating) AS DECIMAL(10,2)) FROM Delivers GROUP BY (uid) HAVING uid = $1;
 /* update_orderstat*/ UPDATE Orders SET orderStatus = $1 WHERE orderID = $2
 /* update_place*/     UPDATE Orders SET timeOrderPlace = $1 WHERE orderID = $2
 /* update_departto*/  UPDATE Orders SET timeDepartToRest = $1 WHERE orderID = $2
 /* update_arriverest*/UPDATE Orders SET timeArriveRest = $1 WHERE orderID = $2
 /* update_departfrom*/UPDATE Orders SET timeDepartFromRest = $1 WHERE orderID = $2
 /* update_delivered*/ UPDATE Orders SET timeOrderDelivered = $1 WHERE orderID = $2
+
+/*Part Time*/ 
+/* view_salary*/     SELECT CP.pYear as year, CP.pMonth as month, CP.pComplete * DR.baseDeliveryFee + CP.pComplete * DR.deliveryBonus + CP.totalWeeksWorked * CP.pBasePay as monthSalary FROM ConsolidateP CP RIGHT JOIN DeliveryRiders DR on DR.uid = CP.pUid WHERE CP.pUid = $1 ;
+/* view_futsched*/   SELECT * FROM WorkingDays WHERE workDate>=NOW() AND uid = $2;
+/* view_pastsched*/  SELECT * FROM WorkingDays WHERE workDate<NOW() AND uid = $2;
+/* view_numOrder*/   SELECT pYear as year,pMonth as month, pComplete as ordersCompelete FROM ConsolidateP WHERE pUid = $1;
+/* view_hourswork*/  SELECT DISTINCT P.uid, EXTRACT(YEAR FROM WD.workDate) as year, EXTRACT(MONTH FROM WD.workDate) as month, sum(DATE_PART('hour', WD.intervalEnd - WD.intervalStart) * 60  + DATE_PART('minute', WD.intervalEnd - WD.intervalStart))::decimal / 60 as totalHours FROM PartTime P INNER JOIN WorkingDays WD on P.uid = WD.uid WHERE WD.numCompleted > 0 GROUP BY P.uid, EXTRACT(YEAR FROM WD.workDate), EXTRACT(MONTH FROM WD.workDate) HAVING P.uid = $1;
+/* add_schedule*/    INSERT INTO WorkingDays(uid,workDate,intervalStart,intervalEnd) VALUES ($1,$2,$3,$4); /*will have to trigger work hours*/
+
+/*Full Time*/
+/* view_salary*/     SELECT CF.fYear as year, CF.fMonth as month, CF.fCompleted * DR.baseDeliveryFee + CF.fCompleted * DR.deliveryBonus + CF.fBasePay as monthSalary FROM DeliveryRiders DR LEFT JOIN ConsolidateF CF on DR.uid = CF.fUid WHERE CF.fuid = $1;
+/* view_futsched*/   SELECT W.workDate as wDate, S.shiftDetails as Shifts FROM WorkingWeeks W JOIN ShiftOptions S USING (shiftID) WHERE workDate>=NOW() AND uid = $1;
+/* view_pastsched*/  SELECT W.workDate as wDate, S.shiftDetails as Shifts FROM WorkingWeeks W JOIN ShiftOptions S USING (shiftID) WHERE workDate<NOW() AND uid = $1;
+/* view_numOrder*/   SELECT fYear as Year,fMonth as Month, fCompleted as ordersComplete FROM ConsolidateF WHERE fUid = $1;
+/* view_hourswork*/  SELECT distinct EXTRACT(YEAR FROM WW.workDate) as year, EXTRACT(MONTH FROM WW.workDate) as month, count(shiftID) * 8 as totalHours FROM FullTime F INNER JOIN WorkingWeeks WW on F.uid = WW.uid WHERE WW.numCompleted > 0 GROUP BY F.uid, EXTRACT(YEAR FROM WW.workDate), EXTRACT(MONTH FROM WW.workDate) HAVING F.uid = $1;
+/* add_schedule*/    INSERT INTO WorkingWeeks(uid,workDate,shiftID) VALUES ($1,$2,$3); /*trigger work hour*/
+'d15945e8-42e9-4e00-a1fc-c5858260465f'
