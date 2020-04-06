@@ -23,17 +23,23 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-/* --- Will log in your terminal whether you are connected to the db ---*/
-console.log("Your database connection: " + process.env.DATABASE_URL);
 
 /* --- IMPT(Section 1): Adding Web Pages --- */
-var main_login = require('./routes/main_login');
+var mainloginRouter = require('./routes/main_login');
+var custHomeRouter = require('./routes/cust_home');
+var fdsHomeRouter = require('./routes/fds_home');
+var restHomeRouter = require('./routes/rest_home');
+var riderHomeRouter = require('./routes/rider_home');
 
 
 
 
 /* --- IMPT(Section 2): Adding Web Pages --- */
-app.use('/', main_login);
+app.use('/', mainloginRouter);
+app.use('/cust_home', custHomeRouter);
+app.use('/fds_home', fdsHomeRouter);
+app.use('/rest_home', restHomeRouter);
+app.use('/rider_home', riderHomeRouter);
 
 
 /* --- Don't need to touch: Error Handler ----*/
@@ -47,9 +53,28 @@ app.use(function(err, req, res, next) {
   res.render('main_error');
 });
 
-/* --- IMPT(Section 3): Traverse Sections (those in navbar confirm need)--- */
+/* --- IMPT(Section 3): Traverse Sections--- */
 app.get('/', (req, res) => {
 	res.render('main_login');
 });
 
+app.get('/cust_home', (req, res) => {
+	res.render('cust_home');
+});
+
+app.get('/fds_home', (req, res) => {
+	res.render('fds_home');
+});
+
+app.get('/rest_home', (req, res) => {
+	res.render('rest_home');
+});
+
+app.get('/rider_home', (req, res) => {
+	res.render('rider_home');
+});
+
+
+/* --- Will log in your terminal whether you are connected to the db ---*/
+console.log("Your database connection: " + process.env.DATABASE_URL);
 module.exports = app;

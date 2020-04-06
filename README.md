@@ -10,13 +10,13 @@ This FDS application is not meant to be realistic like food delivery apps in rea
 
 A "node_modules" folder should be created in your directory and as this folder shouldn't be pushed to github, I have added it in a gitignore file. 
 
-If gitignore isn't working for you, do these steps: http://www.codeblocq.com/2016/01/Untrack-files-already-added-to-git-repository-based-on-gitignore/. In vscode, the ignored files should be greyed out
-
 3. Create a .env file under the /App folder and insert with a single line: 
 DATABASE_URL=postgres://username:password@host address:port/database_name
 For example. DATABASE_URL=postgres://postgres:1@localhost:5432/postgres
 
 This .env should be ignored through .gitignore and not pushed to github. 
+
+If gitignore isn't working for you, do these steps: http://www.codeblocq.com/2016/01/Untrack-files-already-added-to-git-repository-based-on-gitignore/. In vscode, the ignored files should be greyed out
 
 ### Ejs and js file Tutorial
 1. Ejs file are like the front end pages (i.e. html page). Stored under views folder.
@@ -42,8 +42,6 @@ This .env should be ignored through .gitignore and not pushed to github.
 <%- include('partials/footer') %>
 ```
 
-Read the past sem guide for more detailed stuff. 
-
 ### Running the App
 1. In your terminal (at .../App), type 'npm start'. I added a 'console.log' in App.js that will show your database connection string at your terminal if successful connected to postgres. 
 2. Open http://localhost:3000 in your browser for index.ejs. You can use the nav bar to traverse pages too.
@@ -54,20 +52,9 @@ Read the past sem guide for more detailed stuff.
 Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For windows, go your task manager
 select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
 
-### Still need to Figure Out [Stuff that will apply to everyone]
-1. How to structure the folders such that Pool and Queries can be accessed from db folder instead of individual js files (those codes in complusory statements in js files) [Done a little - sort of figure out from
-[this](https://github.com/thisisadiyoga/cs2102_ay1819_s2/blob/master/sql/index.js) and 
-[this](https://github.com/thisisadiyoga/cs2102_ay1819_s2/blob/master/routes/init.js) but need
-to learn how to structure the js files to  respond to different multiple queries/actions on page]
-2. How to do session values for userid i.e. how pass session values from page to page. User id need to be used in many js files in the sql statement parameters!
-3. How to retreive user input from html forms into sql parameters. [DONE - See Insert.js, Insert.ejs and InsertScript.js]
-4. How to link page to page. [DONE? - see the nav section of each ejs the "a href" and "app.get" in app.js is what connects pages together]
-
 
 ### OTHER USEFUL REFERENCES
 1. BootStrap Nav Reference(if want additional stuff
 like dropdown can refer here to): https://www.w3schools.com/bootstrap4/bootstrap_navbar.asp
 2. Node js navigation between pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
-
-Hopefully the guide can address some of these ^
 
