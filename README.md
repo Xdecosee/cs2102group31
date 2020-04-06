@@ -2,7 +2,7 @@
 ## Tutorial for Team
 
 ### IMPORTANT NOTE
-Completed the guide. The tutorials below only cover some selected stuff in all sections of the guide. Not adding database folder stuff into App/db folder yet until queries settled and stuff under the below section "still need to figure out" are done. 
+This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well!
 
 ### Setting Up this repo
 1. Download NodeJS at https://nodejs.org/en/
@@ -12,7 +12,8 @@ A "node_modules" folder should be created in your directory and as this folder s
 
 If gitignore isn't working for you, do these steps: http://www.codeblocq.com/2016/01/Untrack-files-already-added-to-git-repository-based-on-gitignore/. In vscode, the ignored files should be greyed out
 
-3. Following section 8 of the guide, create a .env file under the /App folder and insert with a single line: DATABASE_URL=postgres://username:password@host address:port/database_name
+3. Create a .env file under the /App folder and insert with a single line: 
+DATABASE_URL=postgres://username:password@host address:port/database_name
 For example. DATABASE_URL=postgres://postgres:1@localhost:5432/postgres
 
 This .env should be ignored through .gitignore and not pushed to github. 
