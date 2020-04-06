@@ -8,9 +8,6 @@ var logger = require('morgan');
 /* --- Using dotenv     --- */
 require('dotenv').config();
 
-/* --- IMPT(Section 1): Adding Web Pages --- */
-var loginRouter = require('./routes/login');
-
 /* --- Don't need to touch: view engine setup ----*/
 var app = express();
 app.set('views', path.join(__dirname, 'views'));
@@ -21,14 +18,23 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-/* --- Body Parser --- */
+/* --- Don't need to touch: Body Parser --- */
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+/* --- Will log in your terminal whether you are connected to the db ---*/
+console.log("Your database connection: " + process.env.DATABASE_URL);
+
+/* --- IMPT(Section 1): Adding Web Pages --- */
+var main_login = require('./routes/main_login');
+
+
+
 
 /* --- IMPT(Section 2): Adding Web Pages --- */
-app.use('/', loginRouter);
+app.use('/', main_login);
+
 
 /* --- Don't need to touch: Error Handler ----*/
 app.use(function(req, res, next) {
@@ -38,16 +44,12 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
-  res.render('error');
+  res.render('main_error');
 });
 
-/* --- Will log in your terminal whether you are connected to the db ---*/
-console.log("Your database connection: " + process.env.DATABASE_URL);
-
-
-/* --- IMPT(Section 3): Traverse Sections --- */
+/* --- IMPT(Section 3): Traverse Sections (those in navbar confirm need)--- */
 app.get('/', (req, res) => {
-	res.render('login');
+	res.render('main_login');
 });
 
 module.exports = app;

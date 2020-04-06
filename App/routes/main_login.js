@@ -6,24 +6,9 @@ var router = express.Router();
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
-
-// GET STATEMENTS
-function selectUsers(req, res, next) {
-	caller.query(sql.query.all_users, (err, data) => {
-        if(err){
-            return next(error);
-        }
-        req.usersInfo = data.rows;
-        return next();
-	});
-}
-
 function loadPage(req, res, next) {
-	res.render('login', { 
-        title: 'Login',
-        usersInfo: req.usersInfo 
-    });
+	res.render('main_login');
 }
 
-router.get('/', selectUsers, loadPage );
+router.get('/', loadPage );
 module.exports = router;
