@@ -7,7 +7,7 @@ const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
 function loadPage(req, res, next) {
-	res.render('rider_home');
+	res.render('rest_home', { username: req.user.username });
 }
 
 router.get('/', loadPage );

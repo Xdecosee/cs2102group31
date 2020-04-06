@@ -4,7 +4,7 @@ const sql = {}
 sql.query = {
 
     //Login
-    login: 'SELECT name, username, type FROM Users where name = $1 and password = %2',
+    login: 'SELECT * FROM Users WHERE username=$1',
 
     //Guide_files
     all_users: 'SELECT uid, name, username FROM Users',
