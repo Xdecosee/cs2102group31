@@ -7,5 +7,6 @@ function authMiddleware () {
       res.redirect('/')
     }
 }
-  
+/*Still buggy: can access other pages even authenticated*/
+
 module.exports = authMiddleware
