@@ -33,6 +33,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
+require('./auth').init(app);
+app.use(passport.initialize())
+app.use(passport.session())
+
+
 /* --- IMPT(Section 1): Adding Web Pages --- */
 var mainloginRouter = require('./routes/main_login');
 var custHomeRouter = require('./routes/cust_home');
