@@ -52,4 +52,9 @@ router.get('/', passport.authMiddleware(), restInfo, menuInfo, loadPage );
 	}
 	res.render('rest_home');
 });*/
+
+/*Other Commonly Used stuff:*/
+/*res.redirect - redirect to another page
+res.render - display your current page*/
+
 module.exports = router;
