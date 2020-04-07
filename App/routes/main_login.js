@@ -2,7 +2,9 @@
 var express = require('express');
 /* A router to handle requests of corressponding page with same name*/
 var router = express.Router();
+/*for page authentication. See antimiddle.js (passport.antiMiddleware) and middleware.js(passport.authMiddleware)*/
 const passport = require('passport');
+
 
 function loadPage(req, res, next) {
 	res.render('main_login');

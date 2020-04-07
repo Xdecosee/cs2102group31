@@ -1,5 +1,69 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_rest') %>
 <h1>Restaurant Staff Home</h1>
-<h2> Welcome, <%= username%>!</h2>
+<p>Welcome, <%= username%>!</p>
+
+<h2>Profile Details</h2>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Name</th>
+			<th scope="col">Username</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><%= name%></td>
+			<td><%= username%></td>
+		</tr>
+	</tbody>
+</table>
+
+<h2>Restaurant Details</h2>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Name</th>
+            <th scope="col">Location</th>
+            <th scope="col">Min. Threshold</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% for(var i=0; i< restInfo.length; i++) { %>
+		<tr>
+			<td><%= restInfo[i].name%></td>
+            <td><%= restInfo[i].location%></td>
+            <!--Note: convert to small letters for the attribute name. -->
+            <!--In db, we may put minThreshold, but convert it to minthreshold 
+                to retrieve values-->
+            <td><%= restInfo[i].minthreshold%></td>
+		</tr>
+		<% } %>
+	</tbody>
+</table>
+
+<h2>Menu Details</h2>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Food</th>
+            <th scope="col">Price</th>
+            <th scope="col">Category</th>
+            <th scope="col">Daily Limit</th>
+            <th scope="col">Avaliablity</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% for(var i=0; i< menuInfo.length; i++) { %>
+		<tr>
+			<td><%= menuInfo[i].foodname%></td>
+            <td><%= menuInfo[i].price%></td>
+            <td><%= menuInfo[i].category%></td>
+            <td><%= menuInfo[i].dailylimit%></td>
+            <td><%= menuInfo[i].availability ? 'yes' : 'no' %></td>
+		</tr>
+		<% } %>
+	</tbody>
+</table>
+
 <%- include('partials/footer') %>
