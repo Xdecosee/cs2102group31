@@ -63,11 +63,18 @@ res.render - display your current page*/
 router.post('/insertfood', function(req, res, next) {
 	// Retrieve Information
 	var foodname  = req.body.foodname;
+<<<<<<< HEAD
 	//Number() makes it whole number, decimal not done yet.
 	var price  = Number(req.body.price);
 
 	//Redirect after database success
 	caller.query(sql.query.insertFood,[foodname, price, restId], (err, data) => {
+=======
+	var price  = req.body.price;
+
+	//Redirect after database success
+	calle.query(sql_query.query.insertFood,[foodname, price, restId], (err, data) => {
+>>>>>>> 22d381a5844a137a925d632cbd06069f295fd0c2
 		if(err) {
 			console.error("Error in adding food");
 		} else {
