@@ -8,6 +8,7 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
+var restId = null;
 
 function restInfo(req, res, next) {
 	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
@@ -15,6 +16,7 @@ function restInfo(req, res, next) {
             return next(error);
         }
 		req.restInfo = data.rows;
+		restId = data.rows[0].restaurantid;
 		//Print variable values in your terminal (useful for debugging)
 		console.log(req.restInfo);
         return next();
@@ -22,7 +24,7 @@ function restInfo(req, res, next) {
 }
 
 function menuInfo(req, res, next) {
-	caller.query(sql.query.menuInfo, [req.user.uid], (err, data) => {
+	caller.query(sql.query.menuInfo, [restId], (err, data) => {
         if(err){
             return next(error);
         }
@@ -56,5 +58,24 @@ router.get('/', passport.authMiddleware(), restInfo, menuInfo, loadPage );
 /*Other Commonly Used stuff:*/
 /*res.redirect - redirect to another page
 res.render - display your current page*/
+
+
+router.post('/insertfood', function(req, res, next) {
+	// Retrieve Information
+	var foodname  = req.body.foodname;
+	//Number() makes it whole number, decimal not done yet.
+	var price  = Number(req.body.price);
+
+	//Redirect after database success
+	caller.query(sql.query.insertFood,[foodname, price, restId], (err, data) => {
+		if(err) {
+			console.error("Error in adding food");
+		} else {
+			//refresh page (i.e. redirect to same page)
+			res.redirect('/rest_home');
+		}
+
+	});
+});
 
 module.exports = router;

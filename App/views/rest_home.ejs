@@ -66,4 +66,19 @@
 	</tbody>
 </table>
 
+<h2>Add New Food</h2>
+<!--Notice here /rest_home is specified because it is a function define in this rest_home router (rest_home.js)-->
+<form id="html_form" action="/rest_home/insertfood" role="form" method="post">
+	<div class="form-group">
+		<label for="name">Food Name</label>
+		<input type="text" class="form-control" id="foodname" name="foodname"  aria-describedby="foodHelp" placeholder="Enter food name">
+		<small id="foodHelp" class="form-text text-muted">Name should not exceed 100 chars</small>
+	</div>
+	<div class="form-group">
+		<label for="username">Price</label>
+		<input type="text" class="form-control" id="price" name="price">
+	</div>
+	<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
 <%- include('partials/footer') %>
