@@ -32,11 +32,6 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Authentication Setup
-require('./auth').init(app);
-app.use(passport.initialize())
-app.use(passport.session())
-
 
 /* --- IMPT(Section 1): Adding Web Pages --- */
 var mainloginRouter = require('./routes/main_login');
