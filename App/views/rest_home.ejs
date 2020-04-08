@@ -67,7 +67,7 @@
 
 <h2>Add New Food</h2>
 <!-- IMPT: Notice here /rest_home is specified because function is define in rest_home router (rest_home.js)-->
-<form id="html_form" action="/rest_home/insertfood" role="form" method="post">
+<form id="food_form" action="/rest_home/insertfood" role="form" method="post">
 	<div class="form-group">
 		<label for="name">Food Name</label>
 		<input type="text" class="form-control" id="foodname" name="foodname"  aria-describedby="foodHelp" placeholder="Enter food name">
@@ -80,4 +80,18 @@
 	<button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
+<!--USEFUL: Example of importing script from /public/javascripts folder-->
+<script src = "javascripts/rest.js"></script>
+<script>
+	(function() {
+		window.addEventListener('load', function() {
+			//get by form id
+			var forms = [document.getElementById('food_form')];
+			var validation = Array.prototype.filter.call(forms, function(form) {
+				//checkFood is a function in rest.js to validate field values
+				form.addEventListener('submit', checkFood, false);
+			});
+		}, false);
+	})();
+</script>
 <%- include('partials/footer') %>

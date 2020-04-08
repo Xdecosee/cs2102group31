@@ -19,8 +19,6 @@ function restInfo(req, res, next) {
         }
 		req.restInfo = data.rows;
 		restId = data.rows[0].restaurantid;
-		/*------ USEFUL: Print variable values in your terminal  for debugging -----*/
-		console.log(req.restInfo);
         return next();
 	});
 }

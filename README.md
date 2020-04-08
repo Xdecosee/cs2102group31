@@ -9,6 +9,9 @@ res.render - display your current page*/
 
 file naming
 <%%>
+
+calling externel scripts
+console.log
 ### IMPORTANT NOTE
 This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well!
 
