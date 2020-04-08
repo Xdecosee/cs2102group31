@@ -5,7 +5,7 @@ function antiMiddleware () {
       if (!req.isAuthenticated()) {
         return next()
       }
-      //Redirect to login page if authenticated
+      //Redirect to login page if authenticated???
       res.redirect('/')
     }
 }

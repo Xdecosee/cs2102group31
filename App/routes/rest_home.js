@@ -4,7 +4,7 @@ var express = require('express');
 var router = express.Router();
 /*for page authentication. See antimiddle.js (passport.antiMiddleware) and middleware.js(passport.authMiddleware)*/
 const passport = require('passport');
-/*Modules: dbsql (sql statements), dbcaller(just used to call db)*/ 
+/*Modules for database interaction*/ 
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
@@ -12,7 +12,7 @@ const caller = require('../db/dbcaller');
 var restId = null;
 
 function restInfo(req, res, next) {
-	/*----- IMPT: Stuff in [] is for you sql parameters ($) ----- */
+	/*----- IMPT: Stuff in [] is for your sql parameters ($) ----- */
 	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
         if(err){
             return next(error);
@@ -36,6 +36,7 @@ function menuInfo(req, res, next) {
 
 
 function loadPage(req, res, next) {
+	/*-- IMPT: How to send data to your frontend ejs file --- */
 	res.render('rest_home', { 
 		username: req.user.username, 
 		name:req.user.name,
@@ -45,21 +46,13 @@ function loadPage(req, res, next) {
 }
 
 /* USEFUL: passport.authMiddleware() make sure user is autheticated before accessing page*/
-/* IMPT: Order of functions is impt based on which should be called first when page loads*/
+/* IMPT: For page to load. Order of functions is impt based on which should be called first.*/
 router.get('/', passport.authMiddleware(), restInfo, menuInfo, loadPage );
 
-/*Alternatively for authentication, you can try sth like this (not tested, but seen in Nadiah's repo)*/
-/*router.get('/', function(req, res, next) {
-	var auth = req.isAuthenticated();
-	if (!req.isAuthenticated()) {
-		res.redirect('/');
-	}
-	res.render('rest_home');
-});*/
 
-
+/*---- IMPT: Retrieve HTML EJS Form Information ----- */
 router.post('/insertfood', function(req, res, next) {
-	/*---- IMPT: Retrieve HTML EJS Form Information ----- */
+	//from <form> in ejs file
 	var foodname  = req.body.foodname;
 	var price  = Number(req.body.price);
 

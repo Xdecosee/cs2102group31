@@ -2,9 +2,9 @@
 var express = require('express');
 /* A router to handle requests of corressponding page with same name*/
 var router = express.Router();
-/*for page authentication. See antimiddle.js (passport.antiMiddleware) and middleware.js(passport.authMiddleware)*/
+/*for page authentication*/
 const passport = require('passport');
-/*Modules: dbsql (sql statements), dbcaller(just used to call db)*/ 
+/*Modules for database interaction*/ 
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 

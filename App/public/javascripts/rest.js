@@ -1,6 +1,6 @@
 /* ---- USEFUL: you can implement input validation if you want  or any javascript funcs you saw online---- */
 function checkFood(event) {
-	// Get Values
+	// Get Values from <form> in ejs file
 	var food  = document.getElementById('foodname' ).value;
 	var price = document.getElementById('price').value;
 	//var numbers = /^[0-9]+$/;

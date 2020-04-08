@@ -2,7 +2,7 @@
 var express = require('express');
 /* A router to handle requests of corressponding page with same name*/
 var router = express.Router();
-/*for page authentication. See antimiddle.js (passport.antiMiddleware) and middleware.js(passport.authMiddleware)*/
+/*for page authentication.*/
 const passport = require('passport');
 
 
