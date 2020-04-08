@@ -189,7 +189,7 @@ router.get('/', function(req, res, next) {
 1. App.js traverse pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
 2. Past Sem #1: https://github.com/thisisadiyoga/cs2102_ay1819_s2
 3. Past Sem #2: https://github.com/ndhuu/Restaurant-Simple-Web
-4. Past Sem guide: The first code I did following the guide is in https://github.com/Xdecosee/cs2102group31/tree/backup_one/App/views
+4. Past Sem guide: The first code I did following the guide is in https://github.com/Xdecosee/cs2102group31/tree/backup_one
 
 
 
