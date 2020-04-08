@@ -118,7 +118,7 @@ How is the router file (.js) in step 2 different from app.js? See [this stackove
 
 #### HTML and Frontend
 
-Most of the frontend matters (things that user can see) will be using ejs and html. Ejs stuff usually in this tag ```<%%>```.  
+Most of the frontend matters (things that user can see) will be using ejs (a node.js templating module) and html. Ejs stuff usually in this tag ```<%%>```.  
 
 #### Repeating HTML CODES 
 I optimized repeating codes through [this guide](https://medium.com/@henslejoseph/ejs-partials-f6f102cb7433) by createing the /views/partials folder. Currently,
