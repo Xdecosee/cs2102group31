@@ -91,7 +91,7 @@ const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 ```
 
-3. 
+3. t
 
 
 mini app vs main app
