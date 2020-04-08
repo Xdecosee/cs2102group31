@@ -1,27 +1,19 @@
 #  FDS Applicaion AY2019/20 Sem 1
-## Tutorial for Team
 
-/*Other Commonly Used stuff:*/
-/*res.redirect - redirect to another page
-res.render - display your current page*/
+## IMPORTANT NOTE
+This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well.
 
-/*get & post */
+For team: Run "npm install" again to reinstall all packages again!
 
-file naming
-<%%>
-
-calling externel scripts
-console.log
-### IMPORTANT NOTE
-This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well!
-
-### Setting Up this repo
-1. Download NodeJS at https://nodejs.org/en/
-2. In a terminal (from vscode or cmd) change directory (cd) to  the folder .../App folder and run 'npm install'. 'npm install' can be useful if having any missing packages required for the application.
+## Setting Up Repo
+1. Download Node js at https://nodejs.org/en/
+2. In a terminal (from vscode or cmd) change directory to /App folder and run 'npm install'.
 
 A "node_modules" folder should be created in your directory and as this folder shouldn't be pushed to github, I have added it in a gitignore file. 
 
-3. Create a .env file under the /App folder and insert with a single line: 
+3. Import psql_script_with_insert.sql under /App/db folder to psql.
+
+4. Create a .env file under the /App folder and insert with a single line: 
 DATABASE_URL=postgres://username:password@host address:port/database_name
 For example. DATABASE_URL=postgres://postgres:1@localhost:5432/postgres
 
@@ -29,43 +21,87 @@ This .env should be ignored through .gitignore and not pushed to github.
 
 If gitignore isn't working for you, do these steps: http://www.codeblocq.com/2016/01/Untrack-files-already-added-to-git-repository-based-on-gitignore/. In vscode, the ignored files should be greyed out
 
-### Ejs and js file Tutorial
-1. Ejs file are like the front end pages (i.e. html page). Stored under views folder.
-2. Js file are like files to connect to your database and retrieve info. Stored under routes folder.
-3. For every (page).ejs, there must be a (page).js.
+## Running the App
+1. In your terminal (at /App), type 'npm start'. 
 
-4. At app.js in under comments of "IMPT(Section 1):" and "IMPT(Section 2):" have to write 
-*var (page)Router = require('./routes/(page)');* and *app.use('/(page)', (page)Router);* RESPECTIVELY.
-*app.get* under "IMPT(Section 3):" is required to render the various pages when traversing through nav bar.
+I added a 'console.log' in app.js that will show your database connection string at your terminal if successful connected to postgres. 
 
-5. The guide js files use *res.render(’/’, {title: ’Page’});* Additional ARGUMENTS are pass in after "title". Since we gonna use sql tables, in select.js, res.render is enclosed in a pool function and the "usersInfo: data.rows" will retrieve all data from the select statement. "usersInfo" is an argument I give to store the data retrieved.  
+2. Open http://localhost:3000 in your browser. 
 
-6. The guide ejs files references arguments from js files through these <%%> . 
+For testing subpages that require no authentication, you can access through http://localhost:3000/{page_name}
 
-7. Links to bootstrap is included in every ejs. I think that the file design are automatically linked through them? 
+3. To stop running the app, Ctrl + C in your terminal to terminate the server. 
 
-8. The current nav bar can be edited under ../views/partials/navbar.ejs. I used this: https://medium.com/@henslejoseph/ejs-partials-f6f102cb7433 so that we don't to repeat a chunk of code for every new page created. Temporarily is just one navbar for now as guide. We will need create multiple nav bars for different user roles. The only code to repeat on every page is:
+Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For windows, go your task manager, select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
 
-```
-<%- include(partials/header) %>
-<%- include('partials/navbar') %>
-<!-- Your HTML Forms and Content Here -->
-<%- include('partials/footer') %>
-```
+## Coding Guide for Team (TL;DR)
+Main Files to reference:
+1. /app.js - adding webpages and traversing
+2. /views/rest_home.ejs - frontend
+3. /public/javascripts/rest.js - 
+4. /views/partials/navbar_rest.ejs - navigation bar
+5. /routes/rest_home.js - backend (NODE.js codes to connect to database using Express node module)
+6. /db/dbsql.js - sql statements (insert and select)
+7. /db - sql files for setting up psql
 
-### Running the App
-1. In your terminal (at .../App), type 'npm start'. I added a 'console.log' in App.js that will show your database connection string at your terminal if successful connected to postgres. 
-2. Open http://localhost:3000 in your browser for index.ejs. You can use the nav bar to traverse pages too.
-3. Go to http://localhost:3000/insert to insert some fake data into users table. Created entries are Customers. Postgres may not generate warnings at your terminal if the data inserted was wrong. (Guide section 6 and 7 explains how the code work.)
-4. Opening http://localhost:3000/select to see your data inserted.
-5. To stop running the app, aside from closing your browser, remember to Ctrl + C in your terminal to terminate the server. 
+Other Files to reference if have issues:
+1. /db/dbcaller.js 
+2. /auth folder
+3. HTML: /views/partials/footer.js, /views/partials/header.ejs
+4. Login matters: /routes/main_login.js, /views/main_login.ejs
 
-Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For windows, go your task manager
-select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
+## Coding Guide for Team
+
+A guide on how to insert pages and coding tips. 
+
+### Creating Files
+#### File Name Prefixes
+Seperating files into subfolders was hard. So I decided to differentiate files with these naming:
+1. cust - Customers related files
+2. rider - Delivery Riders related files
+3. fds - FDS Manager related files
+4. rest - Restaurant Staff related files
 
 
-### OTHER USEFUL REFERENCES
-1. BootStrap Nav Reference(if want additional stuff
+### IMPT and Useful Codes
+
+### Frontend : HTML, EJS, <script> javascript(js)
+css, navbar
+calling externel scripts
+1. Navigation Bar Customization (if want additional stuff
 like dropdown can refer here to): https://www.w3schools.com/bootstrap4/bootstrap_navbar.asp
-2. Node js navigation between pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
+```<%%>```
+### Backend: Linking to database (Node.js)
+
+### SQL Select + HTML Table
+
+/*get & post */
+/*res.redirect - redirect to another page
+res.render - display your current page*/
+console.log
+
+### SQL Insert + HTML Forms
+
+### Validation
+console.log
+
+
+### Authentication
+
+
+## REFERENCES
+1. App.js traverse pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
+
+
+
+
+
+
+
+
+
+
+
+
+
 
