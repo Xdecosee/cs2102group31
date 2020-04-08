@@ -45,10 +45,9 @@ Seperating files into subfolders was hard. So I decided to differentiate files w
 4. rest - Restaurant Staff related files
 
 ## Coding Guide for Team - Restaurant Staff Home Page Example
-Sign in to restaurant staff home page with Ariela's account to see the demo and then would
-be easier to understand the codes behind as well. I tag important parts with IMPT and useful parts with USEFUL. I have added comments to the files if you all need help understanding the codes. 
+I put some skeleton codes for you all to understand how to code. Sign in to restaurant staff home page with Ariela's account to see the demo and then would be easier to understand the codes behind as well. I tag important parts with IMPT and useful parts with USEFUL. I have added comments to the files if you all need help understanding the codes. 
 
-Main Files to reference:
+Main Files to see:
 1. /app.js - adding webpages and traversing
 2. /views/rest_home.ejs - frontend (demo both insert and select)
 3. /views/partials/navbar_rest.ejs - navigation bar
@@ -57,7 +56,7 @@ Main Files to reference:
 6. /db - sql files for setting up psql
 7. /public/javascripts/rest.js - validating input
 
-Other Files to reference if have issues:
+Other Files to see:
 1. /db/dbcaller.js 
 2. /auth folder
 3. HTML: /views/partials/footer.js, /views/partials/header.ejs
@@ -154,11 +153,11 @@ calling various functions when the page loads through ```router.get('/')```
 
 5. Node Modules related to database are pg and dotenv(for keeping database url).
 
-6. Session values (e.g. user uid) can be requested though using req.user.{field_name} in your js files for the parameters of the sql statements. A list of session values can be found under /auth/init.js  
+6. **Session values** (e.g. user uid) can be requested though using req.user.{field_name} in your js files for the parameters of the sql statements. A list of session values can be found under /auth/init.js  
 
 ### [IMPT] SQL Select + HTML Table, SQL Insert + HTML Forms
 
-For an easy start, use HTML Tables for select statments and HTML Forms to do insert statements.
+For an easy start, use HTML Tables for select statments and HTML Forms to do insert, update statements. For delete, we ignore it.
 
 ### [IMPT] Debugging Tip
 
@@ -190,7 +189,7 @@ router.get('/', function(req, res, next) {
 1. App.js traverse pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
 2. Past Sem #1: https://github.com/thisisadiyoga/cs2102_ay1819_s2
 3. Past Sem #2: https://github.com/ndhuu/Restaurant-Simple-Web
-4. Past Sem guide
+4. Past Sem guide: The first code I did following the guide is in https://github.com/Xdecosee/cs2102group31/tree/backup_one/App/views
 
 
 
