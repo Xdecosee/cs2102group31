@@ -3,7 +3,9 @@
 ## IMPORTANT NOTE
 This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well.
 
-For team: Run "npm install" again to reinstall all packages again!
+For team: 
+1. Run "npm install" again to reinstall all packages again!
+2. I didn't implement any async or synchonization codes. (Just in case you all need to know)
 
 ## Setting Up Repo
 1. Download Node js at https://nodejs.org/en/
@@ -34,15 +36,22 @@ For testing subpages that require no authentication, you can access through http
 
 Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For windows, go your task manager, select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
 
-## Coding Guide for Team (TL;DR)
+## File Name Prefixes
+Seperating files into subfolders was hard. So I decided to differentiate files with these naming:
+1. cust - Customers related files
+2. rider - Delivery Riders related files
+3. fds - FDS Manager related files
+4. rest - Restaurant Staff related files
+
+## Coding Guide for Team - Restaurant Staff Example(TL;DR)
 Main Files to reference:
 1. /app.js - adding webpages and traversing
-2. /views/rest_home.ejs - frontend
-3. /public/javascripts/rest.js - 
-4. /views/partials/navbar_rest.ejs - navigation bar
-5. /routes/rest_home.js - backend (NODE.js codes to connect to database using Express node module)
-6. /db/dbsql.js - sql statements (insert and select)
-7. /db - sql files for setting up psql
+2. /views/rest_home.ejs - frontend (demo both insert and select)
+3. /views/partials/navbar_rest.ejs - navigation bar
+4. /routes/rest_home.js - backend (NODE.js codes to connect to database using Express node module)
+5. /db/dbsql.js - sql statements (insert and select)
+6. /db - sql files for setting up psql
+7. /public/javascripts/rest.js - validating input
 
 Other Files to reference if have issues:
 1. /db/dbcaller.js 
@@ -55,13 +64,10 @@ Other Files to reference if have issues:
 A guide on how to insert pages and coding tips. 
 
 ### Creating Files
-#### File Name Prefixes
-Seperating files into subfolders was hard. So I decided to differentiate files with these naming:
-1. cust - Customers related files
-2. rider - Delivery Riders related files
-3. fds - FDS Manager related files
-4. rest - Restaurant Staff related files
 
+mini app vs main app
+
+Lets create lesser pages by using multiple sql statements on one page (see restaurant staff example). 
 
 ### IMPT and Useful Codes
 
@@ -72,6 +78,8 @@ calling externel scripts
 like dropdown can refer here to): https://www.w3schools.com/bootstrap4/bootstrap_navbar.asp
 ```<%%>```
 ### Backend: Linking to database (Node.js)
+
+dbcaller dbsql
 
 ### SQL Select + HTML Table
 
@@ -91,11 +99,6 @@ console.log
 
 ## REFERENCES
 1. App.js traverse pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
-
-
-
-
-
 
 
 
