@@ -43,7 +43,10 @@ Seperating files into subfolders was hard. So I decided to differentiate files w
 3. fds - FDS Manager related files
 4. rest - Restaurant Staff related files
 
-## Coding Guide for Team - Restaurant Staff Example(TL;DR)
+## Coding Guide for Team - Restaurant Staff Home Page Example
+Sign in to restaurant staff home page with Ariela's account to see the demo.
+I tag important parts with IMPT and useful parts with USEFUL.
+
 Main Files to reference:
 1. /app.js - adding webpages and traversing
 2. /views/rest_home.ejs - frontend (demo both insert and select)
@@ -59,46 +62,73 @@ Other Files to reference if have issues:
 3. HTML: /views/partials/footer.js, /views/partials/header.ejs
 4. Login matters: /routes/main_login.js, /views/main_login.ejs
 
-## Coding Guide for Team
+## Coding Guide for Team 
 
 A guide on how to insert pages and coding tips. 
 
-### Creating Files
+### [IMPT] Creating Files
+
+1. Create frontend page under /views with .ejs extension. Skeleton codes needed:
+
+```
+<%- include('partials/header') %>
+<%- include('partials/navbar_[role]') %>
+<!-- Your content will be here ---->
+<%- include('partials/footer') %>
+```
+
+2. Create backend script under /routes with .js extension with same name as .ejs file. Skeleton codes needed:
+
+```
+var express = require('express');
+var router = express.Router();
+
+/*for page authentication*/
+const passport = require('passport');
+
+/*Modules to interact with DB*/ 
+const sql = require('../db/dbsql');
+const caller = require('../db/dbcaller');
+```
+
+3. 
+
 
 mini app vs main app
 
 Lets create lesser pages by using multiple sql statements on one page (see restaurant staff example). 
 
-### IMPT and Useful Codes
 
-### Frontend : HTML, EJS, <script> javascript(js)
-css, navbar
+### [IMPT] Frontend : HTML, EJS, <script> javascript(js)
+css, navbar, header, footer
 calling externel scripts
 1. Navigation Bar Customization (if want additional stuff
 like dropdown can refer here to): https://www.w3schools.com/bootstrap4/bootstrap_navbar.asp
 ```<%%>```
-### Backend: Linking to database (Node.js)
+### [IMPT] Backend: Linking to database (Node.js)
 
 dbcaller dbsql
 
-### SQL Select + HTML Table
+### [IMPT] SQL Select + HTML Table
 
 /*get & post */
 /*res.redirect - redirect to another page
 res.render - display your current page*/
 console.log
 
-### SQL Insert + HTML Forms
+### [IMPT] SQL Insert + HTML Forms
 
-### Validation
+### [USEFUL] Validation - can implement after finishing impt parts
 console.log
 
 
-### Authentication
-
+### [USEFUL] Authentication - can implement after finishing impt parts
 
 ## REFERENCES
 1. App.js traverse pages: https://stackoverflow.com/questions/41322217/i-want-to-navigate-to-another-page-in-ejs-using-a-link
+2. Header and Footer partial folder: https://medium.com/@henslejoseph/ejs-partials-f6f102cb7433
+3. Past Sem #1: https://github.com/thisisadiyoga/cs2102_ay1819_s2
+4. Past Sem #2: https://github.com/ndhuu/Restaurant-Simple-Web
 
 
 
