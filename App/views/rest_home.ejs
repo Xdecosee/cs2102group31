@@ -33,9 +33,8 @@
 		<tr>
 			<td><%= restInfo[i].name%></td>
             <td><%= restInfo[i].location%></td>
-            <!--Note: convert to small letters for the attribute name. -->
-            <!--In db, we may put minThreshold, but convert it to minthreshold 
-                to retrieve values-->
+            <!--IMPT: convert to small letters for the attribute name. -->
+            <!--In db, we may put minThreshold, but convert it to minthreshold to retrieve values-->
             <td><%= restInfo[i].minthreshold%></td>
 		</tr>
 		<% } %>
@@ -67,7 +66,7 @@
 </table>
 
 <h2>Add New Food</h2>
-<!--Notice here /rest_home is specified because it is a function define in this rest_home router (rest_home.js)-->
+<!-- IMPT: Notice here /rest_home is specified because function is define in rest_home router (rest_home.js)-->
 <form id="html_form" action="/rest_home/insertfood" role="form" method="post">
 	<div class="form-group">
 		<label for="name">Food Name</label>

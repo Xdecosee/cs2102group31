@@ -8,8 +8,10 @@ var logger = require('morgan');
 const session = require('express-session')
 const passport = require('passport')
 
-/* --- Using dotenv     --- */
+/* --- Using dotenv and login to db     --- */
 require('dotenv').config();
+//Will log in your terminal whether you are connected to the db
+console.log("Your database connection: " + process.env.DATABASE_URL);
 
 /* --- Don't need to touch: view engine setup ----*/
 var app = express();
@@ -89,6 +91,4 @@ app.get('/rider_home', (req, res) => {
 });
 
 
-/* --- Will log in your terminal whether you are connected to the db ---*/
-console.log("Your database connection: " + process.env.DATABASE_URL);
 module.exports = app;

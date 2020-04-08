@@ -1,3 +1,4 @@
+/*------ List of SQL Statements ---*/
 const sql = {}
 
 

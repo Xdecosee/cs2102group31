@@ -8,22 +8,25 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
+//Global variable to store restID
 var restId = null;
 
 function restInfo(req, res, next) {
+	/*----- IMPT: Stuff in [] is for you sql parameters ($) ----- */
 	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
         if(err){
             return next(error);
         }
 		req.restInfo = data.rows;
 		restId = data.rows[0].restaurantid;
-		//Print variable values in your terminal (useful for debugging)
+		/*------ USEFUL: Print variable values in your terminal  for debugging -----*/
 		console.log(req.restInfo);
         return next();
 	});
 }
 
 function menuInfo(req, res, next) {
+	//Reuse restID from restInfo to retrieve menu info
 	caller.query(sql.query.menuInfo, [restId], (err, data) => {
         if(err){
             return next(error);
@@ -43,7 +46,8 @@ function loadPage(req, res, next) {
 	});
 }
 
-/*passport.authMiddleware() is just to make sure user is autheticated before accessing page*/
+/* USEFUL: passport.authMiddleware() make sure user is autheticated before accessing page*/
+/* IMPT: Order of functions is impt based on which should be called first when page loads*/
 router.get('/', passport.authMiddleware(), restInfo, menuInfo, loadPage );
 
 /*Alternatively for authentication, you can try sth like this (not tested, but seen in Nadiah's repo)*/
@@ -55,23 +59,17 @@ router.get('/', passport.authMiddleware(), restInfo, menuInfo, loadPage );
 	res.render('rest_home');
 });*/
 
-/*Other Commonly Used stuff:*/
-/*res.redirect - redirect to another page
-res.render - display your current page*/
-
 
 router.post('/insertfood', function(req, res, next) {
-	// Retrieve Information
+	/*---- IMPT: Retrieve HTML EJS Form Information ----- */
 	var foodname  = req.body.foodname;
-	//Number() makes it whole number, decimal not done yet.
 	var price  = Number(req.body.price);
 
-	//Redirect after database success
 	caller.query(sql.query.insertFood,[foodname, price, restId], (err, data) => {
 		if(err) {
 			console.error("Error in adding food");
 		} else {
-			//refresh page (i.e. redirect to same page)
+			// this redirects to same page (i.e. refresh this page) after db success
 			res.redirect('/rest_home');
 		}
 

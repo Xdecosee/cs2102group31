@@ -1,0 +1,1 @@
+/* ---- USEFUL: you can implement input validation here if you want ---- */

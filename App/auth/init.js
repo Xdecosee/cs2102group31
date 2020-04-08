@@ -7,7 +7,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const authMiddleware = require('./middleware');
 const antiMiddleware = require('./antimiddle');
 
-
+/*-----Find users by username during login and sets up session values ---*/
 function findUser (username, callback) {
 	caller.query(sql.query.login, [username], (err, data) => {
 		if(err) {
@@ -19,6 +19,7 @@ function findUser (username, callback) {
 			console.error("User does not exists?");
 			return callback(null)
 		} else if(data.rows.length == 1) {
+      /*-------- IMPT: Useful session values for using in pages -----*/
 			return callback(null, {
 				username    : data.rows[0].username,
 				password    : data.rows[0].password,
@@ -41,6 +42,7 @@ passport.deserializeUser(function (username, cb) {
   findUser(username, cb);
 })
 
+/*--------Find users by username during login and sets up session values -----*/
 function initPassport () {
   passport.use(new LocalStrategy(
     (username, password, done) => {

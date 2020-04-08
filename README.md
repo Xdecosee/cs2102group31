@@ -1,6 +1,14 @@
 #  FDS Applicaion AY2019/20 Sem 1
 ## Tutorial for Team
 
+/*Other Commonly Used stuff:*/
+/*res.redirect - redirect to another page
+res.render - display your current page*/
+
+/*get & post */
+
+file naming
+<%%>
 ### IMPORTANT NOTE
 This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well!
 
