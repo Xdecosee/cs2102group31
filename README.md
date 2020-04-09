@@ -157,7 +157,7 @@ calling various functions when the page loads through ```router.get('/')```
 
 ### [IMPT] SQL Select + HTML Table, SQL Insert + HTML Forms
 
-For an easy start, use HTML Tables for select statments and HTML Forms to do insert, update statements. For delete, we ignore it.
+For an easy start, use HTML Tables for select statments and HTML Forms to do insert, update, delete statements.
 
 ### [IMPT] Debugging Tip
 
