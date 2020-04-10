@@ -119,6 +119,10 @@ How is the router file (.js) in step 2 different from app.js? See [this stackove
 
 Most of the frontend matters (things that user can see) will be using ejs (a node.js templating module) and html. Ejs stuff usually in this tag ```<%%>```.  
 
+Usual HTML Reference (for me): Aside from stackoverflow or other code snippets website, usually I refer to this website https://www.w3schools.com/. 
+
+E.g. Date Time Picker for your forms https://www.w3schools.com/tags/att_input_type_datetime-local.asp
+
 #### Repeating HTML CODES 
 I optimized repeating codes through [this guide](https://medium.com/@henslejoseph/ejs-partials-f6f102cb7433) by createing the /views/partials folder. Currently,
 for each user role, have their individual navigation bars. 
