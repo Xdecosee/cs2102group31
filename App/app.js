@@ -45,7 +45,10 @@ var mainloginRouter = require('./routes/main_login');
 var custHomeRouter = require('./routes/cust_home');
 var fdsHomeRouter = require('./routes/fds_home');
 var restHomeRouter = require('./routes/rest_home');
+var restMenuRouter = require('./routes/rest_menu');
 var riderHomeRouter = require('./routes/rider_home');
+
+
 
 
 
@@ -55,8 +58,8 @@ app.use('/', mainloginRouter);
 app.use('/cust_home', custHomeRouter);
 app.use('/fds_home', fdsHomeRouter);
 app.use('/rest_home', restHomeRouter);
+app.use('/rest_menu', restMenuRouter);
 app.use('/rider_home', riderHomeRouter);
-
 
 /* --- Don't need to touch: Error Handler ----*/
 app.use(function(req, res, next) {
@@ -86,9 +89,14 @@ app.get('/rest_home', (req, res) => {
 	res.render('rest_home');
 });
 
+app.get('/rest_menu', (req, res) => {
+	res.render('rest_menu');
+});
+
 app.get('/rider_home', (req, res) => {
 	res.render('rider_home');
 });
+
 
 
 module.exports = app;
