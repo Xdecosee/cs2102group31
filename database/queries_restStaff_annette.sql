@@ -202,13 +202,13 @@ AND FM.restaurantID = $1
 ORDER BY O.date, O.timeOrderPlace, FM.orderID;
 
 //Total Orders Completed/ Total Cost - OK
-SELECT year, month, COUNT(orderID) AS totalorders, SUM(cost)
+SELECT year, month, COUNT(orderID) AS totalorders, SUM(cost) As totalCost
 FROM (
 	SELECT DISTINCT EXTRACT(Year FROM (O.date)) AS year,  to_char(O.date, 'Month') as month, O.orderid, O.cost
 	FROM Orders O
 	INNER JOIN FromMenu FM on O.orderID = FM.orderID
 	WHERE O.orderStatus = 'Completed'
-	AND FM.restaurantID = '3f5c7ba1-01b1-4c9d-887f-28966f06ed54') TMP
+	AND FM.restaurantID = $1) TMP
 GROUP BY year, month
 ORDER BY year DESC, to_date(month, 'Month’) DESC;
 

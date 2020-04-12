@@ -23,4 +23,51 @@
 	</tbody>
 </table>
 
+<h2>Restaurant Summary</h2>
+<p> Shows the total number of completed orders and the total cost of all completed orders for each month </p>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Year</th>
+			<th scope="col">Month</th>
+			<th scope="col">Total Orders</th>
+            <th scope="col">Total Cost</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% for (var i = 0; i < restSummary.length; i++) { %>
+		<tr>
+			<td><%= restSummary[i].year%></td>
+			<td><%= restSummary[i].month%></td>
+			<td><%= restSummary[i].totalorders%></td>
+			<td><%= restSummary[i].totalcost%></td>
+		</tr>
+		<% } %>
+	</tbody>
+</table>
+
+<h2>Favourite Food</h2>
+<p> Shows the top 5 favorite food items in terms of completed orders for each month </p>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Year</th>
+			<th scope="col">Month</th>
+			<th scope="col">Food</th>
+            <th scope="col">Total Orders</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% for (var i = 0; i < restFavFood.length; i++) { %>
+		<tr>
+			<td><%= restFavFood[i].year%></td>
+			<td><%= restFavFood[i].month%></td>
+			<td><%= restFavFood[i].food%></td>
+			<td><%= restFavFood[i].totalorders%></td>
+		</tr>
+		<% } %>
+	</tbody>
+</table>
+
+
 <%- include('partials/footer') %>

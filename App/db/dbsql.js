@@ -20,7 +20,7 @@ sql.query = {
                     'FROM Orders O INNER JOIN FromMenu FM on O.orderID = FM.orderID ' +
                     'WHERE O.orderStatus = \'Confirmed\'  AND O.timeDepartFromRest IS NULL AND FM.restaurantID = $1 ' + 
                     'ORDER BY O.date, O.timeOrderPlace, FM.orderID',
-    restSummary:    'SELECT year, month, COUNT(orderID) AS totalorders, SUM(cost) ' +
+    restSummary:    'SELECT year, month, COUNT(orderID) AS totalorders, SUM(cost) As totalCost ' +
                     'FROM (SELECT DISTINCT EXTRACT(Year FROM (O.date)) AS year, to_char(O.date, \'Month\') as month, '+
                     'O.orderid, O.cost FROM Orders O INNER JOIN FromMenu FM on O.orderID = FM.orderID ' +
                     'WHERE O.orderStatus = \'Completed\' AND FM.restaurantID = $1) TMP ' +
@@ -29,7 +29,7 @@ sql.query = {
                     'FM.foodName as food, SUM(FM.quantity) as totalOrders FROM FromMenu FM INNER JOIN Orders O on FM.orderID = O.orderID ' +
                     'WHERE O.orderStatus = \'Completed\' AND FM.restaurantID = $1 ' +
                     'GROUP BY EXTRACT(Year FROM (O.date)),  to_char(O.date, \'Month\'), FM.foodName) ' +
-                    'SELECT DISTINCT * FROM ( SELECT year, month, to_date(month, \'Month \’) as month2, food, totalOrders, '+
+                    'SELECT DISTINCT * FROM ( SELECT year, month, to_date(month, \'Month \') as month2, food, totalOrders, '+
                     'row_number() OVER (PARTITION BY year, month) as rownum FROM FoodOrders ' +
                     ')Tmp WHERE rownum < 6 ORDER BY year DESC, month2 DESC, totalOrders DESC'
 

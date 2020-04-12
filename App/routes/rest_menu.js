@@ -8,7 +8,7 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
-//Gloabl Variable
+//Global Variable
 var restID = null;
 
 function restInfo(req, res, next) {
@@ -22,7 +22,7 @@ function restInfo(req, res, next) {
 }
 
 function menuInfo(req, res, next) {
-	caller.query(sql.query.menuInfo, [restID], (err, data) => {
+	caller.query(sql.query.restMenuInfo, [restID], (err, data) => {
         if(err){
             return next(error);
 		}
@@ -47,7 +47,7 @@ router.post('/insertfood', function(req, res, next) {
 	var foodname  = req.body.foodname;
 	var price  = Number(req.body.price);
 
-	caller.query(sql.query.insertFood,[foodname, price, restID], (err, data) => {
+	caller.query(sql.query.restInsertFood,[foodname, price, restID], (err, data) => {
 		if(err) {
 			console.log ("Error in adding food!");
 			console.log (err);
