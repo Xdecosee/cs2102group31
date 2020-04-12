@@ -193,13 +193,13 @@ INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, '40304
 /*
 
 //CONFIRMED ORDERS - OK
-SELECT DISTINCT FM.orderID, O.date, O.timeOrderPlace, FM.FoodName, FM.quantity
+SELECT DISTINCT FM.orderID,  to_char(O.date, 'DD/MM/YYYY') as date, O.timeOrderPlace, FM.FoodName, FM.quantity
 FROM Orders O
 INNER JOIN FromMenu FM on O.orderID = FM.orderID
 WHERE O.orderStatus = 'Confirmed'
 AND O.timeDepartFromRest IS NULL
-AND FM.restaurantID = $1
-ORDER BY O.date, O.timeOrderPlace, FM.orderID;
+AND FM.restaurantID = '3f5c7ba1-01b1-4c9d-887f-28966f06ed54'
+ORDER BY date, O.timeOrderPlace, FM.orderID;
 
 //Total Orders Completed/ Total Cost - OK
 SELECT year, month, COUNT(orderID) AS totalorders, SUM(cost) As totalCost
@@ -223,7 +223,7 @@ GROUP BY EXTRACT(Year FROM (O.date)),  to_char(O.date, 'Month'), FM.foodName
 )
 
 SELECT DISTINCT * FROM (
-	SELECT year, month, to_date(month, 'Month’) as month2, food, totalOrders, row_number() OVER (PARTITION BY year, month) as rownum FROM FoodOrders
+	SELECT year, month, to_date(month, 'Month') as month2, food, totalOrders, row_number() OVER (PARTITION BY year, month) as rownum FROM FoodOrders
 )Tmp
 WHERE rownum < 6
 ORDER BY year DESC, month2 DESC, totalOrders DESC;

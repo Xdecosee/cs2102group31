@@ -16,10 +16,10 @@ sql.query = {
                     'WHERE R.restaurantID = $1',
     restInsertFood: 'INSERT INTO Food(foodName, price, category, restaurantID) ' +
                     'Values($1, $2, \'Western\', $3)',
-    restOrders:     'SELECT DISTINCT FM.orderID, O.date, O.timeOrderPlace, FM.FoodName, FM.quantity ' +
+    restOrders:     'SELECT DISTINCT FM.orderID, to_char(O.date, \'DD/MM/YYYY\') as date, O.timeOrderPlace, FM.FoodName, FM.quantity ' +
                     'FROM Orders O INNER JOIN FromMenu FM on O.orderID = FM.orderID ' +
                     'WHERE O.orderStatus = \'Confirmed\'  AND O.timeDepartFromRest IS NULL AND FM.restaurantID = $1 ' + 
-                    'ORDER BY O.date, O.timeOrderPlace, FM.orderID',
+                    'ORDER BY date, O.timeOrderPlace, FM.orderID',
     restSummary:    'SELECT year, month, COUNT(orderID) AS totalorders, SUM(cost) As totalCost ' +
                     'FROM (SELECT DISTINCT EXTRACT(Year FROM (O.date)) AS year, to_char(O.date, \'Month\') as month, '+
                     'O.orderid, O.cost FROM Orders O INNER JOIN FromMenu FM on O.orderID = FM.orderID ' +
