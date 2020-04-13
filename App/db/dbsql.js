@@ -5,7 +5,8 @@ const sql = {}
 sql.query = {
 
     /*--------Login-----------*/
-    login: 'SELECT DISTINCT * FROM Users WHERE username=$1',
+    login:  'SELECT DISTINCT U.username, U.password, U.name, U.uid, U.type As type , DR.type As ridertype ' +
+            'FROM Users U Left Join DeliveryRiders DR on U.uid = DR.uid WHERE U.username = $1',
 
     /*------Restaurant Staff--------*/
     restInfo:   'SELECT DISTINCT * FROM Restaurants R ' +
