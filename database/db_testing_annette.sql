@@ -83,6 +83,7 @@ CREATE TABLE FromMenu (
 	orderID         uuid         NOT NULL,
 	restaurantID    uuid         NOT NULL,
 	foodName        VARCHAR(100)    NOT NULL,
+	hide			BOOLEAN	DEFAULT False   NOT NULL,
 	PRIMARY KEY (restaurantID,foodName,orderID),
 	FOREIGN KEY (promoID) REFERENCES Restpromo (promoID),
 	FOREIGN KEY (orderID) REFERENCES Orders (orderID),
@@ -200,7 +201,10 @@ INNER JOIN FromMenu FM on O.orderID = FM.orderID
 WHERE O.orderStatus = 'Confirmed'
 AND O.timeDepartFromRest IS NULL
 AND FM.restaurantID = '3f5c7ba1-01b1-4c9d-887f-28966f06ed54'
+AND FM.hide = 'false'
 ORDER BY date, O.timeOrderPlace, FM.orderID;
+
+UPDATE FromMenu SET hide = \'true\' WHERE orderID = $1 and foodName = $2
 
 //Total Orders Completed/ Total Cost - OK
 SELECT year, month, COUNT(orderID) AS totalorders, SUM(cost) As totalCost

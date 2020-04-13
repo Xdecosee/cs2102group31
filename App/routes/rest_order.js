@@ -40,5 +40,20 @@ function loadPage(req, res, next) {
 
 router.get('/', passport.authMiddleware(), restInfo, currentOrders, loadPage );
 
+
+router.post('/cooked/(:orderid)/(:foodname)', function(req, res, next) {
+
+	var orderid = req.params.orderid;
+	var foodname = req.params.foodname;
+
+	caller.query(sql.query.restCooked,[orderid, foodname], (err, data) => {
+		if(err) {
+			console.log ("Error in updating order!");
+			console.log (err);
+		}
+        res.redirect('/rest_order');
+	});
+});
+
 module.exports = router;
 

@@ -9,7 +9,8 @@
             <th scope="col">Date</th>
             <th scope="col">Time</th>
             <th scope="col">Food</th>
-            <th scope="col">Quantity</th>
+			<th scope="col">Quantity</th>
+			<th scope="col">Ready for Delivery? </th>
 		</tr>
 	</thead>
 	<tbody>
@@ -19,7 +20,12 @@
             <td><%= restOrders[i].date%></td>
             <td><%= restOrders[i].timeorderplace%></td>
             <td><%= restOrders[i].foodname%></td>
-            <td><%= restOrders[i].quantity%></td>
+			<td><%= restOrders[i].quantity%></td>
+			<td>
+				<form action='/rest_order/cooked/<%= restOrders[i].orderid %>/<%= restOrders[i].foodname %>' method="post">
+					<button  type="submit" >Cooked!</button>
+				</form>
+			</td>
 		</tr>
 		<% } %>
 	</tbody>
