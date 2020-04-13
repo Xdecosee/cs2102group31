@@ -1,25 +1,3 @@
-DROP TABLE IF EXISTS Promotion CASCADE;
-DROP TABLE IF EXISTS FDSpromo CASCADE;
-DROP TABLE IF EXISTS Restaurants CASCADE;
-DROP TABLE IF EXISTS Restpromo CASCADE;
-DROP TABLE IF EXISTS Categories CASCADE;
-DROP TABLE IF EXISTS Food CASCADE;
-DROP TABLE IF EXISTS PaymentOption CASCADE;
-DROP TABLE IF EXISTS Orders CASCADE;
-DROP TABLE IF EXISTS FromMenu CASCADE;
-DROP TABLE IF EXISTS Users CASCADE;
-DROP TABLE IF EXISTS Customers CASCADE;
-DROP TABLE IF EXISTS FDSManagers CASCADE;
-DROP TABLE IF EXISTS RestaurantStaff CASCADE;
-DROP TABLE IF EXISTS Place CASCADE;
-DROP TABLE IF EXISTS DeliveryRiders CASCADE;
-DROP TABLE IF EXISTS PartTime CASCADE;
-DROP TABLE IF EXISTS FullTime CASCADE;
-DROP TABLE IF EXISTS WorkingDays CASCADE;
-DROP TABLE IF EXISTS ShiftOptions CASCADE;
-DROP TABLE IF EXISTS WorkingWeeks CASCADE;
-DROP TABLE IF EXISTS Delivers CASCADE; 
-
 /*check availability*/ --problem
 CREATE OR REPLACE FUNCTION check_availability()
 RETURNS TRIGGER AS $$
@@ -78,12 +56,11 @@ BEGIN
     ELSIF currHour >= closingHour THEN
         UPDATE Orders SET orderStatus = 'Failed' WHERE NEW.orderID = Orders.OrderID; 
         RAISE NOTICE 'Not within Opening Hours';
-        RETURN NULL;
+        RETURN NULL; --RETURN NULL instead of RETURN NEW to just abort the inserted row silently without raising an exception and without rolling anything back.
     ELSE 
         RAISE NOTICE 'Within Opening Hours';
         RETURN NEW; 
     END IF;
-     /* return value of row-level trigger fired AFTER is always ignored */
 
 END;
 $$ LANGUAGE plpgsql;
@@ -131,7 +108,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER riders_trigger
-AFTER INSERT ON DeliveryRiders
+AFTER INSERT ON DeliveryRiders /* return value of row-level trigger fired AFTER is always ignored */
 FOR EACH ROW
 EXECUTE PROCEDURE check_riders();
 
@@ -325,7 +302,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE check_promotion();
 
 
-
 /*Check restaurant staff account creation*/
 CREATE OR REPLACE FUNCTION check_reststaff()
 RETURNS TRIGGER AS $$
@@ -351,3 +327,33 @@ CREATE TRIGGER add_rest_trigger
 BEFORE INSERT ON Restaurants
 FOR EACH ROW
 EXECUTE PROCEDURE check_reststaff();
+
+/*ensure one hour shift, check overlap*/
+CREATE OR REPLACE FUNCTION check_shift()
+RETURNS TRIGGER AS $$
+DECLARE currShiftEnd NUMERIC;
+DECLARE newShiftStart NUMERIC;
+
+BEGIN
+    IF EXISTS(
+          SELECT 1 
+          FROM workingDays W 
+          WHERE (W.intervalStart <= NEW.intervalEnd 
+          AND NEW.intervalStart <=  W.intervalEnd)
+          AND NEW.uid = W.uid
+          AND NOT (W.intervalStart = NEW.intervalStart OR NEW.intervalEnd = W.intervalEnd))
+    THEN
+        RAISE NOTICE 'Overlap shifts';
+        RETURN NULL;
+    ELSE 
+        RAISE NOTICE 'One hour break between shifts';
+        RETURN NEW;
+    END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_shift_trigger
+BEFORE UPDATE OR INSERT ON WorkingDays
+FOR EACH ROW
+EXECUTE PROCEDURE check_shift();

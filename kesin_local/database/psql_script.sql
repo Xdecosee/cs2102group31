@@ -75,13 +75,14 @@ CREATE TABLE PaymentOption (
     PRIMARY KEY (payOption)
 );
 
-CREATE TABLE Orders ( --deliveryfee not useful
+CREATE TABLE Orders (
 	orderID             INT GENERATED ALWAYS AS IDENTITY,
 	deliveryFee         INTEGER                           NOT NULL DEFAULT 4,
-	cost                INTEGER      DEFAULT 0            NOT NULL,
+	cost                NUMERIC      DEFAULT 0            NOT NULL,
 	location            VARCHAR(255)                      NOT NULL,
 	date                DATE DEFAULT CURRENT_DATE         NOT NULL,
 	payOption	    	VARCHAR(50)			    		  NOT NULL,
+	area                CHAR (1)					  NOT NULL CHECK (area in ('N','S','E','W')),
 	orderStatus         VARCHAR(50) DEFAULT 'Pending'     NOT NULL CHECK (orderStatus in ('Pending','Confirmed','Completed','Failed')),
 	deliveryDuration    INTEGER  DEFAULT 0				  NOT NULL,
 	timeOrderPlace      TIME DEFAULT CURRENT_TIME,
@@ -144,8 +145,7 @@ CREATE TABLE RestaurantStaff (
 
 CREATE TABLE DeliveryRiders (
     uid             INTEGER PRIMARY KEY,
-	baseDeliveryFee NUMERIC NOT NULL DEFAULT 4,
-	deliveryBonus NUMERIC NOT NULL DEFAULT 3,
+	baseDeliveryFee NUMERIC NOT NULL DEFAULT 2,
 	availability BOOLEAN DEFAULT TRUE,  -- free by default
 	type    VARCHAR(255)  NOT NULL CHECK (type in ('FullTime', 'PartTime')),
     FOREIGN KEY (uid, type) REFERENCES Users(uid, riderType) ON DELETE CASCADE
@@ -175,13 +175,13 @@ CREATE TABLE FullTime (
     FOREIGN KEY (uid) REFERENCES DeliveryRiders(uid) ON DELETE CASCADE
 );
 
-CREATE TABLE  WorkingDays (
+CREATE TABLE  WorkingDays ( 
 	uid             INTEGER,
 	workDate        DATE NOT NULL,
 	intervalStart   TIME NOT NULL,
 	intervalEnd     TIME NOT NULL,
 	numCompleted    INTEGER DEFAULT 0,
-	PRIMARY KEY (uid, workDate, intervalStart, intervalEnd),
+	PRIMARY KEY (uid, workDate, intervalStart, intervalEnd),--
 	FOREIGN KEY (uid) REFERENCES PartTime(uid) ON DELETE CASCADE
 );
 
@@ -242,7 +242,24 @@ INSERT INTO ShiftOptions(shiftID, shiftDetails) VALUES (3, '12am-8am');
 INSERT INTO ShiftOptions(shiftID, shiftDetails) VALUES (4, '1am-9am');
 
 /*Insert Schedule for Riders */
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(18, '2020-01-08', '04:05', '07:40', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(16, '2020-01-08', '08:00', '10:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(16, '2020-01-08', '15:00', '20:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(16, '2020-01-08', '04:00', '08:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(16, '2020-01-08', '11:00', '13:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(16, '2020-01-08', '13:00', '14:00', 10);
+
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(17, '2020-01-08', '08:00', '10:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(17, '2020-01-08', '15:00', '20:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(17, '2020-01-08', '04:00', '08:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(17, '2020-01-08', '11:00', '13:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(17, '2020-01-08', '13:00', '14:00', 10);
+
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(18, '2020-01-08', '08:00', '10:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(18, '2020-01-08', '15:00', '20:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(18, '2020-01-08', '04:00', '08:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(18, '2020-01-08', '11:00', '13:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(18, '2020-01-08', '13:00', '14:00', 10);
+
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(11, '2020-01-08', 3, 13);
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(13, '2020-01-09', 1, 15);
 
@@ -308,7 +325,7 @@ INSERT INTO PaymentOption(payOption) VALUES ('Credit');
 -- deliveryduration is in integer?
 /* Insert Data into orders and fromMenu think of how to make it happen*/ 
 /* Order 1: Confirmed */
-INSERT INTO Orders(cost,location,date,deliveryDuration,payOption) VALUES (0,'81 Goodland Road','2020-03-31',0,'Cash'); /* let cost be initially deffered*/
+INSERT INTO Orders(cost,location,date,deliveryDuration,payOption,area) VALUES (0,'81 Goodland Road','2020-03-31',0,'Cash','N'); /* let cost be initially deffered*/
 
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,5,1,3,'Tteokbokki');
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,3,1,3,'Kimchi Fried Rice');   
@@ -327,7 +344,7 @@ UPDATE Orders SET timeDepartFromRest = '10:22:00' WHERE orderID = 1;
 UPDATE Orders SET timeOrderDelivered = '10:45:00'  WHERE orderID = 1;
 
 /*Order 2: Completed by .... */ 
-INSERT INTO Orders(cost,location,date,deliveryDuration,payOption) VALUES (0,'346 Dennis Trail','2020-03-31',0,'Credit'); /* let cost be initially deffered*/
+INSERT INTO Orders(cost,location,date,deliveryDuration,payOption) VALUES (0,'346 Dennis Trail','2020-03-31',0,'Credit','S'); /* let cost be initially deffered*/
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (6,1,2,4,'Steam Egg');
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (6,1,2,4,'Sweet and Sour Pork');   
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (6,3,2,4,'Yang Zhou Fried Rice');        
@@ -347,8 +364,8 @@ UPDATE Orders SET timeOrderDelivered = '23:45:00'  WHERE orderID = 2;
 
 /* Order 3: Confirmed */
 INSERT INTO Orders(location,payOption) VALUES ('333 Canberra Road','Cash'); 
-
-INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,40,3,3,'Tteokbokki'); --insertion into from menu have to be a transaction
+--partial order completion possible (quantity < availQty)
+INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,40,3,3,'Tteokbokki');
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,10,3,3,'Kimchi Fried Rice');  
 
 /* Insert data into place */
@@ -369,11 +386,5 @@ INSERT INTO Delivers (orderID,uid,rating) VALUES (1,12,2);
 INSERT INTO Delivers (orderID,uid,rating) VALUES (2,16,5);
 INSERT INTO Delivers (orderID,uid,rating) VALUES (3,16,5);
 
+Update WorkingDays SET  intervalEnd = '22:00' WHERE uid = 18 AND workDate = '2020-01-08' AND intervalStart = '15:00'; 
 
-/* Add back column id default*/
-/*
-ALTER TABLE Users ALTER COLUMN uid SET DEFAULT gen_random_uuid();
-ALTER TABLE Restaurants ALTER COLUMN restaurantID SET DEFAULT gen_random_uuid();
-ALTER TABLE Promotion ALTER COLUMN promoID SET DEFAULT gen_random_uuid();
-ALTER TABLE Orders ALTER COLUMN orderID SET DEFAULT gen_random_uuid();
-*/
