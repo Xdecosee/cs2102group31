@@ -47,6 +47,7 @@ var fdsHomeRouter = require('./routes/fds_home');
 var restHomeRouter = require('./routes/rest_home');
 var restMenuRouter = require('./routes/rest_menu');
 var restOrderRouter = require('./routes/rest_order');
+var restPromoRouter = require('./routes/rest_promo');
 var riderHomeRouter = require('./routes/rider_home');
 
 
@@ -61,6 +62,7 @@ app.use('/fds_home', fdsHomeRouter);
 app.use('/rest_home', restHomeRouter);
 app.use('/rest_menu', restMenuRouter);
 app.use('/rest_order', restOrderRouter);
+app.use('/rest_promo', restPromoRouter);
 app.use('/rider_home', riderHomeRouter);
 
 /* --- Don't need to touch: Error Handler ----*/
@@ -98,6 +100,11 @@ app.get('/rest_menu', (req, res) => {
 app.get('/rest_order', (req, res) => {
 	res.render('rest_order');
 });
+
+app.get('/rest_promo', (req, res) => {
+	res.render('rest_promo');
+});
+
 
 app.get('/rider_home', (req, res) => {
 	res.render('rider_home');
