@@ -1,22 +1,15 @@
-const sql_query = require('../db/index');
-const db = require('../db/db')
+const sql = require('../db/dbsql');
+const caller = require('../db/dbcaller');
 
 const passport = require('passport');
-const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
 
 const authMiddleware = require('./middleware');
 const antiMiddleware = require('./antimiddle');
 
-// Postgre SQL Connection
-const { Pool } = require('pg')
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-  //ssl: true
-});
-
+/*-----Find users by username during login and sets up session values ---*/
 function findUser (username, callback) {
-	pool.query(sql_query.query.userpass, [username], (err, data) => {
+	caller.query(sql.query.login, [username], (err, data) => {
 		if(err) {
 			console.error("Cannot find user");
 			return callback(null);
@@ -26,13 +19,13 @@ function findUser (username, callback) {
 			console.error("User does not exists?");
 			return callback(null)
 		} else if(data.rows.length == 1) {
+      /*-------- IMPT: Useful session values for using in pages -----*/
 			return callback(null, {
-				username    : data.rows[0].uname,
-				passwordHash: data.rows[0].password,
-				name        : data.rows[0].name,
-        type        : data.rows[0].type,
-        email       : data.rows[0].email,
-        phoneNum    : data.rows[0].phonenum
+				username    : data.rows[0].username,
+				password    : data.rows[0].password,
+				name  : data.rows[0].name,
+				uid   : data.rows[0].uid,
+				type     : data.rows[0].type
 			});
 		} else {
 			console.error("More than one user?");
@@ -49,6 +42,7 @@ passport.deserializeUser(function (username, cb) {
   findUser(username, cb);
 })
 
+/*--------Find users by username during login and sets up session values -----*/
 function initPassport () {
   passport.use(new LocalStrategy(
     (username, password, done) => {
@@ -63,33 +57,19 @@ function initPassport () {
           return done(null, false);
         }
 
-        // // test code
-        // if (user.passwordHash == password) {
-        //   return done(null, user);
-        // }
-        // else {
-        //   console.error('Incorrect password');
-        //   return done(null, false);
-        // }
-        
-
-        // Always use hashed passwords and fixed time comparison
-        bcrypt.compare(password, user.passwordHash, (err, isValid) => {
-          if (err) {
-            return done(err);
-          }
-          if (!isValid) {
+        if(password != user.password ){
             return done(null, false);
-          }
-          return done(null, user);
-        })
+        }
+
+        return done(null, user);
+
       })
     }
   ));
 
   passport.authMiddleware = authMiddleware;
   passport.antiMiddleware = antiMiddleware;
-	passport.findUser = findUser;
+  passport.findUser = findUser;
 }
 
 module.exports = initPassport;
