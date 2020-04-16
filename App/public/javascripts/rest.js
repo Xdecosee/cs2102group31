@@ -1,4 +1,10 @@
 /* ---- USEFUL: you can implement input validation if you want  or any javascript funcs you saw online---- */
+function emptyValues(str){
+	if (!str || str.length === 0) {
+		return true;
+	}
+}
+
 function checkFood(event) {
 	// Get Values from <form> in ejs file
 	var food  = document.getElementById('foodname' ).value;
@@ -20,4 +26,49 @@ function checkFood(event) {
 		event.stopPropagation();
 		return false;
 	}
+}
+
+
+function checkPromo(event) {
+
+	var start  = new Date(document.getElementById('startdt' ).value).getTime();
+	var end = new Date(document.getElementById('enddt').value).getTime();
+	var type = document.getElementById('type').value;
+	var discount = document.getElementById('discount').value;
+	var twodecimal = /^\d*\.?\d{1,2}$/;
+	var whole = /^\d{1,3}$/;
+
+	console.log(start);
+	console.log(discount);
+	
+	if(emptyValues(start) || emptyValues(end) || emptyValues(type) || emptyValues(discount.toString())){
+		alert("Please key in all information!");
+		event.preventDefault();
+		event.stopPropagation();
+		return false;
+	}
+	
+	if( end <= start) {
+		alert("End date and time need to be after the start date and time!");
+		event.preventDefault();
+		event.stopPropagation();
+		return false;
+	}
+
+	if(type == "percentage"){
+		if(!discount.match(whole) || (discount > 100) || discount <= 0) {
+			alert("discount format invalid!");
+			event.preventDefault();
+			event.stopPropagation();
+			return false;
+		}
+	} else if(type == "fixed"){
+		if( !discount.match(twodecimal) || discount <= 0.00) {
+			alert("discount format invalid!");
+			event.preventDefault();
+			event.stopPropagation();
+			return false;
+		}
+	}
+	
 }

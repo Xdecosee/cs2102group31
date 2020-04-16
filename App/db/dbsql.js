@@ -33,7 +33,12 @@ sql.query = {
                     'GROUP BY EXTRACT(Year FROM (O.date)),  to_char(O.date, \'Month\'), FM.foodName) ' +
                     'SELECT DISTINCT * FROM ( SELECT year, month, to_date(month, \'Month \') as month2, food, totalOrders, '+
                     'row_number() OVER (PARTITION BY year, month) as rownum FROM FoodOrders ' +
-                    ')Tmp WHERE rownum < 6 ORDER BY year DESC, month2 DESC, totalOrders DESC'
+                    ')Tmp WHERE rownum < 6 ORDER BY year DESC, month2 DESC, totalOrders DESC',
+    restPercPromo:      'INSERT INTO Promotion(startDate, endDate, startTime, endTime, discPerc, type) ' +
+                        'Values($1, $2, $3, $4, $5, \'Restpromo\') RETURNING promoID',
+    restAmtPromo:       'INSERT INTO Promotion(startDate, endDate, startTime, endTime, discAmt, type) ' +
+                        'Values($1, $2, $3, $4, $5, \'Restpromo\') RETURNING promoID',
+    restInsertPromo:    'INSERT INTO Restpromo(promoID, restID) VALUES($1, $2)'
 
 
 }

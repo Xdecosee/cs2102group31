@@ -26,11 +26,14 @@ DROP TABLE IF EXISTS Delivers CASCADE;
 
 
 CREATE TABLE Promotion ( 
-    promoID     uuid PRIMARY KEY ,
+    promoID     uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     startDate   DATE NOT NULL,
     endDate     DATE NOT NULL,
+	startTime 	TIME,
+	endTime		TIME,
     discPerc    NUMERIC check(discPerc > 0),
-    discAmt     NUMERIC check(discAmt > 0)
+    discAmt     NUMERIC check(discAmt > 0),
+	type		VARCHAR(255)  NOT NULL CHECK (type in ('FDSpromo', 'Restpromo'))
 );
 
 CREATE TABLE Restaurants ( 
@@ -105,6 +108,41 @@ CREATE TABLE RestaurantStaff (
 	PRIMARY KEY (uid),
 	FOREIGN KEY (uid) REFERENCES Users ON DELETE CASCADE,
 	FOREIGN KEY (restaurantID) REFERENCES Restaurants ON DELETE CASCADE
+);
+
+CREATE TABLE DeliveryRiders (
+    uid             uuid PRIMARY KEY,
+	baseDeliveryFee NUMERIC NOT NULL DEFAULT 4,
+	deliveryBonus	NUMERIC NOT NULL DEFAULT 3,
+	type    VARCHAR(255)  NOT NULL CHECK (type in ('FullTime', 'PartTime')),
+    FOREIGN KEY (uid) REFERENCES Users(uid) ON DELETE CASCADE
+);
+
+CREATE TABLE PartTime (
+	uid             uuid PRIMARY KEY,
+	weeklyBasePay   NUMERIC NOT NULL DEFAULT 100, /* $10 times minimum 10 hours in each WWS*/
+    FOREIGN KEY (uid) REFERENCES DeliveryRiders(uid) ON DELETE CASCADE
+);
+
+CREATE TABLE FullTime (
+	uid              uuid PRIMARY KEY,
+	monthlyBasePay   INTEGER NOT NULL DEFAULT 1800,
+    FOREIGN KEY (uid) REFERENCES DeliveryRiders(uid) ON DELETE CASCADE
+);
+
+CREATE TABLE Customers (
+	uid         uuid,
+	rewardPts   INTEGER DEFAULT '0' NOT NULL,
+	signUpDate  DATE    DEFAULT Now() NOT NULL,
+	cardDetails VARCHAR(255),
+	PRIMARY KEY (uid),
+	FOREIGN KEY (uid) REFERENCES Users ON DELETE CASCADE
+);
+
+CREATE TABLE FDSManagers (
+	uid         uuid,
+	PRIMARY KEY (uid),
+	FOREIGN KEY (uid) REFERENCES Users ON DELETE CASCADE
 );
 
 INSERT INTO Users(uid, name, username, password, type) VALUES('0acb2fe9-2e48-483b-b45c-9aa246541fc2', 'Mr Minestrone', 'minestrone', '12345', 'RestaurantStaff');
