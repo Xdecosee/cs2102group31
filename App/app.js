@@ -44,6 +44,12 @@ app.use(passport.session())
 var mainloginRouter = require('./routes/main_login');
 var custHomeRouter = require('./routes/cust_home');
 var fdsHomeRouter = require('./routes/fds_home');
+//fds
+var fdsCustRouter = require('./routes/fds_cust');
+var fdsRestRouter = require('./routes/fds_rest');
+var fdsRiderRouter = require('./routes/fds_rider');
+var fdsPromoRouter = require('./routes/fds_promo');
+
 var restHomeRouter = require('./routes/rest_home');
 var riderHomeRouter = require('./routes/rider_home');
 
@@ -56,7 +62,10 @@ app.use('/cust_home', custHomeRouter);
 app.use('/fds_home', fdsHomeRouter);
 app.use('/rest_home', restHomeRouter);
 app.use('/rider_home', riderHomeRouter);
-
+app.use('/fds_cust', fdsCustRouter);
+app.use('/fds_rest', fdsRestRouter);
+app.use('/fds_rider', fdsRiderRouter);
+app.use('/fds_promo', fdsPromoRouter);
 
 /* --- Don't need to touch: Error Handler ----*/
 app.use(function(req, res, next) {
@@ -90,5 +99,19 @@ app.get('/rider_home', (req, res) => {
 	res.render('rider_home');
 });
 
+//----fds
+app.get('/fds_cust', (req, res) => {
+	res.render('fds_cust');
+});
+app.get('/fds_rest', (req, res) => {
+	res.render('fds_rest');
+});
+app.get('/fds_rider', (req, res) => {
+	res.render('fds_rider');
+});
+app.get('/fds_cust', (req, res) => {
+	res.render('fds_rider');
+});
+//-----
 
 module.exports = app;
