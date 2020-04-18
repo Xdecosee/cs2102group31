@@ -21,10 +21,18 @@ sql.query = {
     //totalSpendingEachCust: 'Select X.customer, x.totalcost From ( SELECT EXTRACT(MONTH FROM (date)) AS month, uid as Customer, SUM(cost) AS totalcost FROM Orders natural join (Place natural join Customers) GROUP BY uid,EXTRACT(MONTH FROM (Date))) as X Where CAST(X.month as INT) = $1',
     activeCus: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(uid) as num FROM Place natural join Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
 
-    viewArea: 'Select X.area, X.hour, X.num From(SELECT EXTRACT(HOUR FROM (timeorderplace)) AS hour, area, COUNT(*) AS num FROM Orders GROUP BY EXTRACT(HOUR FROM (timeorderplace)), area) as X WHERE X.area = $1', 
+    viewArea: 'Select X.area, X.hour, X.num From(SELECT EXTRACT(HOUR FROM (timeorderplace)) AS hour, area, COUNT(*) AS num FROM Orders GROUP BY EXTRACT(HOUR FROM (timeorderplace)), area) as X WHERE X.area = $1',
     viewCat: 'Select * from categories',
 
     insertCat: 'INSERT INTO categories(category) Values($1)',
+
+    fdsPercentPromo: 'INSERT INTO Promotion(startDate, endDate, discPerc, type) ' +
+        'Values($1, $2, $3, \'FDSpromo\') RETURNING promoID',
+    fdsAmtPromo: 'INSERT INTO Promotion(startDate, endDate, discAmt, type) ' +
+        'Values($1, $2, $3, \'FDSpromo\') RETURNING promoID',
+    fdsInsertPromo: 'INSERT INTO FDSpromo(promoID) VALUES($1)',
+    promoInfo: 'Select * from Promotion',
+
 }
 
 module.exports = sql;

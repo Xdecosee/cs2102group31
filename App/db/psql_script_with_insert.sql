@@ -32,12 +32,14 @@ CREATE TABLE Promotion (
     promoID     INTEGER GENERATED ALWAYS AS IDENTITY,
     startDate   DATE NOT NULL,
     endDate     DATE NOT NULL,
+	startTime 	TIME,
+	endTime		TIME,
     discPerc    NUMERIC check(discPerc > 0) DEFAULT NULL,
     discAmt     NUMERIC check(discAmt > 0) DEFAULT NULL,
-	restaurantID INTEGER,
+	-- restaurantID INTEGER,
 	type    	VARCHAR(255) NOT NULL CHECK (type in ('FDSpromo', 'Restpromo')),
 	PRIMARY KEY (promoID),
-	FOREIGN KEY (restaurantID) REFERENCES Restaurants(restaurantID) ON DELETE CASCADE
+	-- FOREIGN KEY (restaurantID) REFERENCES Restaurants(restaurantID) ON DELETE CASCADE
 );
 
 CREATE TABLE FDSpromo (
@@ -175,8 +177,8 @@ CREATE TABLE FullTime (
     FOREIGN KEY (uid) REFERENCES DeliveryRiders(uid) ON DELETE CASCADE
 );
 
-CREATE TABLE  WorkingDays ( 
-	uid             INTEGER,
+CREATE TABLE  WorkingDays ( -- Part Timer
+	uid             INTEGER, 
 	workDate        DATE NOT NULL,
 	intervalStart   TIME NOT NULL,
 	intervalEnd     TIME NOT NULL,
@@ -191,7 +193,7 @@ CREATE TABLE ShiftOptions (
 	PRIMARY KEY (shiftID)
 );
 
-CREATE TABLE  WorkingWeeks (
+CREATE TABLE  WorkingWeeks (-- Full Timer
 	uid             INTEGER,
 	workDate        DATE NOT NULL,
 	shiftID         INTEGER NOT NULL,
@@ -468,44 +470,44 @@ EXECUTE PROCEDURE update_bonus();
 
 
 /*ISA check for Promotion*/
-CREATE OR REPLACE FUNCTION check_promotion()
-RETURNS TRIGGER AS $$
-DECLARE count NUMERIC;
+-- CREATE OR REPLACE FUNCTION check_promotion()
+-- RETURNS TRIGGER AS $$
+-- DECLARE count NUMERIC;
 
-BEGIN
-    IF (NEW.type = 'FDSpromo') THEN
-        SELECT COUNT(*) INTO count 
-        FROM Restpromo 
-        WHERE NEW.promoID = Restpromo.promoID;
-        IF (count > 0) THEN 
-            RETURN NULL;
-        ELSE
-            INSERT INTO FDSpromo VALUES (NEW.promoID);
-            RAISE NOTICE 'FDSpromo added';
-            RETURN NEW;
-        END IF;
+-- BEGIN
+--     IF (NEW.type = 'FDSpromo') THEN
+--         SELECT COUNT(*) INTO count 
+--         FROM Restpromo 
+--         WHERE NEW.promoID = Restpromo.promoID;
+--         IF (count > 0) THEN 
+--             RETURN NULL;
+--         ELSE
+--             INSERT INTO FDSpromo VALUES (NEW.promoID);
+--             RAISE NOTICE 'FDSpromo added';
+--             RETURN NEW;
+--         END IF;
 
-    ELSIF (NEW.type = 'Restpromo') THEN
-        SELECT COUNT(*) INTO count 
-        FROM FDSpromo
-        WHERE NEW.promoID = FDSpromo.promoID;
+--     ELSIF (NEW.type = 'Restpromo') THEN
+--         SELECT COUNT(*) INTO count 
+--         FROM FDSpromo
+--         WHERE NEW.promoID = FDSpromo.promoID;
 
-        IF (count > 0) THEN 
-            RETURN NULL;
-        ELSE
-            INSERT INTO Restpromo VALUES (NEW.promoID, NEW.restaurantID);
-            RAISE NOTICE 'Restpromo added';
-            RETURN NEW;
-        END IF;
-    ELSE RETURN NEW;
-    END IF;
-END;
-$$ LANGUAGE plpgsql;
+--         IF (count > 0) THEN 
+--             RETURN NULL;
+--         ELSE
+--             INSERT INTO Restpromo VALUES (NEW.promoID, NEW.restaurantID);
+--             RAISE NOTICE 'Restpromo added';
+--             RETURN NEW;
+--         END IF;
+--     ELSE RETURN NEW;
+--     END IF;
+-- END;
+-- $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER promo_trigger
-AFTER INSERT ON Promotion
-FOR EACH ROW
-EXECUTE PROCEDURE check_promotion();
+-- CREATE TRIGGER promo_trigger
+-- AFTER INSERT ON Promotion
+-- FOR EACH ROW
+-- EXECUTE PROCEDURE check_promotion();
 
 
 /*Check restaurant staff account creation*/
@@ -684,11 +686,18 @@ INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Char Siew Ra
 
 /* Insert Data for Promo */
 INSERT INTO Promotion (startDate,endDate,discAmt,type) VALUES ('2020-02-01','2020-02-28',5,'FDSpromo');
-INSERT INTO Promotion (startDate,endDate,discPerc,type) VALUES ('2020-03-01','2020-05-30',0.2,'FDSpromo'); --
+INSERT INTO Promotion (startDate,endDate,discPerc,type) VALUES ('2020-03-01','2020-05-30',0.2,'FDSpromo'); 
 INSERT INTO Promotion (startDate,endDate,discAmt,type) VALUES ('2020-06-01','2020-06-30',5,'FDSpromo');
 INSERT INTO Promotion (startDate,endDate,discPerc,restaurantID,type) VALUES ('2020-03-01','2020-05-30',0.2,1,'Restpromo');
 INSERT INTO Promotion (startDate,endDate,discPerc,restaurantID,type) VALUES ('2020-06-01','2020-07-01',0.2,3,'Restpromo');
 INSERT INTO Promotion (startDate,endDate,discPerc,restaurantID,type) VALUES ('2020-08-01','2020-09-01',0.15,4,'Restpromo');
+
+INSERT INTO FDSpromo(promoID) VALUES(1);
+INSERT INTO FDSpromo(promoID) VALUES(2);
+INSERT INTO FDSpromo(promoID) VALUES(3);
+INSERT INTO Restpromo(promoID, restID) VALUES(4,1);
+INSERT INTO Restpromo(promoID, restID) VALUES(5,3);
+INSERT INTO Restpromo(promoID, restID) VALUES(6,4);
 
 /* Insert Data into Payment Option */
 INSERT INTO PaymentOption(payOption) VALUES ('Cash');
