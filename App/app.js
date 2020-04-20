@@ -46,7 +46,10 @@ var custHomeRouter = require('./routes/cust_home');
 var fdsHomeRouter = require('./routes/fds_home');
 var restHomeRouter = require('./routes/rest_home');
 var riderHomeRouter = require('./routes/rider_home');
-
+var riderSalaryRouter = require('./routes/rider_salary');
+var riderOrderRouter = require('./routes/rider_order');
+var riderftScheduleRouter = require('./routes/rider_ftschedule');
+var riderptScheduleRouter = require('./routes/rider_ptschedule');
 
 
 
@@ -56,6 +59,10 @@ app.use('/cust_home', custHomeRouter);
 app.use('/fds_home', fdsHomeRouter);
 app.use('/rest_home', restHomeRouter);
 app.use('/rider_home', riderHomeRouter);
+app.use('/rider_salary', riderSalaryRouter);
+app.use('/rider_order', riderOrderRouter);
+app.use('/rider_ftschedule', riderftScheduleRouter);
+app.use('/rider_ptschedule', riderptScheduleRouter);
 
 
 /* --- Don't need to touch: Error Handler ----*/
@@ -87,8 +94,23 @@ app.get('/rest_home', (req, res) => {
 });
 
 app.get('/rider_home', (req, res) => {
-	res.render('rider_home');
+  res.render('rider_home');
 });
 
+app.get('/rider_salary', (req, res) => {
+  res.render('rider_salary');
+});
+
+app.get('/rider_order', (req, res) => {
+  res.render('rider_order');
+});
+
+app.get('/rider_ftschedule', (req, res) => {
+  res.render('rider_ftschedule');
+});
+
+app.get('/rider_ptschedule', (req, res) => {
+  res.render('rider_ptschedule');
+});
 
 module.exports = app;

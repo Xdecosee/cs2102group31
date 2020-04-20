@@ -7,7 +7,6 @@ DROP TABLE IF EXISTS Restaurants CASCADE;
 DROP TABLE IF EXISTS Restpromo CASCADE;
 DROP TABLE IF EXISTS Categories CASCADE;
 DROP TABLE IF EXISTS Food CASCADE;
-/*DROP TABLE IF EXISTS Menu CASCADE;*/
 DROP TABLE IF EXISTS PaymentOption CASCADE;
 DROP TABLE IF EXISTS Orders CASCADE;
 DROP TABLE IF EXISTS FromMenu CASCADE;
@@ -22,7 +21,6 @@ DROP TABLE IF EXISTS FullTime CASCADE;
 DROP TABLE IF EXISTS WorkingDays CASCADE;
 DROP TABLE IF EXISTS ShiftOptions CASCADE;
 DROP TABLE IF EXISTS WorkingWeeks CASCADE;
-/*DROP TABLE IF EXISTS MonthlyDeliveryBonus CASCADE;*/
 DROP TABLE IF EXISTS Delivers CASCADE; 
 
 
@@ -74,14 +72,6 @@ CREATE TABLE Food (
 	FOREIGN KEY	(category) REFERENCES Categories (category)
 );
 
-/*CREATE TABLE Menu (
-	restaurantID    uuid         NOT NULL,
-	foodName        VARCHAR(100)    NOT NULL,
-	Unique (restaurantID, foodName),
-	FOREIGN KEY	(restaurantID) REFERENCES Restaurants (restaurantID) ON DELETE CASCADE,
-	FOREIGN KEY	(restaurantID, foodName) REFERENCES Food (restaurantID,foodname) ON DELETE CASCADE
-);*/
-
 CREATE TABLE PaymentOption (
     payOption   VARCHAR(100),
     PRIMARY KEY (payOption)
@@ -95,7 +85,7 @@ CREATE TABLE Orders (
 	date                DATE                              NOT NULL,
 	payOption	    	VARCHAR(50)			    		  NOT NULL,
 	orderStatus         VARCHAR(50) DEFAULT 'Pending'     NOT NULL CHECK (orderStatus in ('Pending','Confirmed','Completed','Failed')),
-	deliveryDuration    INTEGER     					  NOT NULL,
+	deliveryDuration    VARCHAR(50)     				  NOT NULL,
 	timeOrderPlace      TIME DEFAULT Now(),
 	timeDepartToRest    TIME,
 	timeArriveRest      TIME,
@@ -163,8 +153,7 @@ CREATE TABLE Place (
 
 CREATE TABLE DeliveryRiders (
     uid             uuid PRIMARY KEY,
-	baseDeliveryFee NUMERIC NOT NULL DEFAULT 4,
-	deliveryBonus	NUMERIC NOT NULL DEFAULT 3,
+	baseDeliveryFee NUMERIC NOT NULL DEFAULT 2,
 	type    VARCHAR(255)  NOT NULL CHECK (type in ('FullTime', 'PartTime')),
     FOREIGN KEY (uid) REFERENCES Users(uid) ON DELETE CASCADE
 );
@@ -188,12 +177,18 @@ CREATE TABLE  WorkingDays(
 	intervalEnd     TIME NOT NULL,
 	numCompleted	INTEGER DEFAULT 0,
 	PRIMARY KEY (uid, workDate, intervalStart, intervalEnd),
-	FOREIGN KEY (uid) REFERENCES PartTime(uid) ON DELETE CASCADE
+	FOREIGN KEY (uid) REFERENCES PartTime(uid) ON DELETE CASCADE,
+	CHECK (intervalEnd > intervalStart),
+	CHECK (intervalStart>='10:00:00' and intervalEnd<='22:00:00'),
+	CHECK (CAST(CONCAT(CAST(EXTRACT(HOUR from intervalStart) AS VARCHAR),':00:00') AS TIME)=intervalStart),
+	CHECK (CAST(CONCAT(CAST(EXTRACT(HOUR from intervalEnd) AS VARCHAR),':00:00') AS TIME)=intervalEnd),
+	CHECK (EXTRACT(HOUR FROM intervalEnd) - EXTRACT(HOUR FROM intervalStart)<=4)
 );
 
 CREATE TABLE ShiftOptions (
 	shiftID         INTEGER, 
-	shiftDetails    VARCHAR(30) NOT NULL,
+	shiftDetail1    VARCHAR(30) NOT NULL,
+	shiftDetail2    VARCHAR(30) NOT NULL,
 	PRIMARY KEY (shiftID)
 );
 
@@ -207,16 +202,6 @@ CREATE TABLE  WorkingWeeks (
 	FOREIGN KEY (shiftID) REFERENCES ShiftOptions(shiftID)
 );
 
-/*MonthlyDeliveryBonus. monthYear will have bogus date*/
-/*CREATE TABLE MonthlyDeliveryBonus (
-	uid            	uuid,
-	monthYear       DATE NOT NULL,
-	Workhour		NUMERIC,
-	numCompleted    INTEGER NOT NULL default 0,
-	deliveryBonus   NUMERIC NOT NULL default 0,
-	PRIMARY KEY (uid, monthYear),
-	FOREIGN KEY (uid) REFERENCES DeliveryRiders(uid) ON DELETE CASCADE
-);*/ 
 
 CREATE TABLE Delivers (
     orderID         uuid,
@@ -242,7 +227,7 @@ INSERT INTO Users (uid, name, username, password, type) VALUES ('6eb1f6d8-6765-4
 INSERT INTO Users (uid, name, username, password, type) VALUES ('540028e9-0e27-44e6-aa4b-db1960e5962b', 'Taddeusz', 'tmanketell2', 'PjIpgl7J', 'FDSManagers');
 INSERT INTO Users (uid, name, username, password, type) VALUES ('3dd244b6-257b-4208-90e8-4b98897cd314', 'Dodie', 'dfermerb', 'SLKtg2Q7kGn', 'FDSManagers');
 
-INSERT INTO Users (uid, name, username, password, type) VALUES ('d15945e8-42e9-4e00-a1fc-c5858260465f', 'Adrea', 'aveldens3', 'cdqUwd81YzX', 'DeliveryRiders');
+INSERT INTO Users (uid, name, username, password, type) VALUES ('d15945e8-42e9-4e00-a1fc-c5858260465f','Adrea', 'aveldens3', 'cdqUwd81YzX', 'DeliveryRiders');
 INSERT INTO Users (uid, name, username, password, type) VALUES ('50c834fa-6f90-40b2-9308-93d948ba589c', 'Adan', 'alaise7', 'blVy4LzR', 'DeliveryRiders');
 INSERT INTO Users (uid, name, username, password, type) VALUES ('f99f2870-c8fa-43fd-96ed-9ecbea1eb11d', 'Elenore', 'epiatto8', 'jiWxXTs4Jjp', 'DeliveryRiders');
 INSERT INTO Users (uid, name, username, password, type) VALUES ('f8f75acf-89ed-4d88-b036-24101928607d', 'Gary', 'gtarrier9', 'G92FSUJuvL9e', 'DeliveryRiders');
@@ -274,15 +259,21 @@ INSERT INTO PartTime(uid) VALUES ('f8f75acf-89ed-4d88-b036-24101928607d');
 INSERT INTO PartTime(uid) VALUES ('8205c525-bf60-485a-ab24-93cb3aaae5cd');
 
 /*Insert Shifts for Full Time Schedule */
-INSERT INTO ShiftOptions(shiftID, shiftDetails) VALUES (1, '1pm-9pm');
-INSERT INTO ShiftOptions(shiftID, shiftDetails) VALUES (2, '12pm-8pm');
-INSERT INTO ShiftOptions(shiftID, shiftDetails) VALUES (3, '12am-8am');
-INSERT INTO ShiftOptions(shiftID, shiftDetails) VALUES (4, '1am-9am');
+INSERT INTO ShiftOptions(shiftID, shiftDetail1, shiftDetail2) VALUES (1, '10am-2pm','3pm-7pm');
+INSERT INTO ShiftOptions(shiftID, shiftDetail1, shiftDetail2) VALUES (2, '11am-3pm','4pm-8pm');
+INSERT INTO ShiftOptions(shiftID, shiftDetail1, shiftDetail2) VALUES (3, '12pm-4pm','5pm-9pm');
+INSERT INTO ShiftOptions(shiftID, shiftDetail1, shiftDetail2) VALUES (4, '1pm-5pm','6pm-10pm');
 
 /*Insert Schedule for Riders */
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES('f8f75acf-89ed-4d88-b036-24101928607d', '2020-01-08', '04:05', '07:40', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES('f8f75acf-89ed-4d88-b036-24101928607d', '2020-01-08', '11:00', '15:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES('f8f75acf-89ed-4d88-b036-24101928607d', '2020-03-20', '16:00', '20:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES('f8f75acf-89ed-4d88-b036-24101928607d', '2020-04-20', '16:00', '20:00', 10);
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES('d15945e8-42e9-4e00-a1fc-c5858260465f', '2020-01-08', 3, 13);
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES('d15945e8-42e9-4e00-a1fc-c5858260465f', '2020-01-09', 1, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES('d15945e8-42e9-4e00-a1fc-c5858260465f', '2020-03-15', 1, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES('d15945e8-42e9-4e00-a1fc-c5858260465f', '2020-04-20', 3, 15);
+
+
 
 /* Insert Data for restaurants */
 INSERT INTO Restaurants (restaurantID, name, location, minThreshold) VALUES ('70500444-ad6b-4bad-926f-b2d0de01f6db', 'Noma', '14 Texas Plaza', 6);
@@ -345,7 +336,7 @@ INSERT INTO PaymentOption(payOption) VALUES ('Credit');
 
 /* Insert Data into orders and fromMenue think of how to make it happen*/ 
 /* Order 1: Confirmed */
-INSERT INTO Orders(orderID,cost,location,date,deliveryDuration,payOption) VALUES ('3572e685-81c6-432d-8175-dcff6d0f7363',0,'81 Goodland Road','2020-03-31',0,'Cash'); /* let cost be initially deffered*/
+INSERT INTO Orders(orderID,cost,location,date,deliveryDuration,payOption) VALUES ('3572e685-81c6-432d-8175-dcff6d0f7363',0,'81 Goodland Road','2020-04-20',0,'Cash'); /* let cost be initially deffered*/
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (NULL,1,'3572e685-81c6-432d-8175-dcff6d0f7363','6fcfcc21-f44d-4fe1-a920-d13440a8c334','Tteokbokki');
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (NULL,1,'3572e685-81c6-432d-8175-dcff6d0f7363','6fcfcc21-f44d-4fe1-a920-d13440a8c334','Kimchi Fried Rice');   
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (NULL,2,'3572e685-81c6-432d-8175-dcff6d0f7363','6fcfcc21-f44d-4fe1-a920-d13440a8c334','Yang Zhou Fried Rice');        
@@ -357,10 +348,10 @@ UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M 
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = '3572e685-81c6-432d-8175-dcff6d0f7363' LIMIT 1) WHERE orderID = '3572e685-81c6-432d-8175-dcff6d0f7363'; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = '3572e685-81c6-432d-8175-dcff6d0f7363';
-UPDATE Orders SET timeDepartToRest = '23:05:00' WHERE orderID = '3572e685-81c6-432d-8175-dcff6d0f7363';
+UPDATE Orders SET timeDepartToRest = '21:05:00' WHERE orderID = '3572e685-81c6-432d-8175-dcff6d0f7363';
 
 /*Order 2: Completed by .... */
-INSERT INTO Orders(orderID,cost,location,date,deliveryDuration,payOption) VALUES ('39ab1c25-b912-4800-a920-0434af1b6218',0,'346 Dennis Trail','2020-03-31',0,'Credit'); /* let cost be initially deffered*/
+INSERT INTO Orders(orderID,cost,location,date,deliveryDuration,payOption) VALUES ('39ab1c25-b912-4800-a920-0434af1b6218',0,'346 Dennis Trail','2020-01-28',0,'Credit'); /* let cost be initially deffered*/
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES ('0f754981-6832-44f5-8bc4-4d17eac2673b',1,'39ab1c25-b912-4800-a920-0434af1b6218','6fcfcc21-f44d-4fe1-a920-d13440a8c334','Tteokbokki');
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES ('0f754981-6832-44f5-8bc4-4d17eac2673b',1,'39ab1c25-b912-4800-a920-0434af1b6218','6fcfcc21-f44d-4fe1-a920-d13440a8c334','Sushi');   
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES ('0f754981-6832-44f5-8bc4-4d17eac2673b',3,'39ab1c25-b912-4800-a920-0434af1b6218','6fcfcc21-f44d-4fe1-a920-d13440a8c334','Yang Zhou Fried Rice');        
@@ -372,15 +363,15 @@ UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M 
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = '39ab1c25-b912-4800-a920-0434af1b6218' LIMIT 1) WHERE orderID = '39ab1c25-b912-4800-a920-0434af1b6218'; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = '39ab1c25-b912-4800-a920-0434af1b6218';
-UPDATE Orders SET timeDepartToRest = '23:00:00' WHERE orderID = '39ab1c25-b912-4800-a920-0434af1b6218';
-UPDATE Orders SET timeArriveRest = '23:15:00' WHERE orderID = '39ab1c25-b912-4800-a920-0434af1b6218';
-UPDATE Orders SET timeDepartFromRest = '23:30:00' WHERE orderID = '39ab1c25-b912-4800-a920-0434af1b6218';
-UPDATE Orders SET timeOrderDelivered = '23:45:00'  WHERE orderID = '39ab1c25-b912-4800-a920-0434af1b6218';
+UPDATE Orders SET timeDepartToRest = '21:00:00' WHERE orderID = '39ab1c25-b912-4800-a920-0434af1b6218';
+UPDATE Orders SET timeArriveRest = '21:15:00' WHERE orderID = '39ab1c25-b912-4800-a920-0434af1b6218';
+UPDATE Orders SET timeDepartFromRest = '21:30:00' WHERE orderID = '39ab1c25-b912-4800-a920-0434af1b6218';
+UPDATE Orders SET timeOrderDelivered = '21:45:00'  WHERE orderID = '39ab1c25-b912-4800-a920-0434af1b6218';
 
 
 /* Insert Data into delivers */
-INSERT INTO Delivers (orderID,uid,rating) VALUES ('3572e685-81c6-432d-8175-dcff6d0f7363','d15945e8-42e9-4e00-a1fc-c5858260465f',2);
-INSERT INTO Delivers (orderID,uid,rating) VALUES ('39ab1c25-b912-4800-a920-0434af1b6218','f8f75acf-89ed-4d88-b036-24101928607d',5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES ('3572e685-81c6-432d-8175-dcff6d0f7363','f8f75acf-89ed-4d88-b036-24101928607d',2);
+INSERT INTO Delivers (orderID,uid,rating) VALUES ('39ab1c25-b912-4800-a920-0434af1b6218','d15945e8-42e9-4e00-a1fc-c5858260465f',5);
 
 
 
@@ -391,3 +382,118 @@ ALTER TABLE Restaurants ALTER COLUMN restaurantID SET DEFAULT gen_random_uuid();
 ALTER TABLE Promotion ALTER COLUMN promoID SET DEFAULT gen_random_uuid();
 ALTER TABLE Orders ALTER COLUMN orderID SET DEFAULT gen_random_uuid();
 */
+
+
+/* Create views */
+
+/*PARTTIME. Consolidate shows for each parttime rider, how many weeks they actually worked in a month (If they
+work one day in a week, it will be counted in totalWeeksWorked) and how many deliveries completed in a month */
+CREATE VIEW ConsolidateP AS (
+SELECT distinct P1.uid as pUid, 
+P1.weeklyBasePay as pBasePay, 
+EXTRACT(YEAR FROM WD1.workDate) as pYear, 
+EXTRACT(Month FROM WD1.workDate) as pMonth,
+count( distinct EXTRACT(WEEK FROM WD1.workDate)) as totalWeeksWorked, 
+sum(WD1.numCompleted) as pComplete
+FROM PartTime P1
+INNER JOIN WorkingDays WD1 on P1.uid = WD1.uid
+WHERE WD1.numCompleted > 0 /**Filter out weeks without any worked days at all for count(Extract(WEEK FROM WD.workDate))**/
+GROUP BY P1.uid, EXTRACT(YEAR FROM WD1.workDate), EXTRACT(Month FROM WD1.workDate)
+);
+
+/*FULLTIME. ConsolidateF shows for each fulltime rider, how many months they actually worked (even if they worked one day in a month) 
+and how many deliveries completed in a month */
+CREATE VIEW ConsolidateF AS (
+SELECT distinct F1.uid as fUid,
+F1.monthlyBasePay as fBasePay,
+EXTRACT(YEAR FROM WW1.workDate) as fYear,
+EXTRACT(MONTH FROM WW1.workDate) as fMonth,
+sum(WW1.numCompleted) as fCompleted
+FROM FullTime F1
+INNER JOIN WorkingWeeks WW1 on F1.uid = WW1.uid
+WHERE WW1.numCompleted > 0  /**Filter out months without any worked days at all**/
+GROUP BY F1.uid, EXTRACT(YEAR FROM WW1.workDate), EXTRACT(MONTH FROM WW1.workDate) 
+);
+
+CREATE VIEW workDetails AS(
+SELECT DISTINCT p.uid as uid,
+		EXTRACT(YEAR FROM WD.workDate) as year, 
+        EXTRACT(Month FROM WD.workDate) as month, 
+        sum(DATE_PART('hour', WD.intervalEnd - WD.intervalStart)) as totalHours,
+		sum(WD.numCompleted) as numCompleted
+FROM PartTime P INNER JOIN WorkingDays WD USING (uid) 
+WHERE WD.numCompleted > 0 
+GROUP BY P.uid, EXTRACT(YEAR FROM WD.workDate), EXTRACT(Month FROM WD.workDate)
+UNION
+SELECT distinct F.uid as uid,
+		EXTRACT(YEAR FROM WW.workDate) as year, 
+		EXTRACT(Month FROM WW.workDate) as month, 
+		count(shiftID) * 8 as totalHours,
+		sum(WW.numCompleted) as numCompleted
+FROM FullTime F INNER JOIN WorkingWeeks WW USING (uid) 
+WHERE WW.numCompleted > 0 
+GROUP BY F.uid, EXTRACT(YEAR FROM WW.workDate), EXTRACT(Month FROM WW.workDate)
+);
+
+CREATE VIEW driverSalary AS (
+SELECT CP.puid as uid,
+	   CP.pYear as year, 
+       CP.pMonth as month, 
+       CP.pComplete * DR.baseDeliveryFee + CP.totalWeeksWorked * CP.pBasePay as monthSalary 
+FROM ConsolidateP CP RIGHT JOIN DeliveryRiders DR on DR.uid = CP.pUid 
+UNION
+SELECT CF.fuid as uid,
+       CF.fYear as year, 
+       CF.fMonth as month, 
+       CF.fCompleted * DR.baseDeliveryFee + CF.fBasePay as monthSalary 
+FROM DeliveryRiders DR LEFT JOIN ConsolidateF CF on DR.uid = CF.fUid 
+);
+
+/* Triggers */
+
+/*Update delivery rider number of complete orders after order completion*/
+CREATE OR REPLACE FUNCTION update_bonus()
+RETURNS TRIGGER AS $$
+DECLARE currStatus VARCHAR(50);
+DECLARE riderId uuid;
+DECLARE riderType VARCHAR(255);
+DECLARE dateO DATE;
+DECLARE timeO TIME;
+
+BEGIN
+    currStatus := NEW.orderStatus;
+	dateO := NEW.date;
+	timeO := NEW.timeOrderPlace;
+
+    SELECT uid INTO riderId
+    FROM Delivers
+    WHERE NEW.orderid = Delivers.orderid;
+
+    SELECT type INTO riderType
+    FROM DeliveryRiders
+    WHERE riderId = DeliveryRiders.uid;
+
+    IF (currStatus = 'Completed') THEN
+        IF (riderType = 'FullTime') THEN
+            UPDATE WorkingWeeks
+            SET numCompleted = numCompleted + 1
+            WHERE riderId = WorkingWeeks.uid
+			AND dateO = WorkingWeeks.workDate;
+        ELSIF (riderType = 'PartTime') THEN
+            UPDATE WorkingDays 
+            SET numCompleted = numCompleted + 1
+            WHERE riderId = WorkingDays.uid
+			AND dateO = WorkingDays.workDate
+			AND timeO >= WorkingDays.intervalStart
+			AND timeO <= WorkingDays.intervalEnd;
+        END IF;
+    END IF;
+    RETURN NULL;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER bonus_trigger
+AFTER UPDATE of orderStatus ON Orders
+FOR EACH ROW
+EXECUTE PROCEDURE update_bonus();

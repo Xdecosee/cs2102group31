@@ -7,15 +7,24 @@
         <li class="nav-item">
             <a class="nav-link" href="/rider_home">Home</a>
         </li>
-         <!-- Not Implemented Yet-->
+        <li class="nav-item"> 
+            <% if (type==="FullTime") { %>
+                <a class='nav-link' href='/rider_ftschedule' >Schedule</a>
+            <% } else if (type==="PartTime") { %>
+                <a class='nav-link' href='/rider_ptschedule' >Schedule</a>
+            <% } %>
+        </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Logout</a>
+            <a class="nav-link" href="/rider_salary">Salary</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/rider_order">Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="\">Logout</a>
         </li>
     </ul>
 </nav>
   
 <!--Container for Content-->
 <div class="container-fluid" style="margin-top:80px">   
-  
-  
-  
