@@ -1,5 +1,50 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_fds') %>
-<h1>FDS Manager Home</h1>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>FDS Manager Home</h1>
+    <p>Welcome, <%= name%>!</p>
+    <p></p>
+    <form id="goto_form" name="goCust" action="/fds_home/go_cust" role="form" method="post">
+      <button id="goCust" name="goCust" type="submit" class="btn btn-primary btn-block"
+        value="Customers">Customers</button>
+
+    </form>
+    <p></p>
+    <form id="goRest_form" name="goRest" action="/fds_home/go_rest" role="form" method="post">
+      <button id="goRest" name="goRest" type="submit" class="btn btn-primary btn-block"
+        value="Restaurants">Restaurants</button>
+    </form>
+    <p></p>
+    <form id="goRider_form" name="goRider" action="/fds_home/go_rider" role="form" method="post">
+      <button id="goRider" name="goRider" type="submit" class="btn btn-primary btn-block" value="Riders">Riders</button>
+    </form>
+    <p></p>
+    <form id="goPromo_form" name="goPromo" action="/fds_home/go_promo" role="form" method="post">
+      <button id="goPromo" name="goPromo" type="submit" class="btn btn-primary btn-block"
+        value="Promotions">Promotions</button>
+    </form>
+    <p></p>
+  </div>
+
+</body>
+
+</html>
+
 
 <%- include('partials/footer') %>

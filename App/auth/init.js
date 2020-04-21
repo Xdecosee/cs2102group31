@@ -27,7 +27,7 @@ function findUser (username, callback) {
 				uid   : data.rows[0].uid,
         type     : data.rows[0].type,
         ridertype: data.rows[0].ridertype
-			});
+      });
 		} else {
 			console.error("More than one user?");
 			return callback(null);
@@ -61,7 +61,7 @@ function initPassport () {
         if(password != user.password ){
             return done(null, false);
         }
-
+ 
         return done(null, user);
 
       })
