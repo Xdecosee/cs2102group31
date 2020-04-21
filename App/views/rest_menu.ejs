@@ -1,0 +1,55 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar_rest') %>
+<h1>Restaurant Menu</h1>
+
+<h2>Menu Details</h2>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Food</th>
+            <th scope="col">Price</th>
+            <th scope="col">Category</th>
+            <th scope="col">Daily Limit</th>
+            <th scope="col">Avaliablity</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% for(var i=0; i< menuInfo.length; i++) { %>
+		<tr>
+			<td><%= menuInfo[i].foodname%></td>
+            <td><%= menuInfo[i].price%></td>
+            <td><%= menuInfo[i].category%></td>
+            <td><%= menuInfo[i].dailylimit%></td>
+            <td><%= menuInfo[i].availability ? 'yes' : 'no' %></td>
+		</tr>
+		<% } %>
+	</tbody>
+</table>
+
+<h2>Add New Food</h2>
+<form id="food_form" action="/rest_menu/insertfood" role="form" method="post">
+	<div class="form-group">
+		<label for="name">Food Name</label>
+		<input type="text" class="form-control" id="foodname" name="foodname"  aria-describedby="foodHelp" placeholder="Enter food name">
+		<small id="foodHelp" class="form-text text-muted">Name should not exceed 100 chars</small>
+	</div>
+	<div class="form-group">
+		<label for="username">Price</label>
+		<input type="text" class="form-control" id="price" name="price">
+	</div>
+	<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script src = "javascripts/rest.js"></script>
+<script>
+	(function() {
+		window.addEventListener('load', function() {
+			var forms = [document.getElementById('food_form')];
+			var validation = Array.prototype.filter.call(forms, function(form) {
+				form.addEventListener('submit', checkFood, false);
+			});
+		}, false);
+	})();
+</script>
+
+<%- include('partials/footer') %>

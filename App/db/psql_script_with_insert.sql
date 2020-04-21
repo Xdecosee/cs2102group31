@@ -113,13 +113,7 @@ CREATE TABLE Users (
 	name        VARCHAR(255)     NOT NULL,
 	username    VARCHAR(255)     NOT NULL,
 	password    VARCHAR(255)     NOT NULL,
-	-- cardDetails VARCHAR(255) DEFAULT NULL,
-	-- restaurantID INT DEFAULT NULL,
-	-- riderType  VARCHAR(255) CHECK (type in ('FullTime', 'PartTime', NULL)) ,
 	type    VARCHAR(255) NOT NULL CHECK (type in ('Customers', 'FDSManagers', 'RestaurantStaff', 'DeliveryRiders')), 
-	-- UNIQUE (uid, cardDetails),
-	-- UNIQUE (uid, restaurantID),
-	-- UNIQUE (uid, riderType),
 	PRIMARY KEY (uid)
 );
 
@@ -129,7 +123,7 @@ CREATE TABLE Customers (
 	signUpDate  DATE    DEFAULT CURRENT_DATE NOT NULL,
 	cardDetails VARCHAR(255),
 	PRIMARY KEY (uid),
-	FOREIGN KEY (uid, cardDetails) REFERENCES Users(uid, cardDetails) ON DELETE CASCADE
+	FOREIGN KEY (uid) REFERENCES Users(uid) ON DELETE CASCADE
 );
 
 CREATE TABLE FDSManagers (
@@ -958,3 +952,4 @@ SELECT CF.fuid as uid,
        CF.fCompleted * DR.baseDeliveryFee + CF.fBasePay as monthSalary 
 FROM DeliveryRiders DR LEFT JOIN ConsolidateF CF on DR.uid = CF.fUid 
 );
+            

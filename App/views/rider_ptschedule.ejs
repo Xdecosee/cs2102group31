@@ -1,0 +1,114 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar_rider') %>
+<link rel = 'stylesheet' href='stylesheets/form.css'>
+<h1>Rider's Schedule</h1>
+<br>
+<details>
+    <summary style="font-size:20px"><strong>Add Schedule</strong></summary>
+    <div line-height:1.6 style="margin-left:1.4em"> 
+      Maximum of 5 slots per form. <br>
+      <strong>Do note</strong> the following points while filing the form: <br>
+      <li style="margin-left:1.4em"> Date and time should not clash with your previous schedule</li>
+      <li style="margin-left:1.4em"> Maximum time per shift is 4 hours</li>
+      <li style="margin-left:1.4em"> Interval between each shift must be at least 1 hour difference</li>
+    </div>
+    <p line-height:1.6 style="margin-left:1.0em"> </p>
+    <form id="schedule_form" action="/rider_ptschedule/addSched" role="form" method="post">
+      <fieldset class="scheduler-border">
+        <legend class="scheduler-border">Schedule Form</legend>
+        <label for="day1" style="margin-left:1.0em"><strong>Date:</strong></label>
+        <input type="date" id="day1" name="day1" required>
+        <label for="start1" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+        <input type="time" id="start1" name="start1" min="10:00" max="22:00" step = "3600" required> 
+        <label for="end1" style="margin-left:2.0em"><strong>End Time:</strong></label>
+        <input type="time" id="end1" name="end1" min="10:00" max="22:00" step = "3600" required>
+        <p></p>
+        <label for="day2" style="margin-left:1.0em"><strong>Date:</strong></label>
+        <input type="date" id="day2" name="day2" >
+        <label for="start2" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+        <input type="time" id="start2" name="start2" min="10:00" max="22:00" step = "3600">
+        <label for="end1" style="margin-left:2.0em"><strong>End Time:</strong></label>
+        <input type="time" id="end2" name="end2" min="10:00" max="22:00" step = "3600">
+        <p></p>
+        <label for="day3" style="margin-left:1.0em"><strong>Date:</strong></label>
+        <input type="date" id="day3" name="day3">
+        <label for="start3" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+        <input type="time" id="start3" name="start3" min="10:00" max="22:00" step = "3600">
+        <label for="end3" style="margin-left:2.0em"><strong>End Time:</strong></label>
+        <input type="time" id="end3" name="end3" min="10:00" max="22:00" step = "3600">
+        <p></p>
+        <label for="day4" style="margin-left:1.0em"><strong>Date:</strong></label>
+        <input type="date" id="day4" name="day4">
+        <label for="start4" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+        <input type="time" id="start4" name="start4" min="10:00" max="22:00" step = "3600">
+        <label for="end4" style="margin-left:2.0em"><strong>End Time:</strong></label>
+        <input type="time" id="end4" name="end4" min="10:00" max="22:00"  step = "3600">
+        <p></p>
+        <label for="day5" style="margin-left:1.0em"><strong>Date:</strong></label>
+        <input type="date" id="day5" name="day5">
+        <label for="start5" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+        <input type="time" id="start5" name="start5" min="10:00" max="22:00" step = "3600">
+        <label for="end5" style="margin-left:2.0em"><strong>End Time:</strong></label>
+        <input type="time" id="end5" name="end5" min="10:00" max="22:00" step = "3600">
+        <p></p>
+        <button style="margin-left:1.0em" type="submit" class="btn btn-primary">Submit</button>
+        <button  type="reset" class="btn btn-primary">Reset</button>
+        <p></p>
+        <small><strong>Note:</strong> Schedule cannot be altered once submitted for processing</small>
+      </fieldset>
+    </form> 
+</details>
+<p></p>
+<details>
+    <summary style="font-size:20px"><strong>View Schedule</strong></summary>
+    <br>
+    <label  for="myInput"><strong>Input Period: </strong></label>
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="e.g. Jan-2020" title="Type in a Period" size="50">
+    <br>
+    <small style="margin-left:8.0em">Fill the month period to view schedule for the month</small>
+    <br>
+    <br>
+    <table class="table" id='myTable'>
+        <thead>
+            <tr>
+                <th scope="col">Period</th>
+                <th scope="col">Work Date</th>
+                <th scope="col">Start Time</th>
+                <th scope="col">End Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(var i=0; i< ptshedInfo.length; i++) { %>
+            <tr>
+                <td><%= ptshedInfo[i].period%></td>
+                <td><%= ptshedInfo[i].date%></td>
+                <td><%= ptshedInfo[i].intervstart%></td>
+                <td><%= ptshedInfo[i].intervend%></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+
+</details>
+
+<%- include('partials/footer') %>
+
+<script>
+    function myFunction() {
+      var input, filter, table, tr, td, i;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+</script>

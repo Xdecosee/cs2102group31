@@ -1,97 +1,73 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_rest') %>
-<h1>Restaurant Staff Home</h1>
-<p>Welcome, <%= username%>!</p>
 
-<h2>Profile Details</h2>
+<h2>Profile Summary</h2>
 <table class="table">
 	<thead>
 		<tr>
 			<th scope="col">Name</th>
 			<th scope="col">Username</th>
+			<th scope="col">Restaurant</th>
+            <th scope="col">Location</th>
+            <th scope="col">Min. Threshold</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
 			<td><%= name%></td>
 			<td><%= username%></td>
+			<td><%= restInfo[0].name%></td>
+			<td><%= restInfo[0].location%></td>
+			<td><%= restInfo[0].minthreshold%></td>
 		</tr>
 	</tbody>
 </table>
 
-<h2>Restaurant Details</h2>
+<h2>Restaurant Summary</h2>
+<p> Shows the total number of completed orders and the total cost of all completed orders for each month </p>
 <table class="table">
 	<thead>
 		<tr>
-			<th scope="col">Name</th>
-            <th scope="col">Location</th>
-            <th scope="col">Min. Threshold</th>
+			<th scope="col">Year</th>
+			<th scope="col">Month</th>
+			<th scope="col">Total Orders</th>
+            <th scope="col">Total Cost</th>
 		</tr>
 	</thead>
 	<tbody>
-		<% for(var i=0; i< restInfo.length; i++) { %>
+		<% for (var i = 0; i < restSummary.length; i++) { %>
 		<tr>
-			<td><%= restInfo[i].name%></td>
-            <td><%= restInfo[i].location%></td>
-            <!--IMPT: convert to small letters for the attribute name. -->
-            <!--In db, we may put minThreshold, but convert it to minthreshold to retrieve values-->
-            <td><%= restInfo[i].minthreshold%></td>
+			<td><%= restSummary[i].year%></td>
+			<td><%= restSummary[i].month%></td>
+			<td><%= restSummary[i].totalorders%></td>
+			<td><%= restSummary[i].totalcost%></td>
 		</tr>
 		<% } %>
 	</tbody>
 </table>
 
-<h2>Menu Details</h2>
+<h2>Favourite Food</h2>
+<p> Shows the top 5 favorite food items in terms of completed orders for each month </p>
 <table class="table">
 	<thead>
 		<tr>
+			<th scope="col">Year</th>
+			<th scope="col">Month</th>
 			<th scope="col">Food</th>
-            <th scope="col">Price</th>
-            <th scope="col">Category</th>
-            <th scope="col">Daily Limit</th>
-            <th scope="col">Avaliablity</th>
+            <th scope="col">Total Orders</th>
 		</tr>
 	</thead>
 	<tbody>
-		<% for(var i=0; i< menuInfo.length; i++) { %>
+		<% for (var i = 0; i < restFavFood.length; i++) { %>
 		<tr>
-			<td><%= menuInfo[i].foodname%></td>
-            <td><%= menuInfo[i].price%></td>
-            <td><%= menuInfo[i].category%></td>
-            <td><%= menuInfo[i].dailylimit%></td>
-            <td><%= menuInfo[i].availability ? 'yes' : 'no' %></td>
+			<td><%= restFavFood[i].year%></td>
+			<td><%= restFavFood[i].month%></td>
+			<td><%= restFavFood[i].food%></td>
+			<td><%= restFavFood[i].totalorders%></td>
 		</tr>
 		<% } %>
 	</tbody>
 </table>
 
-<h2>Add New Food</h2>
-<!-- IMPT: Notice here /rest_home is specified because function is define in rest_home router (rest_home.js)-->
-<form id="food_form" action="/rest_home/insertfood" role="form" method="post">
-	<div class="form-group">
-		<label for="name">Food Name</label>
-		<input type="text" class="form-control" id="foodname" name="foodname"  aria-describedby="foodHelp" placeholder="Enter food name">
-		<small id="foodHelp" class="form-text text-muted">Name should not exceed 100 chars</small>
-	</div>
-	<div class="form-group">
-		<label for="username">Price</label>
-		<input type="text" class="form-control" id="price" name="price">
-	</div>
-	<button type="submit" class="btn btn-primary">Submit</button>
-</form>
 
-<!--USEFUL: Example of importing script from /public/javascripts folder-->
-<script src = "javascripts/rest.js"></script>
-<script>
-	(function() {
-		window.addEventListener('load', function() {
-			//get by form id
-			var forms = [document.getElementById('food_form')];
-			var validation = Array.prototype.filter.call(forms, function(form) {
-				//checkFood is a function in rest.js to validate field values
-				form.addEventListener('submit', checkFood, false);
-			});
-		}, false);
-	})();
-</script>
 <%- include('partials/footer') %>

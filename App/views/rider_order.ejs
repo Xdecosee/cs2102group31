@@ -1,0 +1,108 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar_rider') %>
+<link rel = 'stylesheet' href='stylesheets/form.css'>
+<h1>Rider's Orders</h1>
+<p> </p>
+<br>
+<details>
+    <summary style="font-size:20px"><strong>Pending Orders</strong></summary>
+    <p> </p>
+    <form id="orderUpdate_form" action="/rider_order/updateOrder" role="form" method="post">
+        <fieldset class="scheduler-border">
+            <legend class="scheduler-border">Order Update Form</legend>
+            <div class="form-row align-items-center">
+                <div class="col-auto my-1">
+                    <label for="order"><strong>Order Number</strong></label>
+                    <select class="custom-select mr-sm-2" id="orderid" name = "orderid">
+                        <option selected>Choose...</option>
+                        <% for(var i=0; i< pOrderInfo.length; i++) { %>
+                            <option value= "<%= pOrderInfo[i].orderid%>"><%= pOrderInfo[i].orderid%></option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="col-auto my-1">
+                <div class="custom-control custom-checkbox mr-sm-2">
+                    <label for="order"><strong>State of Order</strong></label>
+                        <select class="custom-select mr-sm-2" id="step" name = "step">
+                            <option selected>Choose...</option>
+                            <option value= "Depart To Resturant">Depart To Resturant</option>
+                            <option value= "Arrive At Resturant">Arrive At Resturant</option>
+                            <option value= "Depart From Resturant">Depart To Location</option>
+                            <option value= "Order Delivered">Order Delivered</option>
+                            <option value= "Order Failed">Order Failed</option>
+                        </select>
+                </div>
+                </div>
+                <button style="margin-top:30px;margin-left:0.5em;" type="submit" class="btn btn-primary">Update</button>
+                <button style="margin-top:30px;margin-left:0.5em;" type=" reset " class="btn btn-primary">Reset</button>
+            </div>
+            
+        </fieldset>
+    </form>
+    <p> </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">orderID</th>
+                <th scope="col">Date</th>
+                <th scope="col">Delivery Location</th>
+                <th scope="col">Time: Placed</th>
+                <th scope="col">Time: To Restaurant</th>
+                <th scope="col">Time: At Restaurant</th>
+                <th scope="col">Time: To Location</th>
+                <th scope="col">Time: Delivered</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(var i=0; i< pOrderInfo.length; i++) { %>
+            <tr>
+                <td><%= pOrderInfo[i].orderid%></td>
+                <td><%= pOrderInfo[i].date%></td>
+                <td><%= pOrderInfo[i].location%></td>
+                <td><%= pOrderInfo[i].timeplace%></td>
+                <td><%= pOrderInfo[i].timetorest%></td>
+                <td><%= pOrderInfo[i].timearrive%></td>
+                <td><%= pOrderInfo[i].timedepart%></td>
+                <td><%= pOrderInfo[i].timedelivered%></td>
+                <td><%= pOrderInfo[i].orderstatus%></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+</details>
+<p></p>
+
+<details>
+    <summary style="font-size:20px"><strong>Past Orders</strong></summary>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">orderID</th>
+                <th scope="col">Date</th>
+                <th scope="col">Time</th>
+                <th scope="col">Delivery Location</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Status</th>
+                <th scope="col">Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(var i=0; i< cOrderInfo.length; i++) { %>
+            <tr>
+                <td><%= cOrderInfo[i].orderid%></td>
+                <td><%= cOrderInfo[i].date%></td>
+                <td><%= cOrderInfo[i].timeplace%></td>
+                <td><%= cOrderInfo[i].location%></td>
+                <td><%= cOrderInfo[i].deliveryduration%></td>
+                <td><%= cOrderInfo[i].orderstatus%></td>
+                <td><%= cOrderInfo[i].rating%></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+</details>
+
+
+<%- include('partials/footer') %>

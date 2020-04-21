@@ -8,42 +8,27 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
-var a = null;
-
-function ratingInfo(req, res, next) {
+function salaryInfo(req, res, next) {
 	/*----- IMPT: Stuff in [] is for your sql parameters ($) ----- */
-	caller.query(sql.query.ratingInfo, [req.user.uid], (err, data) => {
+	caller.query(sql.query.salaryInfo, [req.user.uid], (err, data) => {
         if(err){
             return next(error);
         }
-		req.ratingInfo = data.rows;
-        return next();
-	});
-}
-
-function workdInfo(req, res, next) {
-	/*----- IMPT: Stuff in [] is for your sql parameters ($) ----- */
-	caller.query(sql.query.workdInfo, [req.user.uid], (err, data) => {
-        if(err){
-            return next(error);
-        }
-		req.workdInfo = data.rows;
+		req.salaryInfo = data.rows;
         return next();
 	});
 }
 
 function loadPage(req, res, next) {
 	/*-- IMPT: How to send data to your frontend ejs file --- */
-	res.render('rider_home',{
+	res.render('rider_salary',{
 		username:req.user.username, 
 		name:req.user.name,
 		type:req.user.ridertype,
-		ratingInfo:req.ratingInfo,
-		workdInfo:req.workdInfo 
+		salaryInfo:req.salaryInfo	
 	});
-	
 }
 
 /* USEFUL: passport.authMiddleware() make sure user is autheticated before accessing page*/
-router.get('/', passport.authMiddleware(), ratingInfo, workdInfo, loadPage);
+router.get('/', passport.authMiddleware(), salaryInfo, loadPage);
 module.exports = router;
