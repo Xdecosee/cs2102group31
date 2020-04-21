@@ -46,6 +46,12 @@ var custHomeRouter = require('./routes/cust_home');
 // var custHomeRouter = require('./routes/cust_profile');
 // var custHomeRouter = require('./routes/cust_view_menu');
 var fdsHomeRouter = require('./routes/fds_home');
+//fds
+var fdsCustRouter = require('./routes/fds_cust');
+var fdsRestRouter = require('./routes/fds_rest');
+var fdsRiderRouter = require('./routes/fds_rider');
+var fdsPromoRouter = require('./routes/fds_promo');
+
 var restHomeRouter = require('./routes/rest_home');
 var restMenuRouter = require('./routes/rest_menu');
 var restOrderRouter = require('./routes/rest_order');
@@ -74,6 +80,12 @@ app.use('/rider_salary', riderSalaryRouter);
 app.use('/rider_order', riderOrderRouter);
 app.use('/rider_ftschedule', riderftScheduleRouter);
 app.use('/rider_ptschedule', riderptScheduleRouter);
+app.use('/fds_cust', fdsCustRouter);
+app.use('/fds_rest', fdsRestRouter);
+app.use('/fds_rider', fdsRiderRouter);
+app.use('/fds_promo', fdsPromoRouter);
+
+
 
 /* --- Don't need to touch: Error Handler ----*/
 app.use(function(req, res, next) {
@@ -136,5 +148,19 @@ app.get('/rider_ptschedule', (req, res) => {
   res.render('rider_ptschedule');
 });
 
+//----fds
+app.get('/fds_cust', (req, res) => {
+	res.render('fds_cust');
+});
+app.get('/fds_rest', (req, res) => {
+	res.render('fds_rest');
+});
+app.get('/fds_rider', (req, res) => {
+	res.render('fds_rider');
+});
+app.get('/fds_cust', (req, res) => {
+	res.render('fds_rider');
+});
+//-----
 
 module.exports = app;

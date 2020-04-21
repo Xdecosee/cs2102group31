@@ -1,0 +1,116 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar_fds') %>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>FDS Promotion</h1>
+
+
+    <h1>View Promotions </h1>
+    <p>
+      This page shows information about promotions.
+      It also shows the duration of the campaign in terms of days and hours,
+      total number of orders using the promotion and average number of orders per day and per hour.
+      For average, it is rounded up to nearest whole number.
+    </p>
+    <h2>Percentage Discount</h2>
+    <p> Promotions with percentage discount </p>
+
+
+    <h2>Fixed Amount Discount</h2>
+    <p> Promotions with a fix amount to offset order cost </p>
+
+    <div class="container">
+      <h2>Current Promotion</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">PromoID</th>
+            <th scope="col">Start</th>
+            <th scope="col">End</th>
+            <th scope="col">Percentage Discount</th>
+            <th scope="col">Amount Discount</th>
+            <th scope="col">RestaurantID</th>
+            <th scope="col">Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(var i=0; i< promoInfo.length; i++) { %>
+          <tr>
+            <td><%= promoInfo[i].promoid%></td>
+            <td><%= promoInfo[i].startdate%></td>
+            <td><%= promoInfo[i].enddate%></td>
+            <td><%= promoInfo[i].discperc%></td>
+            <td><%= promoInfo[i].discamt%></td>
+            <td><%= promoInfo[i].restaurantid%></td>
+            <td><%= promoInfo[i].type%></td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+
+      <h1>Add Promotion</h1>
+      <form id="promo_form" action="/fds_promo/insertpromo" role="form" method="post">
+        <div class="form-group">
+          <label for="start">Start Date</label>
+          <input type="date" class="form-control" id="startdate" name="startdate">
+        </div>
+        <div class="form-group">
+          <label for="end">End Date</label>
+          <input type="date" class="form-control" id="enddate" name="enddate">
+        </div>
+        <div class="form-group">
+          <label for="type">Choose Discount Type</label>
+          <select id="type" name="type">
+            <option value="percentage">Percentage</option>
+            <option value="fixed">Fixed Amount</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="discount">Enter Discount</label>
+          <input type="text" class="form-control" id="discount" name="discount" aria-describedby="promoHelp">
+          <small id="promoHelp" class="form-text text-muted"> Percentage should be in whole number and not more than
+            100.
+            Fixed Amount should be up to two decimal points.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    <!-- for inputs validation -->
+    <script src="javascripts/fds.js"> </script>
+    <script>
+      (function () {
+        window.addEventListener('load', function () {
+          var forms = [document.getElementById('promo_form')];
+          var validation = Array.prototype.filter.call(forms, function (form) {
+            form.addEventListener('submit', checkPromo, false);
+          });
+        }, false);
+      })();
+    </script>
+    </form>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+<%- include('partials/footer') %>

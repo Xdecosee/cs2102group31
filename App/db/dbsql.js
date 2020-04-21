@@ -65,8 +65,26 @@ sql.query = {
                         'SELECT DISTINCT PI.promoID, startDate, startTime, endDate, endTime, discAmt, totalOrders, dayDuration, hourDuration, ' +
                         'ROUND(totalOrders::decimal / dayDuration) as dayAvg, ROUND(totalOrders::decimal/ hourDuration) as hourAvg ' +
                         'FROM PromoInfo PI INNER JOIN OrderInfo O on PI.promoID = O.promoID',
+  
+    totalOrders: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(orderid) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
+    totalCost: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, SUM(cost) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
+    totalNewCus: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (signupDate)) AS month, COUNT(distinct uid) AS num FROM Customers GROUP BY EXTRACT(MONTH FROM (signupDate))) as X Where CAST(X.month as INT) = $1',
+    totalOrderEachCust: 'Select x.customer, x.totalcost, x.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, uid as Customer, SUM(cost) AS totalcost, count(cost) as num FROM (Orders natural join (Place natural join Customers)) GROUP BY uid,EXTRACT(MONTH FROM (Date))) as X Where CAST(X.month as INT) = $1',
+    //totalSpendingEachCust: 'Select X.customer, x.totalcost From ( SELECT EXTRACT(MONTH FROM (date)) AS month, uid as Customer, SUM(cost) AS totalcost FROM Orders natural join (Place natural join Customers) GROUP BY uid,EXTRACT(MONTH FROM (Date))) as X Where CAST(X.month as INT) = $1',
+    activeCus: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(uid) as num FROM Place natural join Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
 
-    /*------Delivery Riders--------*/
+    viewArea: 'Select X.area, X.hour, X.num From(SELECT EXTRACT(HOUR FROM (timeorderplace)) AS hour, area, COUNT(*) AS num FROM Orders GROUP BY EXTRACT(HOUR FROM (timeorderplace)), area) as X WHERE X.area = $1',
+    viewCat: 'Select * from categories',
+
+    insertCat: 'INSERT INTO categories(category) Values($1)',
+
+    fdsPercentPromo: 'INSERT INTO Promotion(startDate, endDate, discPerc, type) ' +
+        'Values($1, $2, $3, \'FDSpromo\') RETURNING promoID',
+    fdsAmtPromo: 'INSERT INTO Promotion(startDate, endDate, discAmt, type) ' +
+        'Values($1, $2, $3, \'FDSpromo\') RETURNING promoID',
+    fdsInsertPromo: 'INSERT INTO FDSpromo(promoID) VALUES($1)',
+    promoInfo: 'Select * from Promotion',
+
     riderInfo:    'SELECT * FROM DeliveryRiders WHERE uid = $1',
     ratingInfo:   'SELECT CAST(avg(rating) AS DECIMAL(10,2)) AS rating FROM Delivers GROUP BY (uid) HAVING uid = $1',
     workdInfo:    'SELECT year AS year,to_char(to_timestamp (month::text, \'MM\'), \'Month\') AS month, numCompleted AS com, totalHours as hour FROM workDetails WHERE uid = $1 ORDER BY (year,month) DESC LIMIT 10',
@@ -95,6 +113,7 @@ sql.query = {
     //orderInfo: 'SELECT distinct * FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
     reviewInfo :'SELECT DISTINCT o.date as date, R.name, P.review, P.star FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
     orderInfo:'SELECT O.date::timestamp::date, R.name, F.foodName, F.quantity FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
+
 
 }
 
