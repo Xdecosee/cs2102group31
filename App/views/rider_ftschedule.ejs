@@ -1,0 +1,127 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar_rider') %>
+<link rel = 'stylesheet' href='stylesheets/form.css'>
+<h1>Rider's Schedule</h1>
+<br>
+<details>
+    <summary style="font-size:20px" ><strong>Add Schedule</strong></summary>
+    <p></p>
+    <div line-height:1.6 style="margin-left:1.0em"> 
+    Full Time Riders are required to select a 5 consecutive day shift each week. <br>
+    To fill up the schedule form, please choose the first of the five consecutive days and select the timeslot for each day shift. 
+    </div>
+    <br>
+
+    
+    <form id="schedule_form" action="/rider_ftschedule/addSchedule" role="form" method="post">
+      <fieldset class="scheduler-border">
+        <legend class="scheduler-border">Weekly Schedule Form</legend>
+              <p>
+              <label for=schedule><strong>1. Select Day 1 of your 5 consecutive day shifts: </strong></label>
+              <input type="date" id="day1" name="day1">
+              </p>
+              <p><strong>2. Select the timeslot shift for each day</strong></p>
+              <label for="s1" style="margin-left:2.0em"><strong>Shift 1:</strong></label>
+              <select id="s1" name="s1">
+                <option selected>Choose...</option>
+                <% for(var i=0; i< ftShiftInfo.length; i++) { %>
+                    <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
+                <% } %>
+              </select>
+       
+              <label for="s2" style="margin-left:2.0em"><strong>Shift 2:</strong></label>
+              <select id="s2" name="s2">
+                <option selected>Choose...</option>
+                <% for(var i=0; i< ftShiftInfo.length; i++) { %>
+                    <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
+                <% } %>
+              </select>
+              <label for="s3" style="margin-left:2.0em"><strong>Shift 3:</strong></label>
+              <select id="s3" name="s3">
+                <option selected>Choose...</option>
+                <% for(var i=0; i< ftShiftInfo.length; i++) { %>
+                    <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
+                <% } %>
+              </select>
+
+              <label for="s4" style="margin-left:2.0em"><strong>  Shift 4:</strong></label>
+              <select id="s4" name="s4">
+                <option selected>Choose...</option>
+                <% for(var i=0; i< ftShiftInfo.length; i++) { %>
+                    <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
+                <% } %>
+              </select>
+          
+              <label for="s5" style="margin-left:2.0em"><strong>  Shift 5:</strong></label>
+              <select id="s5" name="s5">
+                <option selected>Choose...</option>
+                <% for(var i=0; i< ftShiftInfo.length; i++) { %>
+                    <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
+                <% } %>
+              </select>
+      <button style="margin-left:2.0em" type="submit" class="btn btn-primary">Submit</button>
+      <button style="margin-left:0.5em" type="reset" class="btn btn-primary">Reset</button>
+      <p></p>
+      <small><strong>Note:</strong> Schedule cannot be altered once submitted for processing</small>
+    </fieldset>
+  </form>  
+    
+
+</details>
+
+<p> </p>
+
+<details>
+    <summary style="font-size:20px"><strong>View Schedule</strong></summary>
+     <br>
+    <label for="myInput"><strong>Input Period: </strong></label>
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="e.g. Jan-2020" title="Type in a Period" size="50">
+    <br>
+    <small style="margin-left:8.0em">Fill the month period to view schedule for the month</small>
+    <br>
+    <br>
+    <table class="table" id='myTable'>
+        <thead>
+            <tr>
+                <th scope="col">Period</th>
+                <th scope="col">Work Date</th>
+                <th scope="col">Shift 1</th>
+                <th scope="col">Shift 2</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(var i=0; i< ftshedInfo.length; i++) { %>
+            <tr>
+                <td><%= ftshedInfo[i].period%></td>
+                <td><%= ftshedInfo[i].wdate%></td>
+                <td><%= ftshedInfo[i].shifts1%></td>
+                <td><%= ftshedInfo[i].shifts2%></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+
+    
+</details>
+
+<%- include('partials/footer') %>
+
+<script>
+    function myFunction() {
+      var input, filter, table, tr, td, i;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+</script>

@@ -25,7 +25,8 @@ function findUser (username, callback) {
 				password    : data.rows[0].password,
 				name  : data.rows[0].name,
 				uid   : data.rows[0].uid,
-				type     : data.rows[0].type
+        type     : data.rows[0].type,
+        ridertype: data.rows[0].ridertype
 			});
 		} else {
 			console.error("More than one user?");
