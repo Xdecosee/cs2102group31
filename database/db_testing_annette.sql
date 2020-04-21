@@ -145,6 +145,8 @@ CREATE TABLE FDSManagers (
 	FOREIGN KEY (uid) REFERENCES Users ON DELETE CASCADE
 );
 
+/*Modify to include excluded stuff */
+
 INSERT INTO Users(uid, name, username, password, type) VALUES('0acb2fe9-2e48-483b-b45c-9aa246541fc2', 'Mr Minestrone', 'minestrone', '12345', 'RestaurantStaff');
 INSERT INTO Restaurants(restaurantID, name, location) VALUES('3f5c7ba1-01b1-4c9d-887f-28966f06ed54', 'Minestrone King', '313 somerset #B2-05');
 INSERT INTO RestaurantStaff(uid, restaurantID) VALUES('0acb2fe9-2e48-483b-b45c-9aa246541fc2', '3f5c7ba1-01b1-4c9d-887f-28966f06ed54');
@@ -228,46 +230,3 @@ INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, '72ce2
 
 INSERT INTO Orders(orderID, cost, date, orderStatus, timeOrderPlace, timeDepartFromRest) VALUES('40304577-4fd5-4610-80a2-7c6c8473f07d', 2.50, '2020-01-30', 'Completed', '22:00', '22:30');
 INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, '40304577-4fd5-4610-80a2-7c6c8473f07d', '3f5c7ba1-01b1-4c9d-887f-28966f06ed54', 'Minestrone Soup');
-
-
-/*
-
-//CONFIRMED ORDERS - OK
-SELECT DISTINCT FM.orderID,  to_char(O.date, 'DD/MM/YYYY') as date, O.timeOrderPlace, FM.FoodName, FM.quantity
-FROM Orders O
-INNER JOIN FromMenu FM on O.orderID = FM.orderID
-WHERE O.orderStatus = 'Confirmed'
-AND O.timeDepartFromRest IS NULL
-AND FM.restaurantID = '3f5c7ba1-01b1-4c9d-887f-28966f06ed54'
-AND FM.hide = 'false'
-ORDER BY date, O.timeOrderPlace, FM.orderID;
-
-UPDATE FromMenu SET hide = \'true\' WHERE orderID = $1 and foodName = $2
-
-//Total Orders Completed/ Total Cost - OK
-SELECT year, month, COUNT(orderID) AS totalorders, SUM(cost) As totalCost
-FROM (
-	SELECT DISTINCT EXTRACT(Year FROM (O.date)) AS year,  to_char(O.date, 'Month') as month, O.orderid, O.cost
-	FROM Orders O
-	INNER JOIN FromMenu FM on O.orderID = FM.orderID
-	WHERE O.orderStatus = 'Completed'
-	AND FM.restaurantID = $1) TMP
-GROUP BY year, month
-ORDER BY year DESC, to_date(month, 'Month’) DESC;
-
-//Top 5 favourite food - 'Completed' Orders - OK
-With FoodOrders as ( 
-SELECT EXTRACT(Year FROM (O.date)) AS year,  to_char(O.date, 'Month') as month,  FM.foodName as food, SUM(FM.quantity) as totalOrders
-FROM FromMenu FM
-INNER JOIN Orders O on FM.orderID = O.orderID
-WHERE O.orderStatus = 'Completed'
-AND FM.restaurantID = $1
-GROUP BY EXTRACT(Year FROM (O.date)),  to_char(O.date, 'Month'), FM.foodName
-)
-
-SELECT DISTINCT * FROM (
-	SELECT year, month, to_date(month, 'Month') as month2, food, totalOrders, row_number() OVER (PARTITION BY year, month) as rownum FROM FoodOrders
-)Tmp
-WHERE rownum < 6
-ORDER BY year DESC, month2 DESC, totalOrders DESC;
-*/

@@ -22,9 +22,30 @@ function restInfo(req, res, next) {
 	});
 }
 
+function percInfo(req, res, next) {
+	caller.query(sql.query.restPercSummary, [restID, restID], (err, data) => {
+        if(err){
+            return next(error);
+        }
+		req.percInfo = data.rows;
+        return next();
+	});
+}
+
+function fixedInfo(req, res, next) {
+	caller.query(sql.query.restAmtSummary, [restID, restID], (err, data) => {
+        if(err){
+            return next(error);
+        }
+		req.fixedInfo = data.rows;
+        return next();
+	});
+}
+
 function loadPage(req, res, next) {
 	res.render('rest_promo', { 
-		menuInfo: req.menuInfo
+        percInfo: req.percInfo,
+        fixedInfo: req.fixedInfo
 	});
 }
 
@@ -40,7 +61,7 @@ function insertPromo(req, res, next){
 
 }
 
-router.get('/', passport.authMiddleware(), restInfo, loadPage );
+router.get('/', passport.authMiddleware(), restInfo, percInfo, fixedInfo, loadPage );
 
 router.post('/insertpromo', function(req, res, next) {
 

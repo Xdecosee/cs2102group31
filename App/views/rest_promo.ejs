@@ -3,18 +3,84 @@
 <h1>View Promotions </h1>
 <p> 
     This page shows information about promotions that your restaurant has.
-    It also shows the duration  of the campaign in terms of days and hours, 
+    It also shows the duration  of the campaign in terms of days and hours (estimated), 
     total number of orders using the promotion and average number of orders per day and per hour.
-    For average, it is rounded up to nearest whole number.
+    For average, it is rounded to nearest whole number.
 </p>
 <h2>Percentage Discount</h2>
 <p> Promotions with percentage discount </p>
-
+<table class="table">
+	<thead>
+		<tr>
+			      <th scope="col">ID</th>
+            <th scope="col">Start Date</th>
+            <th scope="col">Start Time</th>
+            <th scope="col">End Date</th>
+            <th scope="col">End Time</th>
+            <th scope="col">Percentage Discount</th>
+            <th scope="col">Total Orders</th>
+            <th scope="col">Duration(Day)</th>
+            <th scope="col">Average(Day)</th>
+            <th scope="col">Duration(Hour)</th>
+            <th scope="col">Average(Hour)</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% for(var i=0; i< percInfo.length; i++) { %>
+		<tr>
+			      <td><%= percInfo[i].promoid%></td>
+            <td><%= percInfo[i].startdate%></td>
+            <td><%= percInfo[i].starttime%></td>
+            <td><%= percInfo[i].enddate%></td>
+            <td><%= percInfo[i].endtime%></td>
+            <td><%= percInfo[i].discperc%></td>
+            <td><%= percInfo[i].totalorders%></td>
+            <td><%= percInfo[i].dayduration%></td>
+            <td><%= percInfo[i].dayavg%></td>
+            <td><%= percInfo[i].hourduration%></td>
+            <td><%= percInfo[i].houravg%></td>
+		</tr>
+		<% } %>
+	</tbody>
+</table>
 
 
 <h2>Fixed Amount Discount</h2>
 <p> Promotions with a fix amount to offset order cost </p>
-
+<table class="table">
+	<thead>
+		<tr>
+			      <th scope="col">ID</th>
+            <th scope="col">Start Date</th>
+            <th scope="col">Start Time</th>
+            <th scope="col">End Date</th>
+            <th scope="col">End Time</th>
+            <th scope="col">Fixed Amount Discount</th>
+            <th scope="col">Total Orders</th>
+            <th scope="col">Duration(Day)</th>
+            <th scope="col">Average(Day)</th>
+            <th scope="col">Duration(Hour)</th>
+            <th scope="col">Average(Hour)</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% for(var i=0; i< fixedInfo.length; i++) { %>
+		<tr>
+			      <td><%= fixedInfo[i].promoid%></td>
+            <td><%= fixedInfo[i].startdate%></td>
+            <td><%= fixedInfo[i].starttime%></td>
+            <td><%= fixedInfo[i].enddate%></td>
+            <td><%= fixedInfo[i].endtime%></td>
+            <td><%= fixedInfo[i].discamt%></td>
+            <td><%= fixedInfo[i].totalorders%></td>
+            <td><%= fixedInfo[i].dayduration%></td>
+            <td><%= fixedInfo[i].dayavg%></td>
+            <td><%= fixedInfo[i].hourduration%></td>
+            <td><%= fixedInfo[i].houravg%></td>
+		</tr>
+		<% } %>
+	</tbody>
+</table>
 
 <h1>Add Promotion</h1>
 <form id="promo_form" action="/rest_promo/insertpromo" role="form" method="post">
