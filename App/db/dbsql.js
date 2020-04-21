@@ -25,6 +25,7 @@ sql.query = {
     ptshedInfo:   'SELECT to_char(workDate,\'Mon-YYYY\') as period, to_char(workDate,\'DD-Mon-YYYY\') as date, to_char(intervalStart, \'HH24:MI:SS\') as intervstart, to_char(intervalEnd, \'HH24:MI:SS\') as intervend FROM WorkingDays WHERE uid = $1 ORDER BY (EXTRACT(Year FROM workDate),EXTRACT(Month FROM workDate),EXTRACT(Day FROM workDate)) DESC',
     ftShiftInfo:  'SELECT * FROM ShiftOptions',
     
+
     statusUpdate:   'UPDATE Orders SET orderStatus = \'Completed\' WHERE orderID = $1',
     orderFailed:    'UPDATE Orders SET orderStatus = \'Failed\' WHERE orderID = $1',
     departtoUpdate: 'UPDATE Orders SET timeDepartToRest = NOW() WHERE orderID = $1',
@@ -35,6 +36,15 @@ sql.query = {
     
     ftschedInsert:  'INSERT INTO WorkingWeeks(uid, workDate, shiftID) VALUES($1, $2, $3)',
     ptschedInsert:  'INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd) VALUES ($1, $2, $3, $4)'               
+
+    /*------Customers--------*/
+    custInfo: 'SELECT * FROM Customers WHERE uid = $1',
+    updateUserCard: 'UPDATE Users SET cardDetails = $2 WHERE uid = $1',
+    updateCustomerCard: 'UPDATE Customers SET cardDetails = $2 WHERE uid = $1',
+    //orderInfo: 'SELECT distinct * FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
+    reviewInfo :'SELECT DISTINCT o.date as date, R.name, P.review, P.star FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
+    orderInfo:'SELECT O.date::timestamp::date, R.name, F.foodName, F.quantity FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
+
 }
 
 module.exports = sql;

@@ -43,6 +43,8 @@ app.use(passport.session())
 /* --- IMPT(Section 1): Adding Web Pages --- */
 var mainloginRouter = require('./routes/main_login');
 var custHomeRouter = require('./routes/cust_home');
+// var custHomeRouter = require('./routes/cust_profile');
+// var custHomeRouter = require('./routes/cust_view_menu');
 var fdsHomeRouter = require('./routes/fds_home');
 var restHomeRouter = require('./routes/rest_home');
 var riderHomeRouter = require('./routes/rider_home');
@@ -50,6 +52,7 @@ var riderSalaryRouter = require('./routes/rider_salary');
 var riderOrderRouter = require('./routes/rider_order');
 var riderftScheduleRouter = require('./routes/rider_ftschedule');
 var riderptScheduleRouter = require('./routes/rider_ptschedule');
+
 
 
 
