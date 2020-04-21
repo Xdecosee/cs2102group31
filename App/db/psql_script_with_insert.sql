@@ -273,8 +273,6 @@ INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES('d15945e8-
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES('d15945e8-42e9-4e00-a1fc-c5858260465f', '2020-03-15', 1, 15);
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES('d15945e8-42e9-4e00-a1fc-c5858260465f', '2020-04-20', 3, 15);
 
-
-
 /* Insert Data for restaurants */
 INSERT INTO Restaurants (restaurantID, name, location, minThreshold) VALUES ('70500444-ad6b-4bad-926f-b2d0de01f6db', 'Noma', '14 Texas Plaza', 6);
 INSERT INTO Restaurants (restaurantID, name, location, minThreshold) VALUES ('6fcfcc21-f44d-4fe1-a920-d13440a8c334', 'Odette', '240 Vernon Hill', 7);
