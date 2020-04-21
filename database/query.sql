@@ -1,37 +1,5 @@
 /* I will just follow the example code when they insert values into it*/
 
-/* Create views */
-
-/*PARTTIME. Consolidate shows for each parttime rider, how many weeks they actually worked in a month (If they
-work one day in a week, it will be counted in totalWeeksWorked) and how many deliveries completed in a month */
-CREATE VIEW ConsolidateP AS (
-SELECT distinct P1.uid as pUid, 
-P1.weeklyBasePay as pBasePay, 
-EXTRACT(YEAR FROM WD1.workDate) as pYear, 
-EXTRACT(Month FROM WD1.workDate) as pMonth, 
-count( distinct EXTRACT(WEEK FROM WD1.workDate)) as totalWeeksWorked, 
-sum(WD1.numCompleted) as pComplete
-FROM PartTime P1
-INNER JOIN WorkingDays WD1 on P1.uid = WD1.uid
-WHERE WD1.numCompleted > 0 /**Filter out weeks without any worked days at all for count(Extract(WEEK FROM WD.workDate))**/
-GROUP BY P1.uid, EXTRACT(YEAR FROM WD1.workDate), EXTRACT(Month FROM WD1.workDate)
-);
-
-/*FULLTIME. ConsolidateF shows for each fulltime rider, how many months they actually worked (even if they worked one day in a month) 
-and how many deliveries completed in a month */
-CREATE VIEW ConsolidateF AS (
-SELECT distinct F1.uid as fUid,
-F1.monthlyBasePay as fBasePay,
-EXTRACT(YEAR FROM WW1.workDate) as fYear,
-EXTRACT(MONTH FROM WW1.workDate) as fMonth,
-sum(WW1.numCompleted) as fCompleted
-FROM FullTime F1
-INNER JOIN WorkingWeeks WW1 on F1.uid = WW1.uid
-WHERE WW1.numCompleted > 0  /**Filter out months without any worked days at all**/
-GROUP BY F1.uid, EXTRACT(YEAR FROM WW1.workDate), EXTRACT(MONTH FROM WW1.workDate)
-);
-
-
 /* General Functions*/
 /* add_user      */ INSERT INTO Users(name,username,password,type) VALUES ($1,$2,$3,$4);
 /* add_cust      */ INSERT INTO Customers(uid,cardDetails) VALUES ($1,$2);
@@ -90,4 +58,3 @@ UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = $1; /* after driver 
 /* view_numOrder*/   SELECT fYear as Year,fMonth as Month, fCompleted as ordersComplete FROM ConsolidateF WHERE fUid = $1;
 /* view_hourswork*/  SELECT distinct EXTRACT(YEAR FROM WW.workDate) as year, EXTRACT(MONTH FROM WW.workDate) as month, count(shiftID) * 8 as totalHours FROM FullTime F INNER JOIN WorkingWeeks WW on F.uid = WW.uid WHERE WW.numCompleted > 0 GROUP BY F.uid, EXTRACT(YEAR FROM WW.workDate), EXTRACT(MONTH FROM WW.workDate) HAVING F.uid = $1;
 /* add_schedule*/    INSERT INTO WorkingWeeks(uid,workDate,shiftID) VALUES ($1,$2,$3); /*trigger work hour*/
-'d15945e8-42e9-4e00-a1fc-c5858260465f'

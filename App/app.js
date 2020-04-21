@@ -43,12 +43,18 @@ app.use(passport.session())
 /* --- IMPT(Section 1): Adding Web Pages --- */
 var mainloginRouter = require('./routes/main_login');
 var custHomeRouter = require('./routes/cust_home');
+// var custHomeRouter = require('./routes/cust_profile');
+// var custHomeRouter = require('./routes/cust_view_menu');
 var fdsHomeRouter = require('./routes/fds_home');
 var restHomeRouter = require('./routes/rest_home');
 var restMenuRouter = require('./routes/rest_menu');
 var restOrderRouter = require('./routes/rest_order');
 var restPromoRouter = require('./routes/rest_promo');
 var riderHomeRouter = require('./routes/rider_home');
+var riderSalaryRouter = require('./routes/rider_salary');
+var riderOrderRouter = require('./routes/rider_order');
+var riderftScheduleRouter = require('./routes/rider_ftschedule');
+var riderptScheduleRouter = require('./routes/rider_ptschedule');
 
 
 
@@ -64,6 +70,10 @@ app.use('/rest_menu', restMenuRouter);
 app.use('/rest_order', restOrderRouter);
 app.use('/rest_promo', restPromoRouter);
 app.use('/rider_home', riderHomeRouter);
+app.use('/rider_salary', riderSalaryRouter);
+app.use('/rider_order', riderOrderRouter);
+app.use('/rider_ftschedule', riderftScheduleRouter);
+app.use('/rider_ptschedule', riderptScheduleRouter);
 
 /* --- Don't need to touch: Error Handler ----*/
 app.use(function(req, res, next) {
@@ -107,9 +117,24 @@ app.get('/rest_promo', (req, res) => {
 
 
 app.get('/rider_home', (req, res) => {
-	res.render('rider_home');
+  res.render('rider_home');
 });
 
+app.get('/rider_salary', (req, res) => {
+  res.render('rider_salary');
+});
+
+app.get('/rider_order', (req, res) => {
+  res.render('rider_order');
+});
+
+app.get('/rider_ftschedule', (req, res) => {
+  res.render('rider_ftschedule');
+});
+
+app.get('/rider_ptschedule', (req, res) => {
+  res.render('rider_ptschedule');
+});
 
 
 module.exports = app;
