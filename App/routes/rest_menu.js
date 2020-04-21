@@ -16,43 +16,44 @@ function restInfo(req, res, next) {
         if(err){
             return next(error);
         }
-		req.restInfo = data.rows;
 		restID = data.rows[0].restaurantid;
         return next();
 	});
 }
 
-function restSummary(req, res, next) {
-	caller.query(sql.query.restSummary, [restID], (err, data) => {
+function menuInfo(req, res, next) {
+	caller.query(sql.query.restMenuInfo, [restID], (err, data) => {
         if(err){
             return next(error);
-        }
-		req.restSummary = data.rows;
-        return next();
-	});
-}
-
-function restFavFood(req, res, next) {
-	caller.query(sql.query.restFavFood, [restID], (err, data) => {
-        if(err){
-            return next(error);
-        }
-		req.restFavFood = data.rows;
+		}
+        req.menuInfo = data.rows;
         return next();
 	});
 }
 
 
 function loadPage(req, res, next) {
-	res.render('rest_home', { 
-		username: req.user.username, 
-		name:req.user.name,
-		restInfo: req.restInfo,
-		restSummary: req.restSummary,
-		restFavFood: req.restFavFood
+	res.render('rest_menu', { 
+		menuInfo: req.menuInfo
 	});
 }
 
-router.get('/', passport.authMiddleware(), restInfo, restSummary, restFavFood, loadPage );
+router.get('/', passport.authMiddleware(), restInfo, menuInfo, loadPage );
+
+
+
+router.post('/insertfood', function(req, res, next) {
+
+	var foodname  = req.body.foodname;
+	var price  = Number(req.body.price);
+
+	caller.query(sql.query.restInsertFood,[foodname, price, restID], (err, data) => {
+		if(err) {
+			console.log ("Error in adding food!");
+			console.log (err);
+		}
+        res.redirect('/rest_menu');
+	});
+});
 
 module.exports = router;

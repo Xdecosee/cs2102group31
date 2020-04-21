@@ -16,43 +16,44 @@ function restInfo(req, res, next) {
         if(err){
             return next(error);
         }
-		req.restInfo = data.rows;
 		restID = data.rows[0].restaurantid;
         return next();
 	});
 }
 
-function restSummary(req, res, next) {
-	caller.query(sql.query.restSummary, [restID], (err, data) => {
+function currentOrders(req, res, next) {
+	caller.query(sql.query.restOrders, [restID], (err, data) => {
         if(err){
             return next(error);
-        }
-		req.restSummary = data.rows;
-        return next();
-	});
-}
-
-function restFavFood(req, res, next) {
-	caller.query(sql.query.restFavFood, [restID], (err, data) => {
-        if(err){
-            return next(error);
-        }
-		req.restFavFood = data.rows;
+		}
+        req.restOrders = data.rows;
         return next();
 	});
 }
 
 
 function loadPage(req, res, next) {
-	res.render('rest_home', { 
-		username: req.user.username, 
-		name:req.user.name,
-		restInfo: req.restInfo,
-		restSummary: req.restSummary,
-		restFavFood: req.restFavFood
+	res.render('rest_order', { 
+		restOrders: req.restOrders
 	});
 }
 
-router.get('/', passport.authMiddleware(), restInfo, restSummary, restFavFood, loadPage );
+router.get('/', passport.authMiddleware(), restInfo, currentOrders, loadPage );
+
+
+router.post('/cooked/(:orderid)/(:foodname)', function(req, res, next) {
+
+	var orderid = req.params.orderid;
+	var foodname = req.params.foodname;
+
+	caller.query(sql.query.restCooked,[orderid, foodname], (err, data) => {
+		if(err) {
+			console.log ("Error in updating order!");
+			console.log (err);
+		}
+        res.redirect('/rest_order');
+	});
+});
 
 module.exports = router;
+

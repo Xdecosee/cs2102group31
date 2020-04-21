@@ -47,6 +47,9 @@ var custHomeRouter = require('./routes/cust_home');
 // var custHomeRouter = require('./routes/cust_view_menu');
 var fdsHomeRouter = require('./routes/fds_home');
 var restHomeRouter = require('./routes/rest_home');
+var restMenuRouter = require('./routes/rest_menu');
+var restOrderRouter = require('./routes/rest_order');
+var restPromoRouter = require('./routes/rest_promo');
 var riderHomeRouter = require('./routes/rider_home');
 var riderSalaryRouter = require('./routes/rider_salary');
 var riderOrderRouter = require('./routes/rider_order');
@@ -56,17 +59,21 @@ var riderptScheduleRouter = require('./routes/rider_ptschedule');
 
 
 
+
+
 /* --- IMPT(Section 2): Adding Web Pages --- */
 app.use('/', mainloginRouter);
 app.use('/cust_home', custHomeRouter);
 app.use('/fds_home', fdsHomeRouter);
 app.use('/rest_home', restHomeRouter);
+app.use('/rest_menu', restMenuRouter);
+app.use('/rest_order', restOrderRouter);
+app.use('/rest_promo', restPromoRouter);
 app.use('/rider_home', riderHomeRouter);
 app.use('/rider_salary', riderSalaryRouter);
 app.use('/rider_order', riderOrderRouter);
 app.use('/rider_ftschedule', riderftScheduleRouter);
 app.use('/rider_ptschedule', riderptScheduleRouter);
-
 
 /* --- Don't need to touch: Error Handler ----*/
 app.use(function(req, res, next) {
@@ -96,6 +103,19 @@ app.get('/rest_home', (req, res) => {
 	res.render('rest_home');
 });
 
+app.get('/rest_menu', (req, res) => {
+	res.render('rest_menu');
+});
+
+app.get('/rest_order', (req, res) => {
+	res.render('rest_order');
+});
+
+app.get('/rest_promo', (req, res) => {
+	res.render('rest_promo');
+});
+
+
 app.get('/rider_home', (req, res) => {
   res.render('rider_home');
 });
@@ -115,5 +135,6 @@ app.get('/rider_ftschedule', (req, res) => {
 app.get('/rider_ptschedule', (req, res) => {
   res.render('rider_ptschedule');
 });
+
 
 module.exports = app;
