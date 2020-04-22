@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar_rider') %>
+<h1>Rider's Salary</h1>
+<br>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Year</th>
+            <th scope="col">Month</th>
+            <th scope="col">Salary</th>
+		</tr>
+	</thead>
+	<tbody>
+        <% for(var i=0; i< salaryInfo.length; i++) { %>
+		<tr>
+			<td><%= salaryInfo[i].year%></td>
+            <td><%= salaryInfo[i].month%></td>
+			<td><%= salaryInfo[i].salary%></td>
+        </tr>
+        <% } %>
+	</tbody>
+</table>
+
+<%- include('partials/footer') %>

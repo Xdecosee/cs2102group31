@@ -952,3 +952,4 @@ SELECT CF.fuid as uid,
        CF.fCompleted * DR.baseDeliveryFee + CF.fBasePay as monthSalary 
 FROM DeliveryRiders DR LEFT JOIN ConsolidateF CF on DR.uid = CF.fUid 
 );
+            
