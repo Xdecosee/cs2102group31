@@ -85,6 +85,7 @@ sql.query = {
     fdsInsertPromo: 'INSERT INTO FDSpromo(promoID) VALUES($1)',
     promoInfo: 'Select * from Promotion',
 
+    /*------Delivery Riders--------*/
     riderInfo:    'SELECT * FROM DeliveryRiders WHERE uid = $1',
     ratingInfo:   'SELECT CAST(avg(rating) AS DECIMAL(10,2)) AS rating FROM Delivers GROUP BY (uid) HAVING uid = $1',
     workdInfo:    'SELECT year AS year,to_char(to_timestamp (month::text, \'MM\'), \'Month\') AS month, numCompleted AS com, totalHours as hour FROM workDetails WHERE uid = $1 ORDER BY (year,month) DESC LIMIT 10',

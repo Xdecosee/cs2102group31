@@ -178,13 +178,13 @@ CREATE TABLE  WorkingDays ( -- Part Timer
 	intervalStart   TIME NOT NULL,
 	intervalEnd     TIME NOT NULL,
 	numCompleted    INTEGER DEFAULT 0,
-	PRIMARY KEY (uid, workDate, intervalStart, intervalEnd),--
+	PRIMARY KEY (uid, workDate, intervalStart, intervalEnd),
 	FOREIGN KEY (uid) REFERENCES PartTime(uid) ON DELETE CASCADE,
 	CHECK (intervalEnd > intervalStart),
 	CHECK (intervalStart>='10:00:00' and intervalEnd<='22:00:00'),
 	CHECK (CAST(CONCAT(CAST(EXTRACT(HOUR from intervalStart) AS VARCHAR),':00:00') AS TIME)=intervalStart),
 	CHECK (CAST(CONCAT(CAST(EXTRACT(HOUR from intervalEnd) AS VARCHAR),':00:00') AS TIME)=intervalEnd),
-	CHECK (EXTRACT(HOUR FROM intervalEnd) - EXTRACT(HOUR FROM intervalStart)<=4)
+	CHECK ((EXTRACT(HOUR FROM intervalEnd) - EXTRACT(HOUR FROM intervalStart))< 5)
 );
 
 CREATE TABLE ShiftOptions (
@@ -559,15 +559,15 @@ BEGIN
     IF EXISTS(
           SELECT 1 
           FROM workingDays W 
-          WHERE (W.intervalStart <= NEW.intervalEnd 
-          AND NEW.intervalStart <=  W.intervalEnd)
-          AND NEW.uid = W.uid
-          AND NOT (W.intervalStart = NEW.intervalStart OR NEW.intervalEnd = W.intervalEnd))
+          WHERE NEW.uid = W.uid
+          AND NEW.WorkDate = w.workDate
+          AND ((W.intervalStart <= NEW.intervalStart AND NEW.intervalStart<(W.intervalEnd + INTERVAL'1 hour'))
+          OR (W.intervalStart<(NEW.intervalEnd + INTERVAL'1 hour') AND NEW.intervalEnd<=W.intervalEnd))
+          )
     THEN
-        RAISE NOTICE 'Overlap shifts';
-        RETURN NULL;
+        RAISE EXCEPTION 'Overlap in Time or 1 hour break not enforced';
     ELSE 
-        RAISE NOTICE 'One hour break between shifts';
+        RAISE NOTICE 'Successfully Inserted';
         RETURN NEW;
     END IF;
 
@@ -951,7 +951,7 @@ INSERT INTO PaymentOption(payOption) VALUES ('Credit');
 -- deliveryduration is in integer?
 /* Insert Data into orders and fromMenu think of how to make it happen*/ 
 /* Order 1: Confirmed */
-INSERT INTO Orders(cost,location,date,deliveryDuration,payOption,area) VALUES (0,'81 Goodland Road','2020-04-20',0,'Cash','N'); /* let cost be initially deffered*/
+INSERT INTO Orders(location,date,payOption,area) VALUES ('81 Goodland Road','2020-04-20','Cash','N'); /* let cost be initially deffered*/
 
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,5,1,3,'Tteokbokki');
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,3,1,3,'Kimchi Fried Rice');   
@@ -970,7 +970,7 @@ UPDATE Orders SET timeDepartFromRest = '11:22:00' WHERE orderID = 1;
 UPDATE Orders SET timeOrderDelivered = '11:45:00'  WHERE orderID = 1;
 
 /*Order 2: Completed by .... */ 
-INSERT INTO Orders(cost,location,date,deliveryDuration,payOption,area) VALUES (0,'346 Dennis Trail','2020-01-08',0,'Credit','S'); /* let cost be initially deffered*/
+INSERT INTO Orders(location,date,payOption,area) VALUES ('346 Dennis Trail','2020-01-08','Credit','S'); /* let cost be initially deffered*/
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (6,1,2,4,'Steam Egg');
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (6,1,2,4,'Sweet and Sour Pork');   
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (6,3,2,4,'Yang Zhou Fried Rice');
@@ -982,11 +982,9 @@ UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Fo
 UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 2 LIMIT 1)) WHERE orderID = 2; /*For percentage promo*/
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 2 LIMIT 1) WHERE orderID = 2; /*For amt promo*/
 
-UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 2;
+UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 2;
 UPDATE Orders SET timeDepartToRest = '11:00:00' WHERE orderID = 2;
 UPDATE Orders SET timeArriveRest = '11:15:00' WHERE orderID = 2;
-UPDATE Orders SET timeDepartFromRest = '11:30:00' WHERE orderID = 2;
-UPDATE Orders SET timeOrderDelivered = '11:45:00'  WHERE orderID = 2;
 
 /* Order 3: Confirmed */
 --partial order completion possible (quantity < availQty)
@@ -1013,7 +1011,7 @@ INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,4
 INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,4,4,3,'Kimchi Fried Rice');  
 
 /* Insert data into place */
-INSERT INTO Place (uid,orderID,review,star,promoid) VALUES (25,4,'Tastes great',5,5);
+INSERT INTO Place (uid,orderID,review,star,promoid) VALUES (8,4,'Tastes great',5,5);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 4) WHERE orderID = 4; /*Food costs*/
 UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 4 LIMIT 1)) WHERE orderID = 4; /*For percentage promo*/
@@ -1052,7 +1050,7 @@ INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (2,6,6,'Temp
 INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (1,6,6,'Char Siew Ramen');    
 
 /* Insert data into place */
-INSERT INTO Place (uid,orderID,review,star) VALUES (23,6,'Taste great',4);
+INSERT INTO Place (uid,orderID,review,star) VALUES (8,6,'Taste great',4);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 6) WHERE orderID = 6; /*Food costs*/
 UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 6 LIMIT 1)) WHERE orderID = 6; /*For percentage promo*/
@@ -1072,17 +1070,14 @@ INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (2,7,6,'Temp
 INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (1,7,6,'Char Siew Ramen');    
 
 /* Insert data into place */
-INSERT INTO Place (uid,orderID,review,star) VALUES (26,7,'Taste great',4);
+INSERT INTO Place (uid,orderID,review,star) VALUES (11,7,'Taste great',4);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 7) WHERE orderID = 7; /*Food costs*/
 UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 7 LIMIT 1)) WHERE orderID = 7; /*For percentage promo*/
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 7 LIMIT 1) WHERE orderID = 7; /*For amt promo*/
 
-UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 7;
+UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 7;
 UPDATE Orders SET timeDepartToRest = '15:25:00' WHERE orderID = 7;
-UPDATE Orders SET timeArriveRest = '15:31:00' WHERE orderID = 7;
-UPDATE Orders SET timeDepartFromRest = '15:42:00' WHERE orderID = 7;
-UPDATE Orders SET timeOrderDelivered = '15:55:00'  WHERE orderID = 7;
 
 
 /* Order 8: Confirmed */
