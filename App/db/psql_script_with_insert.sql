@@ -579,6 +579,37 @@ BEFORE UPDATE OR INSERT ON WorkingDays
 FOR EACH ROW
 EXECUTE PROCEDURE check_shift();
 
+/* Check that the hour inserted must be >= 10h or <=48h*/
+CREATE OR REPLACE FUNCTION check_hours()
+RETURNS TRIGGER AS $$
+DECLARE hour_in INTEGER;
+
+
+BEGIN
+
+    SELECT sum(EXTRACT(HOUR FROM w.intervalEnd) - EXTRACT(HOUR FROM w.intervalStart)) INTO hour_in
+    FROM workingDays W
+    WHERE EXTRACT(WEEK FROM w.WorkDate) = EXTRACT(WEEK FROM NEW.WorkDate)
+    AND NEW.uid = W.uid;
+
+    IF (hour_in) < 10 THEN
+        RAISE EXCEPTION 'Insufficient hours for the week (<10h)';
+    ELSIF (hour_in) >48 THEN 
+        RAISE EXCEPTION '<Exceeded hours for the week (>48h)';
+    ELSE
+        RAISE NOTICE 'Succesfully Inserted';
+        RETURN NULL;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+        
+        
+CREATE CONSTRAINT TRIGGER work_hours_trigger
+AFTER UPDATE OR INSERT ON WorkingDays
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW
+EXECUTE PROCEDURE check_hours();
+
 
 /* Insert Data for 12 Customers*/
 INSERT INTO Users (name, username, password, type) VALUES ('Alano', 'asunock0', 'SuKnMdGlSZv', 'Customers');
@@ -758,6 +789,7 @@ INSERT INTO ShiftOptions(shiftID, shiftDetail1, shiftDetail2) VALUES (3, '12pm-4
 INSERT INTO ShiftOptions(shiftID, shiftDetail1, shiftDetail2) VALUES (4, '1pm-5pm','6pm-10pm');
 
 /*Insert Schedule for Riders */
+BEGIN;
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-06', '10:00', '14:00', 7);
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-06', '15:00', '19:00', 6);
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-07', '10:00', '14:00', 8);
@@ -801,16 +833,33 @@ INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted)
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-13', '15:00', '19:00', 0);
 
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-01-08', '11:00', '15:00', 10); /*Include others*/
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-01-08', '16:00', '20:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-03-20', '16:00', '20:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '11:00', '15:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '16:00', '20:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-01-08', '16:00', '20:00', 12);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-01-09', '11:00', '15:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-01-09', '16:00', '20:00', 10);
 
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-01-08', '11:00', '15:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-01-08', '16:00', '20:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-03-20', '16:00', '20:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-20', '11:00', '15:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-20', '16:00', '20:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-03-19', '16:00', '20:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-03-20', '16:00', '20:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-03-21', '16:00', '20:00', 12);
+
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '11:00', '15:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '16:00', '20:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '11:00', '15:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '16:00', '20:00', 12);
+
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-01-08', '11:00', '15:00', 10); /*Include others*/
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-01-08', '16:00', '20:00', 12);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-01-09', '11:00', '15:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-01-09', '16:00', '20:00', 10);
+
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-03-19', '16:00', '20:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-03-20', '16:00', '20:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-03-21', '16:00', '20:00', 12);
+
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '11:00', '15:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '16:00', '20:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '11:00', '15:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '16:00', '20:00', 12);
+COMMIT;
 
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-03-23', 1, 13);
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-03-24', 1, 15);
