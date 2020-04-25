@@ -76,37 +76,62 @@ router.post('/addsched', function(req, res, next){
 			if (req.body.day2!="" & start2!="" & end2!=""){
 				caller.query(sql.query.ptschedInsert,[uuid, day2, start2,end2], (err, data) =>{
 					if (shouldAbort(err)) return
-
+				
 					if (req.body.day3!="" & start3!="" & end3!=""){
 						caller.query(sql.query.ptschedInsert,[uuid, day3, start3,end3], (err, data) =>{
 							if (shouldAbort(err)) return
-
+							
 							if (req.body.day4!="" & start4!="" & end4!=""){
 								caller.query(sql.query.ptschedInsert,[uuid, day4, start4,end4], (err, data) =>{
 									if (shouldAbort(err)) return
-
+									
 									if (req.body.day5!="" & start5!="" & end5!=""){
 										caller.query(sql.query.ptschedInsert,[uuid, day5, start5,end5], (err, data) =>{
 											if (shouldAbort(err)) return
+
+											caller.query('COMMIT', err=>{
+												if(err){
+													console.error("Error in adding schedule",err.stack)
+												}						
+												res.redirect('/rider_ptschedule');
+											})	
+										})
+									} else{
+										caller.query('COMMIT', err=>{
+											if(err){
+												console.error("Error in adding schedule",err.stack)
+											}						
+											res.redirect('/rider_ptschedule');
 										})
 									}
-
+								})
+							} else{
+								caller.query('COMMIT', err=>{
+									if(err){
+										console.error("Error in adding schedule",err.stack)
+									}						
+									res.redirect('/rider_ptschedule');
 								})
 							}
-						
-
+						})
+					} else {
+						caller.query('COMMIT', err=>{
+							if(err){
+								console.error("Error in adding schedule",err.stack)
+							}						
+							res.redirect('/rider_ptschedule');
 						})
 					}
-
+				})
+			} else {
+				caller.query('COMMIT', err=>{
+					if(err){
+						console.error("Error in adding schedule",err.stack)
+					}						
+					res.redirect('/rider_ptschedule');
 				})
 			}
 		})
-		caller.query('COMMIT', err=>{
-			if(err){
-				console.error("Error in adding schedule",err.stack)
-			}
-			res.redirect('/rider_ptschedule');
-		})	
 	})
 })
 

@@ -33,7 +33,6 @@ UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M 
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = $1 LIMIT 1) WHERE orderID = $1; /*For amt promo*/
 UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = $1; /* after driver is assigned to order*/
 
-
 /* Delivery Riders Function*/
 /* view_ratings*/     SELECT CAST(avg(rating) AS DECIMAL(10,2)) FROM Delivers GROUP BY (uid) HAVING uid = $1;
 /* update_orderstat*/ UPDATE Orders SET orderStatus = $1 WHERE orderID = $2
