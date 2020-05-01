@@ -101,7 +101,7 @@ CREATE TABLE FromMenu (
 	orderID         INT         NOT NULL,
 	restaurantID    INTEGER         NOT NULL,
 	foodName        VARCHAR(100)    NOT NULL,
-    hide BOOLEAN DEFAULT FALSE NOT NULL,
+    hide            BOOLEAN         DEFAULT FALSE NOT NULL,
 	PRIMARY KEY (restaurantID,foodName,orderID),
 	FOREIGN KEY (promoID) REFERENCES Restpromo (promoID),
 	FOREIGN KEY (orderID) REFERENCES Orders (orderID),
@@ -151,7 +151,7 @@ CREATE TABLE DeliveryRiders (
 CREATE TABLE Place (
 	uid            INT,
 	orderid        INT,  
-	review         VARCHAR(255)     NOT NULL,
+	review         VARCHAR(255),
 	star           INTEGER      DEFAULT NULL CHECK (star >= 0 AND star <= 5), 
 	promoid        INT,
 	PRIMARY KEY (orderid),
@@ -247,161 +247,6 @@ CREATE TRIGGER availability_trigger
 BEFORE INSERT ON FromMenu
 FOR EACH ROW
 EXECUTE PROCEDURE check_availability();
-
-
-/*check whether order placed during operational hours*/
-CREATE OR REPLACE FUNCTION check_operational_hours() --after operating hours, insertion continuessss
-RETURNS TRIGGER AS $$
-DECLARE currHour NUMERIC;
-DECLARE openingHour NUMERIC;
-DECLARE closingHour NUMERIC;
-
-BEGIN
-    openingHour := 10; --10am
-    closingHour := 22; --10pm
-    
-    SELECT EXTRACT(HOUR from timeOrderPlace) INTO currHour
-    FROM Orders
-    WHERE NEW.orderID = Orders.OrderID;
-
-    IF currHour < openingHour THEN
-        UPDATE Orders SET orderStatus = 'Failed' WHERE NEW.orderID = Orders.OrderID;
-        RAISE NOTICE 'Not within Opening Hours';
-        RETURN NULL; 
-    ELSIF currHour >= closingHour THEN
-        UPDATE Orders SET orderStatus = 'Failed' WHERE NEW.orderID = Orders.OrderID; 
-        RAISE NOTICE 'Not within Opening Hours';
-        RETURN NULL; --RETURN NULL instead of RETURN NEW to just abort the inserted row silently without raising an exception and without rolling anything back.
-    ELSE 
-        RAISE NOTICE 'Within Opening Hours';
-        RETURN NEW; 
-    END IF;
-
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER operating_trigger
-BEFORE INSERT ON Place
-FOR EACH ROW
-EXECUTE PROCEDURE check_operational_hours();
-
-
-/*ISA check for delivery riders*/
-/*
-CREATE OR REPLACE FUNCTION check_riders()
-RETURNS TRIGGER AS $$
-DECLARE count NUMERIC;
-
-BEGIN
-    IF (NEW.type = 'FullTime') THEN
-        SELECT COUNT(*) INTO count 
-        FROM PartTime 
-        WHERE NEW.uid = PartTime.uid;
-        IF (count > 0) THEN 
-            RETURN NULL;
-        ELSE
-            INSERT INTO FullTime VALUES (NEW.uid, DEFAULT);
-            RAISE NOTICE 'Full time rider added';
-            RETURN NEW;
-        END IF;
-
-    ELSIF (NEW.type = 'PartTime') THEN
-        SELECT COUNT(*) INTO count 
-        FROM FullTime 
-        WHERE NEW.uid = FullTime.uid;
-
-        IF (count > 0) THEN 
-            RETURN NULL;
-        ELSE
-            INSERT INTO PartTime VALUES (NEW.uid, DEFAULT);
-            RAISE NOTICE 'Part time rider added';
-            RETURN NEW;
-        END IF;
-    ELSE RETURN NEW;
-    END IF;
-END;
-$$ LANGUAGE plpgsql;
-CREATE TRIGGER riders_trigger
-AFTER INSERT ON DeliveryRiders 
-FOR EACH ROW
-EXECUTE PROCEDURE check_riders();
-*/
-/* return value of row-level trigger fired AFTER is always ignored */
-
-
-/*ISA check for users*/
-/*
-CREATE OR REPLACE FUNCTION check_user()
-RETURNS TRIGGER AS $$
-DECLARE count NUMERIC;
-BEGIN 
-	IF (NEW.type = 'Customers') THEN
-		SELECT COUNT(*) INTO count 
-        FROM FDSManagers, RestaurantStaff, DeliveryRiders
-        WHERE NEW.uid = FDSManagers.uid
-        OR NEW.uid = RestaurantStaff.uid
-        OR NEW.uid = DeliveryRiders.uid;
-        
-		IF (count > 0) THEN 
-            RETURN NULL;
-		ELSE
-            INSERT INTO Customers VALUES (NEW.uid,DEFAULT,DEFAULT,NEW.cardDetails);
-            RAISE NOTICE 'Customers added';
-			RETURN NEW;
-
-		END IF;
-	ELSIF (NEW.type = 'FDSManagers') THEN
-		SELECT COUNT(*) INTO count 
-        FROM Customers, RestaurantStaff, DeliveryRiders
-        WHERE NEW.uid = Customers.uid
-        OR NEW.uid = RestaurantStaff.uid
-        OR NEW.uid = DeliveryRiders.uid;
-
-		IF (count > 0) THEN RETURN NULL;
-		ELSE
-			INSERT INTO FDSManagers VALUES (NEW.uid);
-            RAISE NOTICE 'FDSManagers added';
-			RETURN NEW;
-		
-		END IF;	
-    ELSIF (NEW.type = 'RestaurantStaff') THEN
-        SELECT COUNT(*) INTO count 
-        FROM Customers, FDSManagers, DeliveryRiders
-        WHERE NEW.uid = Customers.uid
-        OR NEW.uid = FDSManagers.uid
-        OR NEW.uid = DeliveryRiders.uid;
-
-		IF (count > 0) THEN RETURN NULL;
-		ELSE
-			
-				-- INSERT INTO RestaurantStaff VALUES (NEW.uid,NEW.restaurantID);
-                RAISE NOTICE 'RestaurantStaff added';
-				RETURN NEW;
-			
-		END IF;	
-    ELSIF (NEW.type = 'DeliveryRiders') THEN
-        SELECT COUNT(*) INTO count 
-        FROM Customers, FDSManagers, RestaurantStaff
-        WHERE NEW.uid = Customers.uid
-        OR NEW.uid = FDSManagers.uid
-        OR NEW.uid = RestaurantStaff.uid;
-
-		IF (count > 0) THEN 
-            RETURN NULL;
-		ELSE
-            -- INSERT INTO DeliveryRiders(uid,type) VALUES (NEW.uid, NEW.riderType);
-            RAISE NOTICE 'DeliveryRiders added';
-		    RETURN NEW;
-		END IF;	
-	END IF;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER user_trigger
-AFTER INSERT ON Users
-FOR EACH ROW
-EXECUTE PROCEDURE check_user();
-*/
 
 
 /*Update reward point after order completion*/
@@ -524,7 +369,7 @@ EXECUTE PROCEDURE update_bonus();
 
 
 /*Check restaurant staff account creation*/
-CREATE OR REPLACE FUNCTION check_reststaff()
+/*CREATE OR REPLACE FUNCTION check_reststaff()
 RETURNS TRIGGER AS $$
 DECLARE count NUMERIC;
 
@@ -547,7 +392,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER add_rest_trigger
 BEFORE INSERT ON Restaurants
 FOR EACH ROW
-EXECUTE PROCEDURE check_reststaff();
+EXECUTE PROCEDURE check_reststaff();*/
 
 /*ensure one hour shift, check overlap*/
 CREATE OR REPLACE FUNCTION check_shift()
@@ -638,10 +483,11 @@ INSERT INTO CUSTOMERS (uid,cardDetails) VALUES (10,NULL);
 INSERT INTO CUSTOMERS (uid,cardDetails) VALUES (11,NULL);
 INSERT INTO CUSTOMERS (uid,cardDetails) VALUES (12,NULL);
 
-/* Insert Data for 3 Restaurant Staff - staff to be inserted below restaurants insert*/
+/* Insert Data for 4 Restaurant Staff - staff to be inserted below restaurants insert*/
 INSERT INTO Users (name, username, password, type) VALUES ('Ariela', 'arodolfi1', '6W8jV0Un','RestaurantStaff');
 INSERT INTO Users (name, username, password, type) VALUES ('Kitti', 'kbelding6', 'CDvLeT','RestaurantStaff');
 INSERT INTO Users (name, username, password, type) VALUES ('Antony', 'aclausenthue4', 'LS5CtMmb','RestaurantStaff'); 
+INSERT INTO Users (name, username, password, type) VALUES ('Mr Minestrone', 'minestrone', '12345', 'RestaurantStaff');
 
 /* Insert Data for 4 FDSManager */
 INSERT INTO Users (name, username, password, type) VALUES ('Taddeusz', 'tmanketell2', 'PjIpgl7J', 'FDSManagers');
@@ -649,10 +495,10 @@ INSERT INTO Users (name, username, password, type) VALUES ('Dodie', 'dfermerb', 
 INSERT INTO Users (name, username, password, type) VALUES ('Nyan', 'desmond', '123abc', 'FDSManagers');
 INSERT INTO Users (name, username, password, type) VALUES ('Kesin', 'itskesin', '123abc', 'FDSManagers'); 
 
-INSERT INTO FDSManagers (uid) VALUES (16);
 INSERT INTO FDSManagers (uid) VALUES (17);
 INSERT INTO FDSManagers (uid) VALUES (18);
 INSERT INTO FDSManagers (uid) VALUES (19);
+INSERT INTO FDSManagers (uid) VALUES (20);
 
 /* Insert Data for 20 FT Riders */
 INSERT INTO Users (name, username, password, type) VALUES ('Adrea', 'aveldens3', 'cdqUwd81YzX','DeliveryRiders');
@@ -676,7 +522,6 @@ INSERT INTO Users (name, username, password, type) VALUES ('Dianemarie', 'dcrook
 INSERT INTO Users (name, username, password, type) VALUES ('Lorry', 'lcovertd', 'xWhikfYExb1P', 'DeliveryRiders');
 INSERT INTO Users (name, username, password, type) VALUES ('Thor', 'tlattimere', 'ihMDOvmHIKFv', 'DeliveryRiders'); 
 
-INSERT INTO DeliveryRiders(uid,type) VALUES (20,'FullTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (21,'FullTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (22,'FullTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (23,'FullTime');
@@ -696,8 +541,8 @@ INSERT INTO DeliveryRiders(uid,type) VALUES (36,'FullTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (37,'FullTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (38,'FullTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (39,'FullTime');
+INSERT INTO DeliveryRiders(uid,type) VALUES (40,'FullTime');
 
-INSERT INTO FullTime(uid) VALUES (20);
 INSERT INTO FullTime(uid) VALUES (21);
 INSERT INTO FullTime(uid) VALUES (22);
 INSERT INTO FullTime(uid) VALUES (23);
@@ -717,6 +562,7 @@ INSERT INTO FullTime(uid) VALUES (36);
 INSERT INTO FullTime(uid) VALUES (37);
 INSERT INTO FullTime(uid) VALUES (38);
 INSERT INTO FullTime(uid) VALUES (39);
+INSERT INTO FullTime(uid) VALUES (40);
 
 /* Insert Data for 20 PT Riders */
 INSERT INTO Users (name, username, password, type) VALUES ('Gary', 'gtarrier9', 'G92FSUJuvL9e','DeliveryRiders');
@@ -740,7 +586,6 @@ insert into Users (name, username, password, type) values ('Arel', 'afirebracee'
 insert into Users (name, username, password, type) values ('Mariana', 'mferierf', '3qNqdMhn', 'DeliveryRiders');
 insert into Users (name, username, password, type) values ('Lulita', 'lconnalg', 'AF3DHUM6', 'DeliveryRiders'); 
 
-INSERT INTO DeliveryRiders(uid,type) VALUES (40,'PartTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (41,'PartTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (42,'PartTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (43,'PartTime');
@@ -760,8 +605,8 @@ INSERT INTO DeliveryRiders(uid,type) VALUES (56,'PartTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (57,'PartTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (58,'PartTime');
 INSERT INTO DeliveryRiders(uid,type) VALUES (59,'PartTime');
+INSERT INTO DeliveryRiders(uid,type) VALUES (60,'PartTime');
 
-INSERT INTO PartTime(uid) VALUES(40);
 INSERT INTO PartTime(uid) VALUES(41);
 INSERT INTO PartTime(uid) VALUES(42);
 INSERT INTO PartTime(uid) VALUES(43);
@@ -781,6 +626,7 @@ INSERT INTO PartTime(uid) VALUES(56);
 INSERT INTO PartTime(uid) VALUES(57);
 INSERT INTO PartTime(uid) VALUES(58);
 INSERT INTO PartTime(uid) VALUES(59);
+INSERT INTO PartTime(uid) VALUES(60);
 
 /*Insert Shifts for Full Time Schedule */
 INSERT INTO ShiftOptions(shiftID, shiftDetail1, shiftDetail2) VALUES (1, '10am-2pm','3pm-7pm');
@@ -790,61 +636,47 @@ INSERT INTO ShiftOptions(shiftID, shiftDetail1, shiftDetail2) VALUES (4, '1pm-5p
 
 /*Insert Schedule for Riders */
 BEGIN;
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-06', '10:00', '14:00', 7);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-06', '15:00', '19:00', 6);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-07', '10:00', '14:00', 8);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-07', '15:00', '19:00', 4);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-08', '10:00', '14:00', 5);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-08', '15:00', '19:00', 9);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-06', '10:00', '14:00', 7);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-06', '15:00', '19:00', 6);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-07', '10:00', '14:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-07', '15:00', '19:00', 4);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-08', '10:00', '14:00', 5);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-08', '15:00', '19:00', 9);
 
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-13', '10:00', '14:00', 8);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-13', '15:00', '19:00', 9);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-14', '10:00', '14:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-14', '15:00', '19:00', 7);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-15', '10:00', '14:00', 8);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-15', '15:00', '19:00', 6);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-13', '10:00', '14:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-13', '15:00', '19:00', 9);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-14', '10:00', '14:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-14', '15:00', '19:00', 7);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-15', '10:00', '14:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-15', '15:00', '19:00', 6);
 
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-20', '10:00', '14:00', 6);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-20', '15:00', '19:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-21', '10:00', '14:00', 9);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-21', '15:00', '19:00', 6);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-22', '10:00', '14:00', 4);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-22', '15:00', '19:00', 7);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '10:00', '14:00', 6);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '15:00', '19:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '10:00', '14:00', 9);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '15:00', '19:00', 6);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-22', '10:00', '14:00', 4);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-22', '15:00', '19:00', 7);
 
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-27', '10:00', '14:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-27', '15:00', '19:00', 8);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-28', '10:00', '14:00', 11);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-28', '15:00', '19:00', 8);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-29', '10:00', '14:00', 6);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-04-29', '15:00', '19:00', 9);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-27', '10:00', '14:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-27', '15:00', '19:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-28', '10:00', '14:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-28', '15:00', '19:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-29', '10:00', '14:00', 6);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-29', '15:00', '19:00', 9);
 
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-04', '10:00', '14:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-04', '15:00', '19:00', 7);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-05', '10:00', '14:00', 7);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-05', '15:00', '19:00', 9);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-06', '10:00', '14:00', 6);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-06', '15:00', '19:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-04', '10:00', '14:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-04', '15:00', '19:00', 7);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-05', '10:00', '14:00', 7);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-05', '15:00', '19:00', 9);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-06', '10:00', '14:00', 6);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-06', '15:00', '19:00', 10);
 
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-11', '10:00', '14:00', 0);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-11', '15:00', '19:00', 0);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-12', '10:00', '14:00', 0);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-12', '15:00', '19:00', 0);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-13', '10:00', '14:00', 0);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(40, '2020-05-13', '15:00', '19:00', 0);
-
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-01-08', '11:00', '15:00', 10); /*Include others*/
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-01-08', '16:00', '20:00', 12);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-01-09', '11:00', '15:00', 11);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-01-09', '16:00', '20:00', 10);
-
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-03-19', '16:00', '20:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-03-20', '16:00', '20:00', 11);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-03-21', '16:00', '20:00', 12);
-
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '11:00', '15:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '16:00', '20:00', 8);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '11:00', '15:00', 11);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '16:00', '20:00', 12);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-11', '10:00', '14:00', 0);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-11', '15:00', '19:00', 0);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-12', '10:00', '14:00', 0);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-12', '15:00', '19:00', 0);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-13', '10:00', '14:00', 0);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-05-13', '15:00', '19:00', 0);
 
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-01-08', '11:00', '15:00', 10); /*Include others*/
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-01-08', '16:00', '20:00', 12);
@@ -855,83 +687,99 @@ INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted)
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-03-20', '16:00', '20:00', 11);
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-03-21', '16:00', '20:00', 12);
 
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '11:00', '15:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '16:00', '20:00', 8);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '11:00', '15:00', 11);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '16:00', '20:00', 12);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-20', '11:00', '15:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-20', '16:00', '20:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-21', '11:00', '15:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-21', '16:00', '20:00', 12);
+
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-08', '11:00', '15:00', 10); /*Include others*/
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-08', '16:00', '20:00', 12);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-09', '11:00', '15:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-09', '16:00', '20:00', 10);
+
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-03-19', '16:00', '20:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-03-20', '16:00', '20:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-03-21', '16:00', '20:00', 12);
+
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-04-20', '11:00', '15:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-04-20', '16:00', '20:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-04-21', '11:00', '15:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-04-21', '16:00', '20:00', 12);
 COMMIT;
 
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-03-23', 1, 13);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-03-24', 1, 15);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-03-25', 1, 16);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-03-26', 1, 15);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-03-27', 1, 14);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-03-23', 1, 13);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-03-24', 1, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-03-25', 1, 16);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-03-26', 1, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-03-27', 1, 14);
 
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-03-31', 3, 12);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-01', 3, 11);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-02', 3, 13);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-03', 3, 18);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-04', 3, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-03-31', 3, 12);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-01', 3, 11);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-02', 3, 13);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-03', 3, 18);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-04', 3, 15);
 
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-07', 3, 15);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-08', 3, 16);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-09', 3, 12);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-10', 3, 20);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-11', 3, 8);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-07', 3, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-08', 3, 16);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-09', 3, 12);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-10', 3, 20);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-11', 3, 8);
 
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-14', 3, 15);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-15', 3, 12);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-16', 3, 11);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-17', 3, 22);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-18', 3, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-14', 3, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-15', 3, 12);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-16', 3, 11);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-17', 3, 22);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-18', 3, 15);
 
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-21', 3, 14);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-22', 3, 15);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-23', 3, 12);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-24', 3, 17);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-25', 3, 13);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-21', 3, 14);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-22', 3, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-23', 3, 12);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-24', 3, 17);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-25', 3, 13);
 
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-28', 3, 12);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-29', 3, 12);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-04-30', 3, 14);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-01', 3, 12);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-02', 3, 17);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-28', 3, 12);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-29', 3, 12);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-30', 3, 14);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-01', 3, 12);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-02', 3, 17);
 
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-05', 3, 14);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-06', 3, 18);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-07', 3, 19);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-08', 3, 12);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-09', 3, 11);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-05', 3, 14);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-06', 3, 18);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-07', 3, 19);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-08', 3, 12);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-09', 3, 11);
 
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-11', 1, 0);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-12', 1, 0);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-13', 1, 0);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-14', 1, 0);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-05-15', 1, 0);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-11', 1, 0);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-12', 1, 0);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-13', 1, 0);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-14', 1, 0);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-05-15', 1, 0);
 
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-20', 1, 13);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-21', 1, 14);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-22', 1, 15);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-23', 1, 12);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-04-24', 1, 17);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(22, '2020-04-20', 1, 13);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(22, '2020-04-21', 1, 14);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(22, '2020-04-22', 1, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(22, '2020-04-23', 1, 12);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(22, '2020-04-24', 1, 17);
 
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(22, '2020-04-20', 2, 13);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(22, '2020-04-21', 2, 14);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(22, '2020-04-22', 2, 15);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(22, '2020-04-23', 2, 12);
-INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(22, '2020-04-24', 2, 17);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2020-04-20', 2, 13);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2020-04-21', 2, 14);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2020-04-22', 2, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2020-04-23', 2, 12);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2020-04-24', 2, 17);
 
 /* Insert Data for restaurants */
 INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Noma', '456 Madhouse Road #11-26 Singapore 123456', 5);
 INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Odette', '456 Database Road #01-27 Singapore 123456', 5);
 INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Wolfgang Puck', '567 Gowhere Road #01-27 Singapore 456567', 3);
 INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Crystal Jade','123 Gowhere Road #01-27 Singapore 123456',4);
-INSERT INTO Restaurants (name, location, minThreshold) VALUES ('What the fries','123 Gowhere Road #02-54 Singapore 123456',5);
+INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Minestrone King','313 Orchard Rd #B2-05 Singapore 238895',3);
 INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Zen food','456 Hungry Road #01-36 Singapore 456789',5);
+
 
 INSERT INTO RestaurantStaff (uid, restaurantID) VALUES (13,1);
 INSERT INTO RestaurantStaff (uid, restaurantID) VALUES (14,2);
 INSERT INTO RestaurantStaff (uid, restaurantID) VALUES (15,3); 
+INSERT INTO RestaurantStaff (uid, restaurantID) VALUES (16,5); 
 
 /* Insert Data for categories */
 INSERT INTO Categories(category) VALUES ('Malay Cuisine');
@@ -969,8 +817,16 @@ INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Chicken with
 INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Chicken Soup', 12, 4, 'Chinese Cuisine');
 
 /*Restaurant 5*/
-INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Cheese Fries', 5, 5, 'Western Cuisine');
-INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Truffle Fries', 9, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Minestrone Soup', 2.50, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Onion Soup', 3.50, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Mushroom Soup', 3.00, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Corn Soup', 3.20, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Chicken Chop', 4.00, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Pork Chop', 4.20, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Steak', 4.50, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Creamy Pasta', 3.50, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Tomato Pasta', 3.00, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Aglio Olio', 3.30, 5, 'Western Cuisine');
 
 /*Restaurant 6*/
 INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Sushi', 29.9, 6, 'Japanese Cuisine');
@@ -1148,19 +1004,300 @@ UPDATE Orders SET timeArriveRest = '15:31:00' WHERE orderID = 8;
 UPDATE Orders SET timeDepartFromRest = '15:42:00' WHERE orderID = 8;
 UPDATE Orders SET timeOrderDelivered = '15:58:00'  WHERE orderID = 8;
 
+/*Rest Staff Pages Dummy Data: Orders 9 to 22*/
+/*Order 9: Confirmed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-55','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(2, 9, 5, 'Minestrone Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 9, 5, 'Mushroom Soup');
+INSERT INTO Place (uid,orderID) VALUES (2,9);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 9) WHERE orderID = 9; /*Food costs*/
+
+UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 9;
+UPDATE Orders SET timeOrderPlace = '10:20:00' WHERE orderID = 9;
+
+/*Order 10: Confirmed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-56','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(2, 10, 5, 'Chicken Chop');
+INSERT INTO Place (uid,orderID) VALUES (3,10);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 10) WHERE orderID = 10; /*Food costs*/
+
+UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 10;
+UPDATE Orders SET timeOrderPlace = '10:20:00' WHERE orderID = 10;
+
+
+
+/*Order 11: Confirmed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-56','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 11, 5, 'Corn Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 11, 5, 'Pork Chop');
+INSERT INTO Place (uid,orderID) VALUES (4,11);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 11) WHERE orderID = 11; /*Food costs*/
+
+UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 11;
+UPDATE Orders SET timeOrderPlace = '10:29:00' WHERE orderID = 11;
+
+
+  
+/*Order 12: Confirmed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-57','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 12, 5, 'Onion Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 12, 5, 'Mushroom Soup');
+INSERT INTO Place (uid,orderID) VALUES (5,12);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 12) WHERE orderID = 12; /*Food costs*/
+
+UPDATE Orders SET date = '2020-05-10' WHERE orderID = 12;
+UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 12;
+UPDATE Orders SET timeOrderPlace = '12:35:00' WHERE orderID = 12;
+UPDATE Orders SET timeDepartToRest = '12:36:00' WHERE orderID = 12;
+UPDATE Orders SET timeArriveRest = '12:55:00' WHERE orderID = 12;
+UPDATE Orders SET timeDepartFromRest = '13:00:00' WHERE orderID = 12;
+
+/*Order 13: Completed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 13, 5, 'Steak');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 13, 5, 'Creamy Pasta');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 13, 5, 'Tomato Pasta');
+INSERT INTO Place (uid,orderID) VALUES (6,13);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 13) WHERE orderID = 13; /*Food costs*/
+
+UPDATE Orders SET date = '2019-12-25' WHERE orderID = 13;
+UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 13;
+UPDATE Orders SET timeOrderPlace = '11:00:00' WHERE orderID = 13;
+UPDATE Orders SET timeDepartToRest = '11:01:00' WHERE orderID = 13;
+UPDATE Orders SET timeArriveRest = '11:25:00' WHERE orderID = 13;
+UPDATE Orders SET timeDepartFromRest = '11:30:00' WHERE orderID = 13;
+UPDATE Orders SET timeOrderDelivered = '12:00:00' WHERE orderID = 13;
+
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 13) WHERE orderID = 13;
+
+
+/*Order 14: Completed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 14, 5, 'Steak');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 14, 5, 'Creamy Pasta');
+INSERT INTO Place (uid,orderID) VALUES (6,14);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 14) WHERE orderID = 14; /*Food costs*/
+
+UPDATE Orders SET date = '2019-12-26' WHERE orderID = 14;
+UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 14;
+UPDATE Orders SET timeOrderPlace = '10:20:00' WHERE orderID = 14;
+UPDATE Orders SET timeDepartToRest = '11:00:00' WHERE orderID = 14;
+UPDATE Orders SET timeArriveRest = '11:14:00' WHERE orderID = 14;
+UPDATE Orders SET timeDepartFromRest = '11:15:00' WHERE orderID = 14;
+UPDATE Orders SET timeOrderDelivered = '12:00:00' WHERE orderID = 14;
+
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 14) WHERE orderID = 14;
+
+
+/*Order 15: Completed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
+
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 15, 5, 'Steak');
+INSERT INTO Place (uid,orderID) VALUES (6,15);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 15) WHERE orderID = 15; /*Food costs*/
+
+UPDATE Orders SET date = '2019-12-13' WHERE orderID = 15; 
+UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 15;
+UPDATE Orders SET timeOrderPlace = '16:00:00' WHERE orderID = 15;
+UPDATE Orders SET timeDepartToRest = '16:01:00' WHERE orderID = 15;
+UPDATE Orders SET timeArriveRest = '16:15:00' WHERE orderID = 15;
+UPDATE Orders SET timeDepartFromRest = '16:20:00' WHERE orderID = 15;
+UPDATE Orders SET timeOrderDelivered = '16:30:00' WHERE orderID = 15;
+
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 15) WHERE orderID = 15;
+
+
+/*Order 16: Completed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 16, 5, 'Aglio Olio');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 16, 5, 'Creamy Pasta');
+INSERT INTO Place (uid,orderID) VALUES (6,16);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 16) WHERE orderID = 16; /*Food costs*/
+
+UPDATE Orders SET date = '2020-03-10' WHERE orderID = 16;
+UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 16;
+UPDATE Orders SET timeOrderPlace = '10:00:00' WHERE orderID = 16;
+UPDATE Orders SET timeDepartToRest = '10:45:00' WHERE orderID = 16;
+UPDATE Orders SET timeArriveRest = '10:50:00' WHERE orderID = 16;
+UPDATE Orders SET timeDepartFromRest = '11:00:00' WHERE orderID = 16;
+UPDATE Orders SET timeOrderDelivered = '11:30:00' WHERE orderID = 16;
+
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 16) WHERE orderID = 16;
+
+
+
+/*Order 17: Completed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 17, 5, 'Minestrone Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 17, 5, 'Onion Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 17, 5, 'Mushroom Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 17, 5, 'Corn Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 17, 5, 'Chicken Chop');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 17, 5, 'Pork Chop');
+INSERT INTO Place (uid,orderID) VALUES (6,17);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 17) WHERE orderID = 17; /*Food costs*/
+
+UPDATE Orders SET date = '2020-01-15' WHERE orderID = 17; 
+UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 17;
+UPDATE Orders SET timeOrderPlace = '18:30:00' WHERE orderID = 17;
+UPDATE Orders SET timeDepartToRest = '18:31:00' WHERE orderID = 17;
+UPDATE Orders SET timeArriveRest = '18:55:00' WHERE orderID = 17;
+UPDATE Orders SET timeDepartFromRest = '19:00:00' WHERE orderID = 17;
+UPDATE Orders SET timeOrderDelivered = '19:30:00' WHERE orderID = 17;
+
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 17) WHERE orderID = 17;
+
+
+/*Order 18: Completed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 18, 5, 'Minestrone Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 18, 5, 'Onion Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 18, 5, 'Mushroom Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 18, 5, 'Corn Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 18, 5, 'Chicken Chop');
+INSERT INTO Place (uid,orderID) VALUES (6,18);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 18) WHERE orderID = 18; /*Food costs*/
+
+UPDATE Orders SET date = '2020-01-25' WHERE orderID = 18;
+UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 18;
+UPDATE Orders SET timeOrderPlace = '12:30:00' WHERE orderID = 18;
+UPDATE Orders SET timeDepartToRest = '12:31:00' WHERE orderID = 18;
+UPDATE Orders SET timeArriveRest = '12:55:00' WHERE orderID = 18;
+UPDATE Orders SET timeDepartFromRest = '13:00:00' WHERE orderID = 18;
+UPDATE Orders SET timeOrderDelivered = '13:30:00' WHERE orderID = 18;
+
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 18) WHERE orderID = 18;
+
+
+
+/*Order 19: Completed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 19, 5, 'Minestrone Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 19, 5, 'Onion Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 19, 5, 'Mushroom Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 19, 5, 'Corn Soup');
+INSERT INTO Place (uid,orderID) VALUES (6,19);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 19) WHERE orderID = 19; /*Food costs*/
+
+UPDATE Orders SET date = '2020-01-06' WHERE orderID = 19;
+UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 19;
+UPDATE Orders SET timeOrderPlace = '10:10:00' WHERE orderID = 19;
+UPDATE Orders SET timeDepartToRest = '10:11:00' WHERE orderID = 19;
+UPDATE Orders SET timeArriveRest = '10:34:00' WHERE orderID = 19;
+UPDATE Orders SET timeDepartFromRest = '10:35:00' WHERE orderID = 19;
+UPDATE Orders SET timeOrderDelivered = '13:00:00' WHERE orderID = 19;
+
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 19) WHERE orderID = 19;
+
+
+
+/*Order 20: Completed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 20, 5, 'Minestrone Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 20, 5, 'Onion Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 20, 5, 'Mushroom Soup');
+INSERT INTO Place (uid,orderID) VALUES (6,20);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 20) WHERE orderID = 20; /*Food costs*/
+
+UPDATE Orders SET date = '2020-01-01' WHERE orderID = 20;
+UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 20;
+UPDATE Orders SET timeOrderPlace = '15:30:00' WHERE orderID = 20;
+UPDATE Orders SET timeDepartToRest = '15:31:00' WHERE orderID = 20;
+UPDATE Orders SET timeArriveRest = '15:34:00' WHERE orderID = 20;
+UPDATE Orders SET timeDepartFromRest = '16:00:00' WHERE orderID = 20;
+UPDATE Orders SET timeOrderDelivered = '16:30:00' WHERE orderID = 20;
+
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 20) WHERE orderID = 20;
+
+/*Order 21: Completed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 21, 5, 'Minestrone Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 21, 5, 'Onion Soup');
+INSERT INTO Place (uid,orderID) VALUES (6,21);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 21) WHERE orderID = 21; /*Food costs*/
+
+UPDATE Orders SET date = '2020-01-13' WHERE orderID = 21;
+UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 21;
+UPDATE Orders SET timeOrderPlace = '20:00:00' WHERE orderID = 21;
+UPDATE Orders SET timeDepartToRest = '20:11:00' WHERE orderID = 21;
+UPDATE Orders SET timeArriveRest = '20:15:00' WHERE orderID = 21;
+UPDATE Orders SET timeDepartFromRest = '20:30:00' WHERE orderID = 21;
+UPDATE Orders SET timeOrderDelivered = '20:40:00' WHERE orderID = 21;
+
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 21) WHERE orderID = 21;
+
+
+/*Order 22: Completed*/
+INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 22, 5, 'Minestrone Soup');
+INSERT INTO Place (uid,orderID) VALUES (6,22);
+
+UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 22) WHERE orderID = 22; /*Food costs*/
+
+UPDATE Orders SET date = '2020-01-30' WHERE orderID = 22;
+UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 22;
+UPDATE Orders SET timeOrderPlace = '21:00:00' WHERE orderID = 22;
+UPDATE Orders SET timeDepartToRest = '21:11:00' WHERE orderID = 22;
+UPDATE Orders SET timeArriveRest = '21:15:00' WHERE orderID = 22;
+UPDATE Orders SET timeDepartFromRest = '21:30:00' WHERE orderID = 22;
+UPDATE Orders SET timeOrderDelivered = '21:40:00' WHERE orderID = 22;
+
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 22) WHERE orderID = 22;
+
 
 /* Insert Data into delivers */
-INSERT INTO Delivers (orderID,uid,rating) VALUES (1,21,2);
-INSERT INTO Delivers (orderID,uid,rating) VALUES (2,20,5);
-INSERT INTO Delivers (orderID,uid,rating) VALUES (3,20,5);
-INSERT INTO Delivers (orderID,uid,rating) VALUES (4,20,3);
-INSERT INTO Delivers (orderID,uid,rating) VALUES (5,40,1);
-INSERT INTO Delivers (orderID,uid,rating) VALUES (6,40,5);
-INSERT INTO Delivers (orderID,uid,rating) VALUES (7,40,5);
-INSERT INTO Delivers (orderID,uid,rating) VALUES (8,41,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (1,22,2);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (2,21,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (3,21,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (4,21,3);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (5,41,1);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (6,41,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (7,41,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (8,42,5);
+/*Rest Staff Pages Dummy Data: For orders 9 to 22, the riders does not have an existing schedule.*/
+INSERT INTO Delivers (orderID,uid) VALUES (9,23);
+INSERT INTO Delivers (orderID,uid) VALUES (10,24);
+INSERT INTO Delivers (orderID,uid) VALUES (11,25);
+INSERT INTO Delivers (orderID,uid) VALUES (12,26);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (13,27,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (14,28,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (15,29,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (16,30,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (17,31,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (18,32,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (19,33,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (20,34,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (21,35,5);
+INSERT INTO Delivers (orderID,uid,rating) VALUES (22,36,5);
 
 /*Update WorkingDays SET intervalEnd = '22:00' WHERE uid = 18 AND workDate = '2020-01-08' AND intervalStart = '15:00'; 
 UPDATE users SET cardDetails = '5200828282828210' WHERE uid = 4;*/
+
+
+/*Rest Staff Pages Dummy Data: Reset Daily Limit after manual order insertion*/
+UPDATE food set dailyLimit = 50 where foodName = 'Minestrone Soup' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Onion Soup' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Mushroom Soup' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Corn Soup' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Chicken Chop' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Pork Chop' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Steak' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Creamy Pasta' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Tomato Pasta' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Aglio Olio' and RestaurantID = 5;
 
 /* Create views */
 
@@ -1226,4 +1363,123 @@ SELECT CF.fuid as uid,
        CF.fCompleted * DR.baseDeliveryFee + CF.fBasePay as monthSalary 
 FROM DeliveryRiders DR LEFT JOIN ConsolidateF CF on DR.uid = CF.fUid 
 );
-            
+
+
+/*Leave this trigger at the bottom to prevent interference with manual insert statements*/
+CREATE OR REPLACE FUNCTION check_riders()
+RETURNS TRIGGER AS $$
+DECLARE count NUMERIC;
+
+BEGIN
+    IF (NEW.type = 'FullTime') THEN
+        SELECT COUNT(*) INTO count 
+        FROM PartTime 
+        WHERE NEW.uid = PartTime.uid;
+        IF (count > 0) THEN 
+            RETURN NULL;
+        ELSE
+            INSERT INTO FullTime VALUES (NEW.uid, DEFAULT);
+            RAISE NOTICE 'Full time rider added';
+            RETURN NEW;
+        END IF;
+
+    ELSIF (NEW.type = 'PartTime') THEN
+        SELECT COUNT(*) INTO count 
+        FROM FullTime 
+        WHERE NEW.uid = FullTime.uid;
+
+        IF (count > 0) THEN 
+            RETURN NULL;
+        ELSE
+            INSERT INTO PartTime VALUES (NEW.uid, DEFAULT);
+            RAISE NOTICE 'Part time rider added';
+            RETURN NEW;
+        END IF;
+    ELSE RETURN NEW;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER riders_trigger
+AFTER INSERT ON DeliveryRiders 
+FOR EACH ROW
+EXECUTE PROCEDURE check_riders();
+
+
+/*Leave this trigger at the bottom to prevent interference with manual insert statements*/
+CREATE OR REPLACE FUNCTION check_user()
+RETURNS TRIGGER AS $$
+DECLARE count NUMERIC;
+BEGIN 
+	IF (NEW.type = 'Customers') THEN
+		SELECT COUNT(*) INTO count 
+        FROM FDSManagers, RestaurantStaff, DeliveryRiders
+        WHERE NEW.uid = FDSManagers.uid
+        OR NEW.uid = RestaurantStaff.uid
+        OR NEW.uid = DeliveryRiders.uid;
+        
+		IF (count > 0) THEN 
+            RETURN NULL;
+		ELSE
+            INSERT INTO Customers VALUES (NEW.uid,DEFAULT,DEFAULT);
+            RAISE NOTICE 'Customers added';
+			RETURN NEW;
+
+		END IF;
+	ELSIF (NEW.type = 'FDSManagers') THEN
+		SELECT COUNT(*) INTO count 
+        FROM Customers, RestaurantStaff, DeliveryRiders
+        WHERE NEW.uid = Customers.uid
+        OR NEW.uid = RestaurantStaff.uid
+        OR NEW.uid = DeliveryRiders.uid;
+
+		IF (count > 0) THEN RETURN NULL;
+		ELSE
+			INSERT INTO FDSManagers VALUES (NEW.uid);
+            RAISE NOTICE 'FDSManagers added';
+			RETURN NEW;
+		
+		END IF;	
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER user_trigger
+AFTER INSERT ON Users
+FOR EACH ROW
+EXECUTE PROCEDURE check_user();
+
+/*check whether order placed during operational hours*/
+CREATE OR REPLACE FUNCTION check_operational_hours() --after operating hours, insertion continuessss
+RETURNS TRIGGER AS $$
+DECLARE currHour NUMERIC;
+DECLARE openingHour NUMERIC;
+DECLARE closingHour NUMERIC;
+
+BEGIN
+    openingHour := 10; --10am
+    closingHour := 22; --10pm
+    
+    SELECT EXTRACT(HOUR from timeOrderPlace) INTO currHour
+    FROM Orders
+    WHERE NEW.orderID = Orders.OrderID;
+
+    IF currHour < openingHour THEN
+        UPDATE Orders SET orderStatus = 'Failed' WHERE NEW.orderID = Orders.OrderID;
+        RAISE NOTICE 'Not within Opening Hours';
+        RETURN NULL; 
+    ELSIF currHour >= closingHour THEN
+        UPDATE Orders SET orderStatus = 'Failed' WHERE NEW.orderID = Orders.OrderID; 
+        RAISE NOTICE 'Not within Opening Hours';
+        RETURN NULL; --RETURN NULL instead of RETURN NEW to just abort the inserted row silently without raising an exception and without rolling anything back.
+    ELSE 
+        RAISE NOTICE 'Within Opening Hours';
+        RETURN NEW; 
+    END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER operating_trigger
+BEFORE INSERT ON Place
+FOR EACH ROW
+EXECUTE PROCEDURE check_operational_hours();
