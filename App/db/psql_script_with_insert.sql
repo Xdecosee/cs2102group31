@@ -286,123 +286,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE check_operational_hours();
 
 
-/*ISA check for delivery riders*/
-/*
-CREATE OR REPLACE FUNCTION check_riders()
-RETURNS TRIGGER AS $$
-DECLARE count NUMERIC;
-
-BEGIN
-    IF (NEW.type = 'FullTime') THEN
-        SELECT COUNT(*) INTO count 
-        FROM PartTime 
-        WHERE NEW.uid = PartTime.uid;
-        IF (count > 0) THEN 
-            RETURN NULL;
-        ELSE
-            INSERT INTO FullTime VALUES (NEW.uid, DEFAULT);
-            RAISE NOTICE 'Full time rider added';
-            RETURN NEW;
-        END IF;
-
-    ELSIF (NEW.type = 'PartTime') THEN
-        SELECT COUNT(*) INTO count 
-        FROM FullTime 
-        WHERE NEW.uid = FullTime.uid;
-
-        IF (count > 0) THEN 
-            RETURN NULL;
-        ELSE
-            INSERT INTO PartTime VALUES (NEW.uid, DEFAULT);
-            RAISE NOTICE 'Part time rider added';
-            RETURN NEW;
-        END IF;
-    ELSE RETURN NEW;
-    END IF;
-END;
-$$ LANGUAGE plpgsql;
-CREATE TRIGGER riders_trigger
-AFTER INSERT ON DeliveryRiders 
-FOR EACH ROW
-EXECUTE PROCEDURE check_riders();
-*/
-/* return value of row-level trigger fired AFTER is always ignored */
-
-
-/*ISA check for users*/
-/*
-CREATE OR REPLACE FUNCTION check_user()
-RETURNS TRIGGER AS $$
-DECLARE count NUMERIC;
-BEGIN 
-	IF (NEW.type = 'Customers') THEN
-		SELECT COUNT(*) INTO count 
-        FROM FDSManagers, RestaurantStaff, DeliveryRiders
-        WHERE NEW.uid = FDSManagers.uid
-        OR NEW.uid = RestaurantStaff.uid
-        OR NEW.uid = DeliveryRiders.uid;
-        
-		IF (count > 0) THEN 
-            RETURN NULL;
-		ELSE
-            INSERT INTO Customers VALUES (NEW.uid,DEFAULT,DEFAULT,NEW.cardDetails);
-            RAISE NOTICE 'Customers added';
-			RETURN NEW;
-
-		END IF;
-	ELSIF (NEW.type = 'FDSManagers') THEN
-		SELECT COUNT(*) INTO count 
-        FROM Customers, RestaurantStaff, DeliveryRiders
-        WHERE NEW.uid = Customers.uid
-        OR NEW.uid = RestaurantStaff.uid
-        OR NEW.uid = DeliveryRiders.uid;
-
-		IF (count > 0) THEN RETURN NULL;
-		ELSE
-			INSERT INTO FDSManagers VALUES (NEW.uid);
-            RAISE NOTICE 'FDSManagers added';
-			RETURN NEW;
-		
-		END IF;	
-    ELSIF (NEW.type = 'RestaurantStaff') THEN
-        SELECT COUNT(*) INTO count 
-        FROM Customers, FDSManagers, DeliveryRiders
-        WHERE NEW.uid = Customers.uid
-        OR NEW.uid = FDSManagers.uid
-        OR NEW.uid = DeliveryRiders.uid;
-
-		IF (count > 0) THEN RETURN NULL;
-		ELSE
-			
-				-- INSERT INTO RestaurantStaff VALUES (NEW.uid,NEW.restaurantID);
-                RAISE NOTICE 'RestaurantStaff added';
-				RETURN NEW;
-			
-		END IF;	
-    ELSIF (NEW.type = 'DeliveryRiders') THEN
-        SELECT COUNT(*) INTO count 
-        FROM Customers, FDSManagers, RestaurantStaff
-        WHERE NEW.uid = Customers.uid
-        OR NEW.uid = FDSManagers.uid
-        OR NEW.uid = RestaurantStaff.uid;
-
-		IF (count > 0) THEN 
-            RETURN NULL;
-		ELSE
-            -- INSERT INTO DeliveryRiders(uid,type) VALUES (NEW.uid, NEW.riderType);
-            RAISE NOTICE 'DeliveryRiders added';
-		    RETURN NEW;
-		END IF;	
-	END IF;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER user_trigger
-AFTER INSERT ON Users
-FOR EACH ROW
-EXECUTE PROCEDURE check_user();
-*/
-
 
 /*Update reward point after order completion*/
 CREATE OR REPLACE FUNCTION update_rewards()
@@ -1509,4 +1392,88 @@ SELECT CF.fuid as uid,
        CF.fCompleted * DR.baseDeliveryFee + CF.fBasePay as monthSalary 
 FROM DeliveryRiders DR LEFT JOIN ConsolidateF CF on DR.uid = CF.fUid 
 );
+
+
+/*Leave this trigger at the bottom to prevent interference with manual insert statements*/
+CREATE OR REPLACE FUNCTION check_riders()
+RETURNS TRIGGER AS $$
+DECLARE count NUMERIC;
+
+BEGIN
+    IF (NEW.type = 'FullTime') THEN
+        SELECT COUNT(*) INTO count 
+        FROM PartTime 
+        WHERE NEW.uid = PartTime.uid;
+        IF (count > 0) THEN 
+            RETURN NULL;
+        ELSE
+            INSERT INTO FullTime VALUES (NEW.uid, DEFAULT);
+            RAISE NOTICE 'Full time rider added';
+            RETURN NEW;
+        END IF;
+
+    ELSIF (NEW.type = 'PartTime') THEN
+        SELECT COUNT(*) INTO count 
+        FROM FullTime 
+        WHERE NEW.uid = FullTime.uid;
+
+        IF (count > 0) THEN 
+            RETURN NULL;
+        ELSE
+            INSERT INTO PartTime VALUES (NEW.uid, DEFAULT);
+            RAISE NOTICE 'Part time rider added';
+            RETURN NEW;
+        END IF;
+    ELSE RETURN NEW;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER riders_trigger
+AFTER INSERT ON DeliveryRiders 
+FOR EACH ROW
+EXECUTE PROCEDURE check_riders();
+
+
+/*Leave this trigger at the bottom to prevent interference with manual insert statements*/
+CREATE OR REPLACE FUNCTION check_user()
+RETURNS TRIGGER AS $$
+DECLARE count NUMERIC;
+BEGIN 
+	IF (NEW.type = 'Customers') THEN
+		SELECT COUNT(*) INTO count 
+        FROM FDSManagers, RestaurantStaff, DeliveryRiders
+        WHERE NEW.uid = FDSManagers.uid
+        OR NEW.uid = RestaurantStaff.uid
+        OR NEW.uid = DeliveryRiders.uid;
+        
+		IF (count > 0) THEN 
+            RETURN NULL;
+		ELSE
+            INSERT INTO Customers VALUES (NEW.uid,DEFAULT,DEFAULT);
+            RAISE NOTICE 'Customers added';
+			RETURN NEW;
+
+		END IF;
+	ELSIF (NEW.type = 'FDSManagers') THEN
+		SELECT COUNT(*) INTO count 
+        FROM Customers, RestaurantStaff, DeliveryRiders
+        WHERE NEW.uid = Customers.uid
+        OR NEW.uid = RestaurantStaff.uid
+        OR NEW.uid = DeliveryRiders.uid;
+
+		IF (count > 0) THEN RETURN NULL;
+		ELSE
+			INSERT INTO FDSManagers VALUES (NEW.uid);
+            RAISE NOTICE 'FDSManagers added';
+			RETURN NEW;
+		
+		END IF;	
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER user_trigger
+AFTER INSERT ON Users
+FOR EACH ROW
+EXECUTE PROCEDURE check_user();
             
