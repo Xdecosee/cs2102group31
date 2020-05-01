@@ -36,7 +36,6 @@ sql.query = {
                     'GROUP BY year, month, food ' +
                     'ORDER BY totalOrders DESC ' +
                     'LIMIT 5',
-   
     restPercPromo:      'INSERT INTO Promotion(startDate, endDate, startTime, endTime, discPerc, type) ' +
                         'Values($1, $2, $3, $4, $5, \'Restpromo\') RETURNING promoID',
     restAmtPromo:       'INSERT INTO Promotion(startDate, endDate, startTime, endTime, discAmt, type) ' +
@@ -50,8 +49,8 @@ sql.query = {
                         'WHERE P.discPerc IS NOT NULL  AND R.restID = $1), ' +
                         'OrderInfo As (SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
                         'FROM Promotion P INNER JOIN FromMenu FM on P.promoID = FM.promoID ' +
-                        'WHERE P.discPerc IS NOT NULL ' +
-                        'GROUP BY P.promoID AND FM.restaurantID = $2) ' +
+                        'WHERE P.discPerc IS NOT NULL AND FM.restaurantID = $2' +
+                        'GROUP BY P.promoID ) ' +
                         'SELECT DISTINCT PI.promoID, startDate, startTime, endDate, endTime, discPerc, totalOrders, dayDuration, hourDuration, ' +
                         'ROUND(totalOrders::decimal / dayDuration) as dayAvg, ROUND(totalOrders::decimal/ hourDuration) as hourAvg ' +
                         'FROM PromoInfo PI INNER JOIN OrderInfo O on PI.promoID = O.promoID',
@@ -63,8 +62,8 @@ sql.query = {
                         'WHERE P.discAmt IS NOT NULL  AND R.restID = $1), ' +
                         'OrderInfo As (SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
                         'FROM Promotion P INNER JOIN FromMenu FM on P.promoID = FM.promoID ' +
-                        'WHERE P.discAmt IS NOT NULL ' +
-                        'GROUP BY P.promoID AND FM.restaurantID = $2) ' +
+                        'WHERE P.discAmt IS NOT NULL AND FM.restaurantID = $2' +
+                        'GROUP BY P.promoID) ' +
                         'SELECT DISTINCT PI.promoID, startDate, startTime, endDate, endTime, discAmt, totalOrders, dayDuration, hourDuration, ' +
                         'ROUND(totalOrders::decimal / dayDuration) as dayAvg, ROUND(totalOrders::decimal/ hourDuration) as hourAvg ' +
                         'FROM PromoInfo PI INNER JOIN OrderInfo O on PI.promoID = O.promoID',
