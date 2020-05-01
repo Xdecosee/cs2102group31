@@ -249,44 +249,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE check_availability();
 
 
-/*check whether order placed during operational hours*/
-CREATE OR REPLACE FUNCTION check_operational_hours() --after operating hours, insertion continuessss
-RETURNS TRIGGER AS $$
-DECLARE currHour NUMERIC;
-DECLARE openingHour NUMERIC;
-DECLARE closingHour NUMERIC;
-
-BEGIN
-    openingHour := 10; --10am
-    closingHour := 22; --10pm
-    
-    SELECT EXTRACT(HOUR from timeOrderPlace) INTO currHour
-    FROM Orders
-    WHERE NEW.orderID = Orders.OrderID;
-
-    IF currHour < openingHour THEN
-        UPDATE Orders SET orderStatus = 'Failed' WHERE NEW.orderID = Orders.OrderID;
-        RAISE NOTICE 'Not within Opening Hours';
-        RETURN NULL; 
-    ELSIF currHour >= closingHour THEN
-        UPDATE Orders SET orderStatus = 'Failed' WHERE NEW.orderID = Orders.OrderID; 
-        RAISE NOTICE 'Not within Opening Hours';
-        RETURN NULL; --RETURN NULL instead of RETURN NEW to just abort the inserted row silently without raising an exception and without rolling anything back.
-    ELSE 
-        RAISE NOTICE 'Within Opening Hours';
-        RETURN NEW; 
-    END IF;
-
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER operating_trigger
-BEFORE INSERT ON Place
-FOR EACH ROW
-EXECUTE PROCEDURE check_operational_hours();
-
-
-
 /*Update reward point after order completion*/
 CREATE OR REPLACE FUNCTION update_rewards()
 RETURNS TRIGGER AS $$
@@ -407,7 +369,7 @@ EXECUTE PROCEDURE update_bonus();
 
 
 /*Check restaurant staff account creation*/
-CREATE OR REPLACE FUNCTION check_reststaff()
+/*CREATE OR REPLACE FUNCTION check_reststaff()
 RETURNS TRIGGER AS $$
 DECLARE count NUMERIC;
 
@@ -430,7 +392,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER add_rest_trigger
 BEFORE INSERT ON Restaurants
 FOR EACH ROW
-EXECUTE PROCEDURE check_reststaff();
+EXECUTE PROCEDURE check_reststaff();*/
 
 /*ensure one hour shift, check overlap*/
 CREATE OR REPLACE FUNCTION check_shift()
@@ -1042,6 +1004,7 @@ UPDATE Orders SET timeArriveRest = '15:31:00' WHERE orderID = 8;
 UPDATE Orders SET timeDepartFromRest = '15:42:00' WHERE orderID = 8;
 UPDATE Orders SET timeOrderDelivered = '15:58:00'  WHERE orderID = 8;
 
+/*Rest Staff Pages Dummy Data: Orders 9 to 22*/
 /*Order 9: Confirmed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-55','Cash','E'); 
 INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(2, 9, 5, 'Minestrone Soup');
@@ -1050,9 +1013,8 @@ INSERT INTO Place (uid,orderID) VALUES (2,9);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 9) WHERE orderID = 9; /*Food costs*/
 
-UPDATE Orders SET date = '2020-05-10';
 UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 9;
-UPDATE Orders SET timeOrderPlace = '14:20:00' WHERE orderID = 9;
+UPDATE Orders SET timeOrderPlace = '10:20:00' WHERE orderID = 9;
 
 /*Order 10: Confirmed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-56','Cash','E'); 
@@ -1061,9 +1023,8 @@ INSERT INTO Place (uid,orderID) VALUES (3,10);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 10) WHERE orderID = 10; /*Food costs*/
 
-UPDATE Orders SET date = '2020-05-10';
 UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 10;
-UPDATE Orders SET timeOrderPlace = '14:20:00' WHERE orderID = 10;
+UPDATE Orders SET timeOrderPlace = '10:20:00' WHERE orderID = 10;
 
 
 
@@ -1075,9 +1036,8 @@ INSERT INTO Place (uid,orderID) VALUES (4,11);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 11) WHERE orderID = 11; /*Food costs*/
 
-UPDATE Orders SET date = '2020-05-10';
 UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 11;
-UPDATE Orders SET timeOrderPlace = '11:15:00' WHERE orderID = 11;
+UPDATE Orders SET timeOrderPlace = '10:29:00' WHERE orderID = 11;
 
 
   
@@ -1089,7 +1049,7 @@ INSERT INTO Place (uid,orderID) VALUES (5,12);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 12) WHERE orderID = 12; /*Food costs*/
 
-UPDATE Orders SET date = '2020-05-10';
+UPDATE Orders SET date = '2020-05-10' WHERE orderID = 12;
 UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 12;
 UPDATE Orders SET timeOrderPlace = '12:35:00' WHERE orderID = 12;
 UPDATE Orders SET timeDepartToRest = '12:36:00' WHERE orderID = 12;
@@ -1105,7 +1065,7 @@ INSERT INTO Place (uid,orderID) VALUES (6,13);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 13) WHERE orderID = 13; /*Food costs*/
 
-UPDATE Orders SET date = '2019-12-25';
+UPDATE Orders SET date = '2019-12-25' WHERE orderID = 13;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 13;
 UPDATE Orders SET timeOrderPlace = '11:00:00' WHERE orderID = 13;
 UPDATE Orders SET timeDepartToRest = '11:01:00' WHERE orderID = 13;
@@ -1113,7 +1073,7 @@ UPDATE Orders SET timeArriveRest = '11:25:00' WHERE orderID = 13;
 UPDATE Orders SET timeDepartFromRest = '11:30:00' WHERE orderID = 13;
 UPDATE Orders SET timeOrderDelivered = '12:00:00' WHERE orderID = 13;
 
-UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 13) WHERE orderID = 13
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 13) WHERE orderID = 13;
 
 
 /*Order 14: Completed*/
@@ -1124,7 +1084,7 @@ INSERT INTO Place (uid,orderID) VALUES (6,14);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 14) WHERE orderID = 14; /*Food costs*/
 
-UPDATE Orders SET date = '2019-12-26';
+UPDATE Orders SET date = '2019-12-26' WHERE orderID = 14;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 14;
 UPDATE Orders SET timeOrderPlace = '10:20:00' WHERE orderID = 14;
 UPDATE Orders SET timeDepartToRest = '11:00:00' WHERE orderID = 14;
@@ -1132,18 +1092,18 @@ UPDATE Orders SET timeArriveRest = '11:14:00' WHERE orderID = 14;
 UPDATE Orders SET timeDepartFromRest = '11:15:00' WHERE orderID = 14;
 UPDATE Orders SET timeOrderDelivered = '12:00:00' WHERE orderID = 14;
 
-UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 14) WHERE orderID = 14
+UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeOrderPlace), 'HH24 h MI "min"') FROM Orders WHERE orderID = 14) WHERE orderID = 14;
 
 
 /*Order 15: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
 
-INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 15, 5, 'Steak')
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 15, 5, 'Steak');
 INSERT INTO Place (uid,orderID) VALUES (6,15);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 15) WHERE orderID = 15; /*Food costs*/
 
-UPDATE Orders SET date = '2019-12-13';
+UPDATE Orders SET date = '2019-12-13' WHERE orderID = 15; 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 15;
 UPDATE Orders SET timeOrderPlace = '16:00:00' WHERE orderID = 15;
 UPDATE Orders SET timeDepartToRest = '16:01:00' WHERE orderID = 15;
@@ -1162,7 +1122,7 @@ INSERT INTO Place (uid,orderID) VALUES (6,16);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 16) WHERE orderID = 16; /*Food costs*/
 
-UPDATE Orders SET date = '2020-03-10';
+UPDATE Orders SET date = '2020-03-10' WHERE orderID = 16;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 16;
 UPDATE Orders SET timeOrderPlace = '10:00:00' WHERE orderID = 16;
 UPDATE Orders SET timeDepartToRest = '10:45:00' WHERE orderID = 16;
@@ -1186,7 +1146,7 @@ INSERT INTO Place (uid,orderID) VALUES (6,17);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 17) WHERE orderID = 17; /*Food costs*/
 
-UPDATE Orders SET date = '2020-01-15';
+UPDATE Orders SET date = '2020-01-15' WHERE orderID = 17; 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 17;
 UPDATE Orders SET timeOrderPlace = '18:30:00' WHERE orderID = 17;
 UPDATE Orders SET timeDepartToRest = '18:31:00' WHERE orderID = 17;
@@ -1208,7 +1168,7 @@ INSERT INTO Place (uid,orderID) VALUES (6,18);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 18) WHERE orderID = 18; /*Food costs*/
 
-UPDATE Orders SET date = '2020-01-25';
+UPDATE Orders SET date = '2020-01-25' WHERE orderID = 18;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 18;
 UPDATE Orders SET timeOrderPlace = '12:30:00' WHERE orderID = 18;
 UPDATE Orders SET timeDepartToRest = '12:31:00' WHERE orderID = 18;
@@ -1230,7 +1190,7 @@ INSERT INTO Place (uid,orderID) VALUES (6,19);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 19) WHERE orderID = 19; /*Food costs*/
 
-UPDATE Orders SET date = '2020-01-06';
+UPDATE Orders SET date = '2020-01-06' WHERE orderID = 19;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 19;
 UPDATE Orders SET timeOrderPlace = '10:10:00' WHERE orderID = 19;
 UPDATE Orders SET timeDepartToRest = '10:11:00' WHERE orderID = 19;
@@ -1251,7 +1211,7 @@ INSERT INTO Place (uid,orderID) VALUES (6,20);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 20) WHERE orderID = 20; /*Food costs*/
 
-UPDATE Orders SET date = '2020-01-01';
+UPDATE Orders SET date = '2020-01-01' WHERE orderID = 20;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 20;
 UPDATE Orders SET timeOrderPlace = '15:30:00' WHERE orderID = 20;
 UPDATE Orders SET timeDepartToRest = '15:31:00' WHERE orderID = 20;
@@ -1269,7 +1229,7 @@ INSERT INTO Place (uid,orderID) VALUES (6,21);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 21) WHERE orderID = 21; /*Food costs*/
 
-UPDATE Orders SET date = '2020-01-13';
+UPDATE Orders SET date = '2020-01-13' WHERE orderID = 21;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 21;
 UPDATE Orders SET timeOrderPlace = '20:00:00' WHERE orderID = 21;
 UPDATE Orders SET timeDepartToRest = '20:11:00' WHERE orderID = 21;
@@ -1282,12 +1242,12 @@ UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeO
 
 /*Order 22: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
-INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, '40304577-4fd5-4610-80a2-7c6c8473f07d', '3f5c7ba1-01b1-4c9d-887f-28966f06ed54', 'Minestrone Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 22, 5, 'Minestrone Soup');
 INSERT INTO Place (uid,orderID) VALUES (6,22);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 22) WHERE orderID = 22; /*Food costs*/
 
-UPDATE Orders SET date = '2020-01-30';
+UPDATE Orders SET date = '2020-01-30' WHERE orderID = 22;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 22;
 UPDATE Orders SET timeOrderPlace = '21:00:00' WHERE orderID = 22;
 UPDATE Orders SET timeDepartToRest = '21:11:00' WHERE orderID = 22;
@@ -1307,8 +1267,7 @@ INSERT INTO Delivers (orderID,uid,rating) VALUES (5,41,1);
 INSERT INTO Delivers (orderID,uid,rating) VALUES (6,41,5);
 INSERT INTO Delivers (orderID,uid,rating) VALUES (7,41,5);
 INSERT INTO Delivers (orderID,uid,rating) VALUES (8,42,5);
-/*For orders 9 to 22, the riders does not have an existing schedule. 
-Dummy data for rest staff page testing*/
+/*Rest Staff Pages Dummy Data: For orders 9 to 22, the riders does not have an existing schedule.*/
 INSERT INTO Delivers (orderID,uid) VALUES (9,23);
 INSERT INTO Delivers (orderID,uid) VALUES (10,24);
 INSERT INTO Delivers (orderID,uid) VALUES (11,25);
@@ -1324,9 +1283,21 @@ INSERT INTO Delivers (orderID,uid,rating) VALUES (20,34,5);
 INSERT INTO Delivers (orderID,uid,rating) VALUES (21,35,5);
 INSERT INTO Delivers (orderID,uid,rating) VALUES (22,36,5);
 
-
 /*Update WorkingDays SET intervalEnd = '22:00' WHERE uid = 18 AND workDate = '2020-01-08' AND intervalStart = '15:00'; 
 UPDATE users SET cardDetails = '5200828282828210' WHERE uid = 4;*/
+
+
+/*Rest Staff Pages Dummy Data: Reset Daily Limit after manual order insertion*/
+UPDATE food set dailyLimit = 50 where foodName = 'Minestrone Soup' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Onion Soup' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Mushroom Soup' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Corn Soup' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Chicken Chop' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Pork Chop' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Steak' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Creamy Pasta' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Tomato Pasta' and RestaurantID = 5;
+UPDATE food set dailyLimit = 50 where foodName = 'Aglio Olio' and RestaurantID = 5;
 
 /* Create views */
 
@@ -1476,4 +1447,39 @@ CREATE TRIGGER user_trigger
 AFTER INSERT ON Users
 FOR EACH ROW
 EXECUTE PROCEDURE check_user();
-            
+
+/*check whether order placed during operational hours*/
+CREATE OR REPLACE FUNCTION check_operational_hours() --after operating hours, insertion continuessss
+RETURNS TRIGGER AS $$
+DECLARE currHour NUMERIC;
+DECLARE openingHour NUMERIC;
+DECLARE closingHour NUMERIC;
+
+BEGIN
+    openingHour := 10; --10am
+    closingHour := 22; --10pm
+    
+    SELECT EXTRACT(HOUR from timeOrderPlace) INTO currHour
+    FROM Orders
+    WHERE NEW.orderID = Orders.OrderID;
+
+    IF currHour < openingHour THEN
+        UPDATE Orders SET orderStatus = 'Failed' WHERE NEW.orderID = Orders.OrderID;
+        RAISE NOTICE 'Not within Opening Hours';
+        RETURN NULL; 
+    ELSIF currHour >= closingHour THEN
+        UPDATE Orders SET orderStatus = 'Failed' WHERE NEW.orderID = Orders.OrderID; 
+        RAISE NOTICE 'Not within Opening Hours';
+        RETURN NULL; --RETURN NULL instead of RETURN NEW to just abort the inserted row silently without raising an exception and without rolling anything back.
+    ELSE 
+        RAISE NOTICE 'Within Opening Hours';
+        RETURN NEW; 
+    END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER operating_trigger
+BEFORE INSERT ON Place
+FOR EACH ROW
+EXECUTE PROCEDURE check_operational_hours();
