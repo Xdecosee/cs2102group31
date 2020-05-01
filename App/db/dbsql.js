@@ -15,25 +15,28 @@ sql.query = {
     restMenuInfo:   'SELECT DISTINCT * FROM Food F ' +
                     'INNER JOIN Restaurants R on F.restaurantID = R.restaurantID ' +
                     'WHERE R.restaurantID = $1',
-    restInsertFood: 'INSERT INTO Food(foodName, price, category, restaurantID) ' +
-                    'Values($1, $2, \'Western\', $3)',
     restOrders:     'SELECT DISTINCT FM.orderID, to_char(O.date, \'DD/MM/YYYY\') as date, O.timeOrderPlace, FM.FoodName, FM.quantity ' +
                     'FROM Orders O INNER JOIN FromMenu FM on O.orderID = FM.orderID ' +
                     'WHERE O.orderStatus = \'Confirmed\'  AND O.timeDepartFromRest IS NULL AND FM.restaurantID = $1 ' + 
-                    'AND FM.hide = \'false\' ORDER BY date, O.timeOrderPlace, FM.orderID',
+                    'AND FM.hide = \'false\' ' +
+                    'ORDER BY date, O.timeOrderPlace, FM.orderID',
     restCooked:     'UPDATE FromMenu SET hide = \'true\' WHERE orderID = $1 and foodName = $2',
-    restSummary:    'SELECT year, month, COUNT(orderID) AS totalorders, SUM(cost) As totalCost ' +
-                    'FROM (SELECT DISTINCT EXTRACT(Year FROM (O.date)) AS year, to_char(O.date, \'Month\') as month, '+
-                    'O.orderid, O.cost FROM Orders O INNER JOIN FromMenu FM on O.orderID = FM.orderID ' +
-                    'WHERE O.orderStatus = \'Completed\' AND FM.restaurantID = $1) TMP ' +
-                    'GROUP BY year, month ORDER BY year DESC, to_date(month, \'Month \') DESC',
-    restFavFood:    'With FoodOrders as ( SELECT EXTRACT(Year FROM (O.date)) AS year,  to_char(O.date, \'Month\') as month, ' +
-                    'FM.foodName as food, SUM(FM.quantity) as totalOrders FROM FromMenu FM INNER JOIN Orders O on FM.orderID = O.orderID ' +
+    restSummary:    'SELECT year, month, COUNT(orderID) AS totalorders, SUM(cost) As totalcost FROM ( ' +
+                    'SELECT DISTINCT EXTRACT(Year FROM (O.date)) AS year, to_char(O.date, \'Month\') as month, ' +
+                    'O.orderid, O.cost ' + 
+                    'FROM Orders O INNER JOIN FromMenu FM on O.orderID = FM.orderID ' +
+                    'WHERE O.orderStatus = \'Completed\' AND FM.restaurantID = $1 AND ' +
+                    'EXTRACT(Year FROM (O.date)) = $2 AND EXTRACT(Month FROM (O.date)) = $3 ) TMP ' +
+                    'GROUP BY year, month',
+    restFavFood:    'SELECT DISTINCT EXTRACT(Year FROM (O.date)) AS year,  to_char(O.date, \'Month\') as month, ' +
+                    'FM.foodName as food, SUM(FM.quantity) as totalOrders ' +
+                    'FROM FromMenu FM INNER JOIN Orders O on FM.orderID = O.orderID ' +
                     'WHERE O.orderStatus = \'Completed\' AND FM.restaurantID = $1 ' +
-                    'GROUP BY EXTRACT(Year FROM (O.date)),  to_char(O.date, \'Month\'), FM.foodName) ' +
-                    'SELECT DISTINCT * FROM ( SELECT year, month, to_date(month, \'Month \') as month2, food, totalOrders, '+
-                    'row_number() OVER (PARTITION BY year, month) as rownum FROM FoodOrders ' +
-                    ')Tmp WHERE rownum < 6 ORDER BY year DESC, month2 DESC, totalOrders DESC',
+                    'AND EXTRACT(Year FROM (O.date)) = $2 AND EXTRACT(Month FROM (O.date)) = $3 ' +
+                    'GROUP BY year, month, food ' +
+                    'ORDER BY totalOrders DESC ' +
+                    'LIMIT 5',
+   
     restPercPromo:      'INSERT INTO Promotion(startDate, endDate, startTime, endTime, discPerc, type) ' +
                         'Values($1, $2, $3, $4, $5, \'Restpromo\') RETURNING promoID',
     restAmtPromo:       'INSERT INTO Promotion(startDate, endDate, startTime, endTime, discAmt, type) ' +
@@ -66,6 +69,8 @@ sql.query = {
                         'ROUND(totalOrders::decimal / dayDuration) as dayAvg, ROUND(totalOrders::decimal/ hourDuration) as hourAvg ' +
                         'FROM PromoInfo PI INNER JOIN OrderInfo O on PI.promoID = O.promoID',
   
+    restInsertFood:     'INSERT INTO Food(foodName, price, category, restaurantID) ' +
+                        'Values($1, $2, \'Western\', $3)',
     /*------FDS Manager--------*/
     totalOrders: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(orderid) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
     totalCost: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, SUM(cost) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',

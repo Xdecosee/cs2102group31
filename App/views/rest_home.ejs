@@ -23,8 +23,21 @@
 	</tbody>
 </table>
 
-<h2>Restaurant Summary</h2>
-<p> Shows the total number of completed orders and the total cost of all completed orders for each month </p>
+<h2> Summary </h2>
+<p>Key in or select a month and year (e.g March/2020) to view summary information for the following sections: </p>
+<p> 1. Order Summary - Shows the total number of completed orders and the total cost of all completed orders for selected month</p>
+<p> 2. Favourite Food - Shows the top 5 favorite food items in terms of completed orders for selected month </p>
+
+<form id="month_form" action="/rest_home/selectmonth" role="form" method="post">
+	<div class="form-group">
+		<input  type="month" class="form-control" id="month" name="month" >
+ 	 </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+</br>
+
+<h3>Order Summary</h3>
 <table class="table">
 	<thead>
 		<tr>
@@ -46,8 +59,7 @@
 	</tbody>
 </table>
 
-<h2>Favourite Food</h2>
-<p> Shows the top 5 favorite food items in terms of completed orders for each month </p>
+<h3>Favourite Food</h3>
 <table class="table">
 	<thead>
 		<tr>

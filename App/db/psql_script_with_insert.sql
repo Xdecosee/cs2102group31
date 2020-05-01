@@ -772,7 +772,7 @@ INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Noma', '456 Madh
 INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Odette', '456 Database Road #01-27 Singapore 123456', 5);
 INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Wolfgang Puck', '567 Gowhere Road #01-27 Singapore 456567', 3);
 INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Crystal Jade','123 Gowhere Road #01-27 Singapore 123456',4);
-INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Minestrone King','313 Orchard Rd #B2-05 Singapore 238895',3);
+INSERT INTO Restaurants (name, location) VALUES ('Minestrone King','313 Orchard Rd #B2-05 Singapore 238895');
 INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Zen food','456 Hungry Road #01-36 Singapore 456789',5);
 
 
