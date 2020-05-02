@@ -37,37 +37,44 @@ sql.query = {
                     'ORDER BY totalOrders DESC ' +
                     'LIMIT 5',
     restPercPromo:      'INSERT INTO Promotion(startDate, endDate, startTime, endTime, discPerc, type) ' +
-                        'Values($1, $2, $3, $4, $5, \'Restpromo\') RETURNING promoID',
+                        'Values($1, $2, $3, $4, Round($5/100::NUMERIC, 2), \'Restpromo\') RETURNING promoID',
     restAmtPromo:       'INSERT INTO Promotion(startDate, endDate, startTime, endTime, discAmt, type) ' +
                         'Values($1, $2, $3, $4, $5, \'Restpromo\') RETURNING promoID',
     restInsertPromo:    'INSERT INTO Restpromo(promoID, restID) VALUES($1, $2)',
-    restPercSummary:    'With PromoInfo AS (SELECT DISTINCT P.promoID, startDate,  startTime, endDate, endTime, discPerc, ' +
-                        'DATE_PART( \'day\',  (startDate + startTime) -  (endDate + endTime)) as dayDuration, ' +
-                        'DATE_PART( \'day\', (startDate + startTime) - ( endDate + endTime)) * 24 + ' +
-                        'DATE_PART( \'hour\', (startDate + startTime) - (endDate + endTime)) as hourDuration ' +
+    restPercSummary:    'With PromoInfo AS ( ' +
+                        'SELECT DISTINCT P.promoID, startDate + startTime as startDT, ' +
+                        'endDate + endTime as endDT, discPerc, ' +
+                        'DATE_PART(\'day\', (endDate + endTime) - (startDate + startTime)) as dayPart, ' +
+                        'DATE_PART(\'hour\',(endDate + endTime) - (startDate + startTime)) as hourPart ' +
                         'FROM Restpromo R INNER JOIN Promotion P on R.promoID = P.promoID ' +
                         'WHERE P.discPerc IS NOT NULL  AND R.restID = $1), ' +
-                        'OrderInfo As (SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
+                        'OrderInfo As ( ' +
+                        'SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
                         'FROM Promotion P INNER JOIN FromMenu FM on P.promoID = FM.promoID ' +
-                        'WHERE P.discPerc IS NOT NULL AND FM.restaurantID = $2' +
-                        'GROUP BY P.promoID ) ' +
-                        'SELECT DISTINCT PI.promoID, startDate, startTime, endDate, endTime, discPerc, totalOrders, dayDuration, hourDuration, ' +
-                        'ROUND(totalOrders::decimal / dayDuration) as dayAvg, ROUND(totalOrders::decimal/ hourDuration) as hourAvg ' +
+                        'WHERE P.discPerc IS NOT NULL AND FM.restaurantID = $2 ' +
+                        'GROUP BY P.promoID ) ' + 
+                        'SELECT DISTINCT PI.promoID, to_char(startDT, \'YYYY-MM-DD\') as startDT, to_char(endDT, \'YYYY-MM-DD\') as endDT, ' +
+                        'discPerc, totalOrders, to_char(endDT-startDT, \'DDD HH24:MI:SS\') as duration,  ' +
+                        'CASE WHEN dayPart > 0 THEN ROUND(totalOrders/dayPart::NUMERIC, 2) ELSE NULL END AS dayAvg, ' +
+                        'CASE WHEN dayPart = 0 AND hourPart = 0 then NULL ELSE ROUND(totalOrders/(dayPart * 24 + hourPart)::NUMERIC, 2) END AS hourAvg  ' +
                         'FROM PromoInfo PI INNER JOIN OrderInfo O on PI.promoID = O.promoID',
-     restAmtSummary:    'With PromoInfo AS (SELECT DISTINCT P.promoID, startDate,  startTime, endDate, endTime, discAmt, ' +
-                        'DATE_PART( \'day\',  (startDate + startTime) -  (endDate + endTime)) as dayDuration, ' +
-                        'DATE_PART( \'day\', (startDate + startTime) - ( endDate + endTime)) * 24 + ' +
-                        'DATE_PART( \'hour\', (startDate + startTime) - (endDate + endTime)) as hourDuration ' +
+     restAmtSummary:    'With PromoInfo AS ( ' +
+                        'SELECT DISTINCT P.promoID, startDate + startTime as startDT, ' +
+                        'endDate + endTime as endDT, discAmt, ' +
+                        'DATE_PART(\'day\', (endDate + endTime) - (startDate + startTime)) as dayPart,  ' +
+                        'DATE_PART(\'hour\',(endDate + endTime) - (startDate + startTime)) as hourPart  ' +
                         'FROM Restpromo R INNER JOIN Promotion P on R.promoID = P.promoID ' +
                         'WHERE P.discAmt IS NOT NULL  AND R.restID = $1), ' +
-                        'OrderInfo As (SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
+                        'OrderInfo As ( ' +
+                        'SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
                         'FROM Promotion P INNER JOIN FromMenu FM on P.promoID = FM.promoID ' +
-                        'WHERE P.discAmt IS NOT NULL AND FM.restaurantID = $2' +
-                        'GROUP BY P.promoID) ' +
-                        'SELECT DISTINCT PI.promoID, startDate, startTime, endDate, endTime, discAmt, totalOrders, dayDuration, hourDuration, ' +
-                        'ROUND(totalOrders::decimal / dayDuration) as dayAvg, ROUND(totalOrders::decimal/ hourDuration) as hourAvg ' +
+                        'WHERE P.discAmt IS NOT NULL AND FM.restaurantID = $2 ' +
+                        'GROUP BY P.promoID ) ' + 
+                        'SELECT DISTINCT PI.promoID, to_char(startDT, \'YYYY-MM-DD\') as startDT, to_char(endDT, \'YYYY-MM-DD\') as endDT,' +
+                        'discAmt, totalOrders, to_char(endDT-startDT, \'DDD HH24:MI:SS\') as duration,  ' +
+                        'CASE WHEN dayPart > 0 THEN ROUND(totalOrders/dayPart::NUMERIC, 2) ELSE NULL END AS dayAvg, ' +
+                        'CASE WHEN dayPart = 0 AND hourPart = 0 then NULL ELSE ROUND(totalOrders/(dayPart * 24 + hourPart)::NUMERIC, 2) END AS hourAvg ' +
                         'FROM PromoInfo PI INNER JOIN OrderInfo O on PI.promoID = O.promoID',
-  
     restInsertFood:     'INSERT INTO Food(foodName, price, category, restaurantID) ' +
                         'Values($1, $2, \'Western\', $3)',
     /*------FDS Manager--------*/

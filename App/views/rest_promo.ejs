@@ -3,9 +3,9 @@
 <h2>View Promotions </h2>
 <p> 
     This page shows information about promotions that your restaurant has.
-    It also shows the duration  of the campaign in terms of days and hours (estimated), 
-    total number of orders using the promotion and average number of orders per day and per hour.
-    For average, it is rounded to nearest whole number.
+    It also shows the duration  of the campaign, total number of orders using the promotion 
+    and average number of orders per day and per hour.
+    For average, it is rounded up to two decimal place.
 </p>
 
 <h3>Percentage Discount</h3>
@@ -14,31 +14,25 @@
 	<thead>
 		<tr>
 			      <th scope="col">ID</th>
-            <th scope="col">Start Date</th>
-            <th scope="col">Start Time</th>
-            <th scope="col">End Date</th>
-            <th scope="col">End Time</th>
+            <th scope="col">Start</th>
+            <th scope="col">End</th>
             <th scope="col">Percentage Discount</th>
             <th scope="col">Total Orders</th>
-            <th scope="col">Duration(Day)</th>
-            <th scope="col">Average(Day)</th>
-            <th scope="col">Duration(Hour)</th>
-            <th scope="col">Average(Hour)</th>
+            <th scope="col">Duration</th>
+            <th scope="col">Orders/Day</th>
+            <th scope="col">Orders/Hour</th>
 		</tr>
 	</thead>
 	<tbody>
 		<% for(var i=0; i< percInfo.length; i++) { %>
 		<tr>
 			      <td><%= percInfo[i].promoid%></td>
-            <td><%= percInfo[i].startdate%></td>
-            <td><%= percInfo[i].starttime%></td>
-            <td><%= percInfo[i].enddate%></td>
-            <td><%= percInfo[i].endtime%></td>
+            <td><%= percInfo[i].startdt%></td>
+            <td><%= percInfo[i].enddt%></td>
             <td><%= percInfo[i].discperc%></td>
             <td><%= percInfo[i].totalorders%></td>
-            <td><%= percInfo[i].dayduration%></td>
-            <td><%= percInfo[i].dayavg%></td>
-            <td><%= percInfo[i].hourduration%></td>
+            <td><%= percInfo[i].duration%></td>
+            <td><%= percInfo[i].dayAvg%></td>
             <td><%= percInfo[i].houravg%></td>
 		</tr>
 		<% } %>
@@ -52,38 +46,32 @@
 	<thead>
 		<tr>
 			      <th scope="col">ID</th>
-            <th scope="col">Start Date</th>
-            <th scope="col">Start Time</th>
-            <th scope="col">End Date</th>
-            <th scope="col">End Time</th>
+            <th scope="col">Start</th>
+            <th scope="col">End</th>
             <th scope="col">Fixed Amount Discount</th>
             <th scope="col">Total Orders</th>
-            <th scope="col">Duration(Day)</th>
-            <th scope="col">Average(Day)</th>
-            <th scope="col">Duration(Hour)</th>
-            <th scope="col">Average(Hour)</th>
+            <th scope="col">Duration</th>
+            <th scope="col">Orders/Day</th>
+            <th scope="col">Orders/Hour</th>
 		</tr>
 	</thead>
 	<tbody>
 		<% for(var i=0; i< fixedInfo.length; i++) { %>
 		<tr>
 			      <td><%= fixedInfo[i].promoid%></td>
-            <td><%= fixedInfo[i].startdate%></td>
-            <td><%= fixedInfo[i].starttime%></td>
-            <td><%= fixedInfo[i].enddate%></td>
-            <td><%= fixedInfo[i].endtime%></td>
+            <td><%= fixedInfo[i].startdt%></td>
+            <td><%= fixedInfo[i].enddt%></td>
             <td><%= fixedInfo[i].discamt%></td>
             <td><%= fixedInfo[i].totalorders%></td>
-            <td><%= fixedInfo[i].dayduration%></td>
-            <td><%= fixedInfo[i].dayavg%></td>
-            <td><%= fixedInfo[i].hourduration%></td>
+            <td><%= fixedInfo[i].duration%></td>
+            <td><%= fixedInfo[i].dayAvg%></td>
             <td><%= fixedInfo[i].houravg%></td>
 		</tr>
 		<% } %>
 	</tbody>
 </table>
 
-<h1>Add Promotion</h1>
+<h2>Add Promotion</h2>
 <form id="promo_form" action="/rest_promo/insertpromo" role="form" method="post">
 	<div class="form-group">
 		<label for="start">Start Date and Time</label>
