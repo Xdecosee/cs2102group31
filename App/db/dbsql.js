@@ -12,9 +12,6 @@ sql.query = {
     restInfo:   'SELECT DISTINCT * FROM Restaurants R ' +
                 'INNER JOIN RestaurantStaff RS on R.restaurantID =  RS.restaurantID ' +
                 'WHERE RS.uid = $1 LIMIT 1',
-    restMenuInfo:   'SELECT DISTINCT * FROM Food F ' +
-                    'INNER JOIN Restaurants R on F.restaurantID = R.restaurantID ' +
-                    'WHERE R.restaurantID = $1',
     restOrders:     'SELECT DISTINCT FM.orderID, to_char(O.date, \'DD/MM/YYYY\') as date, O.timeOrderPlace, FM.FoodName, FM.quantity ' +
                     'FROM Orders O INNER JOIN FromMenu FM on O.orderID = FM.orderID ' +
                     'WHERE O.orderStatus = \'Confirmed\'  AND O.timeDepartFromRest IS NULL AND FM.restaurantID = $1 ' + 
@@ -50,14 +47,14 @@ sql.query = {
                         'WHERE P.discPerc IS NOT NULL  AND R.restID = $1), ' +
                         'OrderInfo As ( ' +
                         'SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
-                        'FROM Promotion P INNER JOIN FromMenu FM on P.promoID = FM.promoID ' +
+                        'FROM Promotion P LEFT JOIN FromMenu FM on P.promoID = FM.promoID ' +
                         'WHERE P.discPerc IS NOT NULL AND FM.restaurantID = $2 ' +
                         'GROUP BY P.promoID ) ' + 
                         'SELECT DISTINCT PI.promoID, to_char(startDT, \'YYYY-MM-DD HH24:MI:SS\') as startDT, to_char(endDT, \'YYYY-MM-DD HH24:MI:SS\') as endDT,' +
                         'discPerc, totalOrders, to_char(endDT-startDT, \'DDD HH24:MI:SS\') as duration,  ' +
                         'CASE WHEN dayPart > 0 THEN ROUND(totalOrders/dayPart::NUMERIC, 2) ELSE NULL END AS dayAvg, ' +
                         'CASE WHEN dayPart = 0 AND hourPart = 0 then NULL ELSE ROUND(totalOrders/(dayPart * 24 + hourPart)::NUMERIC, 2) END AS hourAvg  ' +
-                        'FROM PromoInfo PI INNER JOIN OrderInfo O on PI.promoID = O.promoID ' +
+                        'FROM PromoInfo PI LEFT JOIN OrderInfo O on PI.promoID = O.promoID ' +
                         'ORDER BY  startDT DESC, endDT DESC',
      restAmtSummary:    'With PromoInfo AS ( ' +
                         'SELECT DISTINCT P.promoID, startDate + startTime as startDT, ' +
@@ -68,17 +65,21 @@ sql.query = {
                         'WHERE P.discAmt IS NOT NULL  AND R.restID = $1), ' +
                         'OrderInfo As ( ' +
                         'SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
-                        'FROM Promotion P INNER JOIN FromMenu FM on P.promoID = FM.promoID ' +
+                        'FROM Promotion P LEFT JOIN FromMenu FM on P.promoID = FM.promoID ' +
                         'WHERE P.discAmt IS NOT NULL AND FM.restaurantID = $2 ' +
                         'GROUP BY P.promoID ) ' + 
                         'SELECT DISTINCT PI.promoID, to_char(startDT, \'YYYY-MM-DD HH24:MI:SS\') as startDT, to_char(endDT, \'YYYY-MM-DD HH24:MI:SS\') as endDT,' +
                         'discAmt, totalOrders, to_char(endDT-startDT, \'DDD HH24:MI:SS\') as duration,  ' +
                         'CASE WHEN dayPart > 0 THEN ROUND(totalOrders/dayPart::NUMERIC, 2) ELSE NULL END AS dayAvg, ' +
                         'CASE WHEN dayPart = 0 AND hourPart = 0 then NULL ELSE ROUND(totalOrders/(dayPart * 24 + hourPart)::NUMERIC, 2) END AS hourAvg ' +
-                        'FROM PromoInfo PI INNER JOIN OrderInfo O on PI.promoID = O.promoID ' +
+                        'FROM PromoInfo PI LEFT JOIN OrderInfo O on PI.promoID = O.promoID ' +
                         'ORDER BY  startDT DESC, endDT DESC',
     restInsertFood:     'INSERT INTO Food(foodName, price, category, restaurantID) ' +
                         'Values($1, $2, \'Western\', $3)',
+    restMenuInfo:       'SELECT DISTINCT * FROM Food F ' +
+                        'INNER JOIN Restaurants R on F.restaurantID = R.restaurantID ' +
+                        'WHERE R.restaurantID = $1',
+                        
     /*------FDS Manager--------*/
     totalOrders: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(orderid) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
     totalCost: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, SUM(cost) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
