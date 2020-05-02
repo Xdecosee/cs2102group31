@@ -840,12 +840,14 @@ INSERT INTO Promotion (startDate,endDate,discAmt,type) VALUES ('2020-06-01','202
 INSERT INTO Promotion (startDate,endDate,discPerc,type) VALUES ('2020-03-01','2020-05-30',0.2,'Restpromo');
 INSERT INTO Promotion (startDate,endDate,discPerc,type) VALUES ('2020-06-01','2020-07-01',0.2,'Restpromo');
 INSERT INTO Promotion (startDate,endDate,discPerc,type) VALUES ('2020-08-01','2020-09-01',0.15,'Restpromo');
+INSERT INTO Promotion (startDate,endDate,discAmt,type) VALUES ('2019-12-25','2020-12-27', 1.50,'Restpromo');
 
 INSERT INTO FDSpromo(promoID) VALUES(1);
 INSERT INTO FDSpromo(promoID) VALUES(2);
 INSERT INTO FDSpromo(promoID) VALUES(3);
 INSERT INTO Restpromo(promoID, restID) VALUES(4,1);
 INSERT INTO Restpromo(promoID, restID) VALUES(5,3);
+INSERT INTO Restpromo(promoID, restID) VALUES(6,4);
 INSERT INTO Restpromo(promoID, restID) VALUES(6,4);
 
 /* Insert Data into Payment Option */
