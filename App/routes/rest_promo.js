@@ -37,7 +37,7 @@ function fixedInfo(req, res, next) {
         if(err){
             return next(error);
         }
-		req.fixedInfo = data.rows;
+        req.fixedInfo = data.rows;
         return next();
 	});
 }
