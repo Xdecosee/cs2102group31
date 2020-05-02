@@ -463,7 +463,7 @@ INSERT INTO Users (name, username, password, type) VALUES ('Ugo', 'uhumphery5', 
 INSERT INTO Users (name, username, password, type) VALUES ('Theo', 'tadkina', 'mXQVb8fG','Customers');
 INSERT INTO Users (name, username, password, type) VALUES ('Jocelyn', 'jdodshund', '8XnPDwZN', 'Customers');
 INSERT INTO Users (name, username, password, type) VALUES ('Paddie', 'ppaulline', 'Ake9PyGlLEh6', 'Customers');
-INSERT INTO Users (name, username, password, type) VALUES ('qwerty', 'qwerty', '123qwe','Customers');
+INSERT INTO Users (name, username, password, type) VALUES ('qwerty', 'qwerty123', '123qwe','Customers');
 INSERT INTO Users (name, username, password, type) VALUES ('queenie', 'queen', '123456','Customers'); 
 INSERT INTO Users (name, username, password, type) VALUES ('ariel', 'ariel123', '123456','Customers');
 INSERT INTO Users (name, username, password, type) VALUES ('belle', 'belle123', '123456','Customers');
