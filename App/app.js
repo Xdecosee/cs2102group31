@@ -42,6 +42,7 @@ app.use(passport.session())
 
 /* --- IMPT(Section 1): Adding Web Pages --- */
 var mainloginRouter = require('./routes/main_login');
+var mainSignUpRouter = require('./routes/main_signup');
 var custHomeRouter = require('./routes/cust_home');
 // var custHomeRouter = require('./routes/cust_profile');
 // var custHomeRouter = require('./routes/cust_view_menu');
@@ -62,13 +63,9 @@ var riderOrderRouter = require('./routes/rider_order');
 var riderftScheduleRouter = require('./routes/rider_ftschedule');
 var riderptScheduleRouter = require('./routes/rider_ptschedule');
 
-
-
-
-
-
 /* --- IMPT(Section 2): Adding Web Pages --- */
 app.use('/', mainloginRouter);
+app.use('/main_signup', mainSignUpRouter);
 app.use('/cust_home', custHomeRouter);
 app.use('/fds_home', fdsHomeRouter);
 app.use('/rest_home', restHomeRouter);
@@ -86,81 +83,19 @@ app.use('/fds_rider', fdsRiderRouter);
 app.use('/fds_promo', fdsPromoRouter);
 
 
-
 /* --- Don't need to touch: Error Handler ----*/
 app.use(function(req, res, next) {
   next(createError(404));
 });
 app.use(function(err, req, res, next) {
+  var type = null;
+  if(req.isAuthenticated()){
+    type = req.user.type;
+  }
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
-  res.render('main_error');
+  res.render('error_app', {error: err, 	type: type});
 });
-
-/* --- IMPT(Section 3): Traverse Sections--- */
-app.get('/', (req, res) => {
-	res.render('main_login');
-});
-
-app.get('/cust_home', (req, res) => {
-	res.render('cust_home');
-});
-
-app.get('/fds_home', (req, res) => {
-	res.render('fds_home');
-});
-
-app.get('/rest_home', (req, res) => {
-	res.render('rest_home');
-});
-
-app.get('/rest_menu', (req, res) => {
-	res.render('rest_menu');
-});
-
-app.get('/rest_order', (req, res) => {
-	res.render('rest_order');
-});
-
-app.get('/rest_promo', (req, res) => {
-	res.render('rest_promo');
-});
-
-
-app.get('/rider_home', (req, res) => {
-  res.render('rider_home');
-});
-
-app.get('/rider_salary', (req, res) => {
-  res.render('rider_salary');
-});
-
-app.get('/rider_order', (req, res) => {
-  res.render('rider_order');
-});
-
-app.get('/rider_ftschedule', (req, res) => {
-  res.render('rider_ftschedule');
-});
-
-app.get('/rider_ptschedule', (req, res) => {
-  res.render('rider_ptschedule');
-});
-
-//----fds
-app.get('/fds_cust', (req, res) => {
-	res.render('fds_cust');
-});
-app.get('/fds_rest', (req, res) => {
-	res.render('fds_rest');
-});
-app.get('/fds_rider', (req, res) => {
-	res.render('fds_rider');
-});
-app.get('/fds_cust', (req, res) => {
-	res.render('fds_rider');
-});
-//-----
 
 module.exports = app;

@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar_login') %>
+<h2> Sign Up For Restaurant Staff </h2>
+<form id="signup_form" role = "form" action="/main_signup/signup/<%= type%>" method="post">
+    <div class="form-group">
+        <label >Username:</label>
+        <input class="form-control" type="text" name="username" id="username"/>
+    </div>
+    <div class="form-group">
+        <label >Name:</label>
+        <input class="form-control" type="text" name="name" id="name"/>
+    </div>
+    <div class="form-group">
+        <label>Password:</label>
+        <input class="form-control" type="password" name="password" id="password"/>
+    </div>
+    <div class="form-group">
+        <label>Restaurant Name:</label>
+        <input class="form-control" type="text" name="restaurant" id="restaurant"/>
+    </div>
+    <div class="form-group">
+        <label>Restaurant Location:</label>
+        <input class="form-control" type="text" name="location" id="location"/>
+    </div>
+    <div class="form-group">
+        <label>Restaurant Min Threshold($):</label>
+        <input class="form-control" type="text" name="threshold" id="threshold" aria-describedby="thresholdHelp"/>
+        <small id="thresholdHelp" class="form-text text-muted"> threshold should be up to two decimal points.</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script src="javascripts/main.js"> </script>
+
+<script>
+    (function() {
+      window.addEventListener('load', function() {
+        var forms = [document.getElementById('signup_form')];
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', checkR, false);
+        });
+      }, false);
+    })();
+</script>
+<%- include('partials/footer') %>

@@ -24,7 +24,7 @@ function restInfo(req, res, next) {
 
 	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
         if(err){
-            return next(error);
+            return next(err);
         }
 		req.restInfo = data.rows;
 		restID = data.rows[0].restaurantid;
@@ -41,7 +41,7 @@ function restSummary(req, res, next) {
 	else {
 		caller.query(sql.query.restSummary, [restID, queryYear, queryMonth], (err, data) => {
 			if(err){
-				return next(error);
+				return next(err);
 			}
 			req.restSummary = data.rows;
 			return next();
@@ -60,7 +60,7 @@ function restFavFood(req, res, next) {
 
 		caller.query(sql.query.restFavFood, [restID, queryYear, queryMonth], (err, data) => {
 			if(err){
-				return next(error);
+				return next(err);
 			}
 			req.restFavFood = data.rows;
 			return next();

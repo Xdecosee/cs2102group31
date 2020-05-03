@@ -16,11 +16,11 @@ function logOut(req, res){
 	res.redirect('/');
 }
 
-router.get('/', loadPage );
+router.get('/', passport.antiMiddleware(), loadPage );
 
 router.get('/logout', passport.authMiddleware(), logOut);
 
-router.post('/login', passport.authenticate('local', {failureRedirect: '/'}), function(req, res) {
+router.post('/login', passport.authenticate('local', {failureRedirect: '/?login=' + encodeURIComponent('fail')}), function(req, res) {
 	var type = req.user.type;
 
     if(type == "Customers"){
@@ -37,6 +37,7 @@ router.post('/login', passport.authenticate('local', {failureRedirect: '/'}), fu
 	}
 	else{
 		console.log('not a valid user type??');
+		res.redirect('/');
 	}
    
 });

@@ -43,7 +43,7 @@ CREATE TABLE Restaurants (
 	restaurantID    INTEGER GENERATED ALWAYS AS IDENTITY,
 	name            VARCHAR(100)         NOT NULL,
 	location        VARCHAR(255)         NOT NUll,
-	minThreshold    INTEGER DEFAULT '0'  NOT NULL,
+	minThreshold   	NUMERIC  DEFAULT 0   NOT NULL,
 	PRIMARY KEY (RestaurantID)
 );
 
@@ -1515,50 +1515,6 @@ CREATE TRIGGER riders_trigger
 AFTER INSERT ON DeliveryRiders 
 FOR EACH ROW
 EXECUTE PROCEDURE check_riders();
-
-
-/*Leave this trigger at the bottom to prevent interference with manual insert statements*/
-CREATE OR REPLACE FUNCTION check_user()
-RETURNS TRIGGER AS $$
-DECLARE count NUMERIC;
-BEGIN 
-	IF (NEW.type = 'Customers') THEN
-		SELECT COUNT(*) INTO count 
-        FROM FDSManagers, RestaurantStaff, DeliveryRiders
-        WHERE NEW.uid = FDSManagers.uid
-        OR NEW.uid = RestaurantStaff.uid
-        OR NEW.uid = DeliveryRiders.uid;
-        
-		IF (count > 0) THEN 
-            RETURN NULL;
-		ELSE
-            INSERT INTO Customers VALUES (NEW.uid,DEFAULT,DEFAULT);
-            RAISE NOTICE 'Customers added';
-			RETURN NEW;
-
-		END IF;
-	ELSIF (NEW.type = 'FDSManagers') THEN
-		SELECT COUNT(*) INTO count 
-        FROM Customers, RestaurantStaff, DeliveryRiders
-        WHERE NEW.uid = Customers.uid
-        OR NEW.uid = RestaurantStaff.uid
-        OR NEW.uid = DeliveryRiders.uid;
-
-		IF (count > 0) THEN RETURN NULL;
-		ELSE
-			INSERT INTO FDSManagers VALUES (NEW.uid);
-            RAISE NOTICE 'FDSManagers added';
-			RETURN NEW;
-		
-		END IF;	
-	END IF;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER user_trigger
-AFTER INSERT ON Users
-FOR EACH ROW
-EXECUTE PROCEDURE check_user();
 
 /*check whether order placed during operational hours*/
 CREATE OR REPLACE FUNCTION check_operational_hours() --after operating hours, insertion continuessss
