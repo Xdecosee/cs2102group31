@@ -84,11 +84,12 @@ sql.query = {
                         'CASE WHEN dayPart = 0 AND hourPart = 0 then NULL ELSE ROUND(totalOrders/(dayPart * 24 + hourPart)::NUMERIC, 2) END AS hourAvg ' +
                         'FROM PromoInfo PI LEFT JOIN OrderInfo O on PI.promoID = O.promoID ' +
                         'ORDER BY  startDT DESC, endDT DESC',
-    restInsertFood:     'INSERT INTO Food(foodName, price, category, restaurantID) ' +
-                        'Values($1, $2, \'Western\', $3)',
+    restInsertFood:     'INSERT INTO Food(foodName, price, category, dailyLimit, restaurantID) ' +
+                        'Values($1, ROUND($2::NUMERIC,2), $3, $4, $5)',
     restMenuInfo:       'SELECT DISTINCT * FROM Food F ' +
                         'INNER JOIN Restaurants R on F.restaurantID = R.restaurantID ' +
-                        'WHERE R.restaurantID = $1',
+                        'WHERE R.restaurantID = $1 AND archive = \'FALSE\'',
+    restSelectCategories:   'SELECT * FROM Categories',
                         
     /*------FDS Manager--------*/
     totalOrders: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(orderid) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',

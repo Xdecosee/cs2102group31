@@ -8,10 +8,18 @@ function emptyValues(str){
 
 function checkFood(event) {
 	// Get Values from <form> in ejs file
-	var food  = document.getElementById('foodname' ).value;
+	var food  = document.getElementById('foodname').value;
 	var price = document.getElementById('price').value;
+	var limit = document.getElementById('limit').value;
+	var category = document.getElementById('category').value;
 	var numbers = /^\d*\.?\d{1,2}$/;
 	
+	if(emptyValues(food) || emptyValues(price.toString()) || emptyValues(limit.toString()) || emptyValues(category)){
+		alert("Please key in all information!");
+		event.preventDefault();
+		event.stopPropagation();
+		return false;
+	}
 
 	if( food.length > 100) {
 		/*-------USEFUL: create popup through alert -------- */
@@ -20,7 +28,7 @@ function checkFood(event) {
 		event.stopPropagation();
 		return false;
 	}
-	if( !price.match(numbers)) {
+	if( !price.match(numbers) || price <= 0.00) {
 		alert("price format invalid!");
 		event.preventDefault();
 		event.stopPropagation();

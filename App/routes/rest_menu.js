@@ -14,7 +14,7 @@ var restID = null;
 function restInfo(req, res, next) {
 	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
         if(err){
-            return next(error);
+            return next(err);
         }
 		restID = data.rows[0].restaurantid;
         return next();
@@ -24,7 +24,7 @@ function restInfo(req, res, next) {
 function menuInfo(req, res, next) {
 	caller.query(sql.query.restMenuInfo, [restID], (err, data) => {
         if(err){
-            return next(error);
+            return next(err);
 		}
         req.menuInfo = data.rows;
         return next();
@@ -32,24 +32,41 @@ function menuInfo(req, res, next) {
 }
 
 
-function loadPage(req, res, next) {
-	res.render('rest_menu', { 
-		menuInfo: req.menuInfo
+function categoriesInfo(req, res, next) {
+	caller.query(sql.query.restSelectCategories, (err, data) => {
+        if(err){
+            return next(err);
+		}
+		req.categories = data.rows;
+        return next();
 	});
 }
 
-router.get('/', passport.authMiddleware(), restInfo, menuInfo, loadPage );
+
+
+function loadPage(req, res, next) {
+	res.render('rest_menu', { 
+		menuInfo: req.menuInfo,
+		categories: req.categories
+	});
+	
+}
+
+router.get('/', passport.authMiddleware(), restInfo, menuInfo, categoriesInfo, loadPage );
 
 
 
 router.post('/insertfood', function(req, res, next) {
 
 	var foodname  = req.body.foodname;
-	var price  = Number(req.body.price);
+	var price  = req.body.price;
+	var category = req.body.category;
+	var limit = req.body.limit;
 
-	caller.query(sql.query.restInsertFood,[foodname, price, restID], (err, data) => {
+	caller.query(sql.query.restInsertFood,[foodname, price, category, limit, restID], (err, data) => {
 		if(err) {
-			return next(err);
+			return next(new Error('Error in adding food! Maybe there is another food with the same name' +
+			' in your menu or your food archives!'));
 		}
         res.redirect('/rest_menu');
 	});

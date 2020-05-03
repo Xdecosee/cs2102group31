@@ -1,8 +1,11 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_rest') %>
-<h1>Restaurant Menu</h1>
+<h2>Restaurant Menu</h2>
 
-<h2>Menu Details</h2>
+<p> You can manage your menu here. Once the daily limit reaches 0 for a food, customers will not be able 
+	to make orders for that food. 
+
+<h3>Menu Details</h3>
 <table class="table">
 	<thead>
 		<tr>
@@ -10,7 +13,6 @@
             <th scope="col">Price</th>
             <th scope="col">Category</th>
             <th scope="col">Daily Limit</th>
-            <th scope="col">Avaliablity</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -20,22 +22,34 @@
             <td><%= menuInfo[i].price%></td>
             <td><%= menuInfo[i].category%></td>
             <td><%= menuInfo[i].dailylimit%></td>
-            <td><%= menuInfo[i].availability ? 'yes' : 'no' %></td>
 		</tr>
 		<% } %>
 	</tbody>
 </table>
 
-<h2>Add New Food</h2>
+<h2>Add Food</h2>
 <form id="food_form" action="/rest_menu/insertfood" role="form" method="post">
 	<div class="form-group">
-		<label for="name">Food Name</label>
-		<input type="text" class="form-control" id="foodname" name="foodname"  aria-describedby="foodHelp" placeholder="Enter food name">
-		<small id="foodHelp" class="form-text text-muted">Name should not exceed 100 chars</small>
+		<label for="name">Food Name:</label>
+		<input type="text" class="form-control" id="foodname" name="foodname">
 	</div>
 	<div class="form-group">
-		<label for="username">Price</label>
-		<input type="text" class="form-control" id="price" name="price">
+		<label for="username">Price: </label>
+		<input type="text" class="form-control" id="price" name="price" aria-describedby="priceHelp">
+		<small id="priceHelp" class="form-text text-muted"> Price should be up to two decimal points and more than 0.
+		</small>
+	</div>
+	<div class="form-group">
+		<label for="username">Category: </label>
+		<select id="category" name="category" class="form-control">
+			<% for(var i = 0; i < categories.length; i++) { %>
+				<option value='<%= categories[i].category%>'><%= categories[i].category%></option>
+			  <% } %>
+		</select>
+	</div>
+	<div class="form-group">
+		<label for="limit">Daily Limit: </label>
+		<input type="number" min="0" class="form-control" id="limit" name="limit">
 	</div>
 	<button type="submit" class="btn btn-primary">Submit</button>
 </form>
@@ -51,5 +65,11 @@
 		}, false);
 	})();
 </script>
+
+<h2>Update Food</h2>
+
+<h2>Delete Food</h2>
+
+<h2>See Food Archives</h2>
 
 <%- include('partials/footer') %>
