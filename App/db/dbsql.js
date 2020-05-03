@@ -50,8 +50,9 @@ sql.query = {
                         'FROM Promotion P LEFT JOIN FromMenu FM on P.promoID = FM.promoID ' +
                         'WHERE P.discPerc IS NOT NULL AND FM.restaurantID = $2 ' +
                         'GROUP BY P.promoID ) ' + 
-                        'SELECT DISTINCT PI.promoID, to_char(startDT, \'YYYY-MM-DD HH24:MI:SS\') as startDT, to_char(endDT, \'YYYY-MM-DD HH24:MI:SS\') as endDT,' +
-                        'discPerc, totalOrders, to_char(endDT-startDT, \'DDD HH24:MI:SS\') as duration,  ' +
+                        'SELECT DISTINCT PI.promoID, discPerc * 100 as discPerc, totalOrders, ' + 
+                        'to_char(startDT, \'YYYY-MM-DD HH24:MI:SS\') as startDT, to_char(endDT, \'YYYY-MM-DD HH24:MI:SS\') as endDT, ' +
+                        'to_char(endDT-startDT, \'DDD HH24:MI:SS\') as duration,  ' +
                         'CASE WHEN dayPart > 0 THEN ROUND(totalOrders/dayPart::NUMERIC, 2) ELSE NULL END AS dayAvg, ' +
                         'CASE WHEN dayPart = 0 AND hourPart = 0 then NULL ELSE ROUND(totalOrders/(dayPart * 24 + hourPart)::NUMERIC, 2) END AS hourAvg  ' +
                         'FROM PromoInfo PI LEFT JOIN OrderInfo O on PI.promoID = O.promoID ' +
@@ -68,8 +69,9 @@ sql.query = {
                         'FROM Promotion P LEFT JOIN FromMenu FM on P.promoID = FM.promoID ' +
                         'WHERE P.discAmt IS NOT NULL AND FM.restaurantID = $2 ' +
                         'GROUP BY P.promoID ) ' + 
-                        'SELECT DISTINCT PI.promoID, to_char(startDT, \'YYYY-MM-DD HH24:MI:SS\') as startDT, to_char(endDT, \'YYYY-MM-DD HH24:MI:SS\') as endDT,' +
-                        'discAmt, totalOrders, to_char(endDT-startDT, \'DDD HH24:MI:SS\') as duration,  ' +
+                        'SELECT DISTINCT PI.promoID, discAmt, totalOrders, ' +
+                        'to_char(startDT, \'YYYY-MM-DD HH24:MI:SS\') as startDT, to_char(endDT, \'YYYY-MM-DD HH24:MI:SS\') as endDT,' +
+                        'to_char(endDT-startDT, \'DDD HH24:MI:SS\') as duration,  ' +
                         'CASE WHEN dayPart > 0 THEN ROUND(totalOrders/dayPart::NUMERIC, 2) ELSE NULL END AS dayAvg, ' +
                         'CASE WHEN dayPart = 0 AND hourPart = 0 then NULL ELSE ROUND(totalOrders/(dayPart * 24 + hourPart)::NUMERIC, 2) END AS hourAvg ' +
                         'FROM PromoInfo PI LEFT JOIN OrderInfo O on PI.promoID = O.promoID ' +
