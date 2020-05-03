@@ -92,14 +92,15 @@ sql.query = {
     viewCat: 'Select * from categories',
 
     insertCat: 'INSERT INTO categories(category) Values($1)',
-
+    
     fdsPercentPromo: 'INSERT INTO Promotion(startDate, endDate, discPerc, type) ' +
         'Values($1, $2, $3, \'FDSpromo\') RETURNING promoID',
     fdsAmtPromo: 'INSERT INTO Promotion(startDate, endDate, discAmt, type) ' +
         'Values($1, $2, $3, \'FDSpromo\') RETURNING promoID',
     fdsInsertPromo: 'INSERT INTO FDSpromo(promoID) VALUES($1)',
-    promoInfo: 'Select * from Promotion',
+    promoInfo:'SELECT p.promoID, to_char(p.startdate,\'DD-Mon-YYYY\') as startdate, to_char(p.enddate,\'DD-Mon-YYYY\') as enddate, p.discperc,p.discamt,p.type,rp.restid from Promotion p left join restpromo rp on rp.promoid = p.promoid',
 
+    
     /*------Delivery Riders--------*/
     riderInfo:    'SELECT * FROM DeliveryRiders WHERE uid = $1',
     ratingInfo:   'SELECT CAST(avg(rating) AS DECIMAL(10,2)) AS rating FROM Delivers GROUP BY (uid) HAVING uid = $1',
@@ -127,10 +128,9 @@ sql.query = {
     updateUserCard: 'UPDATE Users SET cardDetails = $2 WHERE uid = $1',
     updateCustomerCard: 'UPDATE Customers SET cardDetails = $2 WHERE uid = $1',
     //orderInfo: 'SELECT distinct * FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
-    reviewInfo :'SELECT DISTINCT o.date as date, R.name, P.review, P.star FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
-    orderInfo:'SELECT O.date::timestamp::date, R.name, F.foodName, F.quantity FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
-
-
-}
+    reviewInfo :'SELECT DISTINCT to_char(O.date,\'DD-Mon-YYYY\') as date, R.name, P.review, P.star FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
+    orderInfo:'SELECT to_char(O.date,\'DD-Mon-YYYY\') as date, R.name, F.foodName, F.quantity FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
+    
+} 
 
 module.exports = sql;

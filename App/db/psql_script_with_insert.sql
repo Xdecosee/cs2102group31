@@ -24,11 +24,11 @@ CREATE TABLE Promotion (
     promoID     INTEGER GENERATED ALWAYS AS IDENTITY,
     startDate   DATE NOT NULL,
     endDate     DATE NOT NULL,
-	startTime 	TIME,
-	endTime		TIME,
+    startTime   TIME,
+    endTime     TIME,
     discPerc    NUMERIC check(discPerc > 0) DEFAULT NULL,
     discAmt     NUMERIC check(discAmt > 0) DEFAULT NULL,
-	type    	VARCHAR(255) NOT NULL CHECK (type in ('FDSpromo', 'Restpromo')),
+    type        VARCHAR(255) NOT NULL CHECK (type in ('FDSpromo', 'Restpromo')),
 	PRIMARY KEY (promoID)
 );
 
