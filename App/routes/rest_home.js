@@ -16,7 +16,6 @@ var queryMonth = 0;
 
 function restInfo(req, res, next) {
 	
-	
 	if(req.query.selectedmonth !== undefined){
 		queryYear = parseInt(req.query.selectedmonth.slice(0,4));
 		queryMonth = parseInt(req.query.selectedmonth.slice(5));

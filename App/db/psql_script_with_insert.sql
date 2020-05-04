@@ -878,6 +878,7 @@ UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M 
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 1 LIMIT 1) WHERE orderID = 1; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 1;
+UPDATE Orders SET timeOrderPlace = '11:00:00' WHERE orderID = 1;
 UPDATE Orders SET timeDepartToRest = '11:05:00' WHERE orderID = 1;
 UPDATE Orders SET timeArriveRest = '11:11:00' WHERE orderID = 1;
 UPDATE Orders SET timeDepartFromRest = '11:22:00' WHERE orderID = 1;
@@ -897,6 +898,7 @@ UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M 
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 2 LIMIT 1) WHERE orderID = 2; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 2;
+UPDATE Orders SET timeOrderPlace = '10:50:00' WHERE orderID = 2;
 UPDATE Orders SET timeDepartToRest = '11:00:00' WHERE orderID = 2;
 UPDATE Orders SET timeArriveRest = '11:15:00' WHERE orderID = 2;
 
@@ -914,6 +916,7 @@ UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M 
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 3 LIMIT 1) WHERE orderID = 3; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 3;
+UPDATE Orders SET timeOrderPlace = '13:00:00' WHERE orderID = 3;
 UPDATE Orders SET timeDepartToRest = '13:05:00' WHERE orderID = 3;
 UPDATE Orders SET timeArriveRest = '13:11:00' WHERE orderID = 3;
 UPDATE Orders SET timeDepartFromRest = '13:22:00' WHERE orderID = 3;
@@ -932,6 +935,7 @@ UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M 
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 4 LIMIT 1) WHERE orderID = 4; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 4;
+UPDATE Orders SET timeOrderPlace = '13:00:00' WHERE orderID = 4;
 UPDATE Orders SET timeDepartToRest = '13:05:00' WHERE orderID = 4;
 UPDATE Orders SET timeArriveRest = '13:11:00' WHERE orderID = 4;
 UPDATE Orders SET timeDepartFromRest = '13:22:00' WHERE orderID = 4;
@@ -951,6 +955,7 @@ UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M 
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 5 LIMIT 1) WHERE orderID = 5; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 5;
+UPDATE Orders SET timeOrderPlace = '15:00:00' WHERE orderID = 5;
 UPDATE Orders SET timeDepartToRest = '15:25:00' WHERE orderID = 5;
 UPDATE Orders SET timeArriveRest = '15:31:00' WHERE orderID = 5;
 UPDATE Orders SET timeDepartFromRest = '15:42:00' WHERE orderID = 5;
@@ -971,6 +976,7 @@ UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M 
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 6 LIMIT 1) WHERE orderID = 6; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 6;
+UPDATE Orders SET timeOrderPlace = '15:20:00' WHERE orderID = 6;
 UPDATE Orders SET timeDepartToRest = '15:25:00' WHERE orderID = 6;
 UPDATE Orders SET timeArriveRest = '15:31:00' WHERE orderID = 6;
 UPDATE Orders SET timeDepartFromRest = '15:42:00' WHERE orderID = 6;
@@ -1008,6 +1014,7 @@ UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M 
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 8 LIMIT 1) WHERE orderID = 8; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 8;
+UPDATE Orders SET timeOrderPlace = '15:00:00' WHERE orderID = 8;
 UPDATE Orders SET timeDepartToRest = '15:25:00' WHERE orderID = 8;
 UPDATE Orders SET timeArriveRest = '15:31:00' WHERE orderID = 8;
 UPDATE Orders SET timeDepartFromRest = '15:42:00' WHERE orderID = 8;
