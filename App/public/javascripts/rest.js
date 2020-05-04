@@ -1,6 +1,7 @@
 /* ---- USEFUL: you can implement input validation if you want  or any javascript funcs you saw online---- */
 function emptyValues(str){
-	if (!str || str.length === 0) {
+
+	if (!str.trim()|| str.trim().length === 0) {
 		return true;
 	}
 }
@@ -9,7 +10,6 @@ function checkFood(event) {
 	// Get Values from <form> in ejs file
 	var food  = document.getElementById('foodname' ).value;
 	var price = document.getElementById('price').value;
-	//var numbers = /^[0-9]+$/;
 	var numbers = /^\d*\.?\d{1,2}$/;
 	
 
@@ -31,17 +31,16 @@ function checkFood(event) {
 
 function checkPromo(event) {
 
+	var startnorm = document.getElementById('startdt' ).value;
+	var endnorm = document.getElementById('enddt').value;
 	var start  = new Date(document.getElementById('startdt' ).value).getTime();
 	var end = new Date(document.getElementById('enddt').value).getTime();
 	var type = document.getElementById('type').value;
 	var discount = document.getElementById('discount').value;
 	var twodecimal = /^\d*\.?\d{1,2}$/;
 	var whole = /^\d{1,3}$/;
-
-	console.log(start);
-	console.log(discount);
 	
-	if(emptyValues(start) || emptyValues(end) || emptyValues(type) || emptyValues(discount.toString())){
+	if(emptyValues(startnorm) || emptyValues(endnorm) || emptyValues(type) || emptyValues(discount.toString())){
 		alert("Please key in all information!");
 		event.preventDefault();
 		event.stopPropagation();
@@ -72,3 +71,4 @@ function checkPromo(event) {
 	}
 	
 }
+

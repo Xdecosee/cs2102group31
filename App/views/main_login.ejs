@@ -13,4 +13,27 @@
     </div>
     <button type="submit" class="btn btn-primary" value="login">Submit</button>
 </form>
+
+
+
+<script>
+    (function() {
+      window.addEventListener('load', function() {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const login = urlParams.get('login');
+        const signup = urlParams.get('signup');
+
+        if(signup != null && signup.localeCompare('success') == 0){
+            alert('Sign Up Success. You can login now!');
+        }
+
+        if(login != null && login.localeCompare('fail') == 0){
+            alert('Login Failed. Please try again!');
+        }
+
+      }, false);
+    })();
+
+</script>
 <%- include('partials/footer') %>

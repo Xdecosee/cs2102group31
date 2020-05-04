@@ -8,6 +8,14 @@ sql.query = {
     login: 'SELECT DISTINCT U.username, U.password, U.name, U.uid, U.type As type , DR.type As ridertype ' +
         'FROM Users U Left Join DeliveryRiders DR on U.uid = DR.uid WHERE U.username = $1',
 
+    /*--------Sign Up ------- */
+    signupUserWithId: 'INSERT INTO Users(name, username, password, type) VALUES($1, $2, $3, $4) RETURNING uid',
+    signupRest: 'INSERT INTO Restaurants(name, location, minthreshold) VALUES($1, $2, Round($3::NUMERIC, 2)) RETURNING restaurantID',
+    signupRestStaff: 'INSERT INTO RestaurantStaff(uid,restaurantID) VALUES($1, $2)',
+    signupCustomer: 'INSERT INTO Customers(uid) VALUES($1)',
+    signupFDS: 'INSERT INTO FDSManagers(uid) VALUES($1)',
+    signupRider: 'INSERT INTO DeliveryRiders(uid, type) VALUES($1, $2)',
+
     /*------Restaurant Staff--------*/
     restInfo: 'SELECT DISTINCT * FROM Restaurants R ' +
         'INNER JOIN RestaurantStaff RS on R.restaurantID =  RS.restaurantID ' +

@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+<% if (type == null) { %>
+    <%- include('partials/navbar_login') %>
+<% } else if (type == 'Customers') { %>
+    <%- include('partials/navbar_cust') %>
+<% } else if (type == 'FDSManagers') { %>
+    <%- include('partials/navbar_fds') %>
+<% } else if (type == 'RestaurantStaff') { %>
+    <%- include('partials/navbar_rest') %>
+<% } else if (type == 'DeliveryRiders') { %>
+    <%- include('partials/navbar_rider') %>
+<% } else { %>
+    <%- include('partials/navbar_login') %>
+<% }%>
+
+<!--Error Page-->
+<h2><%= error.message %></h2>
+<h3> Error Content </h3>
+<p><%= error.status %></p>
+<pre><%= error.stack %></pre>
+
+<%- include('partials/footer') %>

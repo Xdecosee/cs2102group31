@@ -43,7 +43,7 @@ CREATE TABLE Restaurants (
 	restaurantID    INTEGER GENERATED ALWAYS AS IDENTITY,
 	name            VARCHAR(100)         NOT NULL,
 	location        VARCHAR(255)         NOT NUll,
-	minThreshold    INTEGER DEFAULT '0'  NOT NULL,
+	minThreshold   	NUMERIC  DEFAULT 0   NOT NULL,
 	PRIMARY KEY (RestaurantID)
 );
 
@@ -112,7 +112,7 @@ CREATE TABLE FromMenu (
 CREATE TABLE Users (
 	uid         INT GENERATED ALWAYS AS IDENTITY,
 	name        VARCHAR(255)     NOT NULL,
-	username    VARCHAR(255)     NOT NULL,
+	username    VARCHAR(255)     UNIQUE NOT NULL,
 	password    VARCHAR(255)     NOT NULL,
 	type    VARCHAR(255) NOT NULL CHECK (type in ('Customers', 'FDSManagers', 'RestaurantStaff', 'DeliveryRiders')), 
 	PRIMARY KEY (uid)
@@ -432,7 +432,6 @@ DECLARE hour_in INTEGER;
 
 
 BEGIN
-
     SELECT sum(EXTRACT(HOUR FROM w.intervalEnd) - EXTRACT(HOUR FROM w.intervalStart)) INTO hour_in
     FROM workingDays W
     WHERE EXTRACT(WEEK FROM w.WorkDate) = EXTRACT(WEEK FROM NEW.WorkDate)
@@ -463,7 +462,7 @@ INSERT INTO Users (name, username, password, type) VALUES ('Ugo', 'uhumphery5', 
 INSERT INTO Users (name, username, password, type) VALUES ('Theo', 'tadkina', 'mXQVb8fG','Customers');
 INSERT INTO Users (name, username, password, type) VALUES ('Jocelyn', 'jdodshund', '8XnPDwZN', 'Customers');
 INSERT INTO Users (name, username, password, type) VALUES ('Paddie', 'ppaulline', 'Ake9PyGlLEh6', 'Customers');
-INSERT INTO Users (name, username, password, type) VALUES ('qwerty', 'qwerty', '123qwe','Customers');
+INSERT INTO Users (name, username, password, type) VALUES ('qwerty', 'qwerty123', '123qwe','Customers');
 INSERT INTO Users (name, username, password, type) VALUES ('queenie', 'queen', '123456','Customers'); 
 INSERT INTO Users (name, username, password, type) VALUES ('ariel', 'ariel123', '123456','Customers');
 INSERT INTO Users (name, username, password, type) VALUES ('belle', 'belle123', '123456','Customers');
@@ -1522,50 +1521,6 @@ CREATE TRIGGER riders_trigger
 AFTER INSERT ON DeliveryRiders 
 FOR EACH ROW
 EXECUTE PROCEDURE check_riders();
-
-
-/*Leave this trigger at the bottom to prevent interference with manual insert statements*/
-CREATE OR REPLACE FUNCTION check_user()
-RETURNS TRIGGER AS $$
-DECLARE count NUMERIC;
-BEGIN 
-	IF (NEW.type = 'Customers') THEN
-		SELECT COUNT(*) INTO count 
-        FROM FDSManagers, RestaurantStaff, DeliveryRiders
-        WHERE NEW.uid = FDSManagers.uid
-        OR NEW.uid = RestaurantStaff.uid
-        OR NEW.uid = DeliveryRiders.uid;
-        
-		IF (count > 0) THEN 
-            RETURN NULL;
-		ELSE
-            INSERT INTO Customers VALUES (NEW.uid,DEFAULT,DEFAULT);
-            RAISE NOTICE 'Customers added';
-			RETURN NEW;
-
-		END IF;
-	ELSIF (NEW.type = 'FDSManagers') THEN
-		SELECT COUNT(*) INTO count 
-        FROM Customers, RestaurantStaff, DeliveryRiders
-        WHERE NEW.uid = Customers.uid
-        OR NEW.uid = RestaurantStaff.uid
-        OR NEW.uid = DeliveryRiders.uid;
-
-		IF (count > 0) THEN RETURN NULL;
-		ELSE
-			INSERT INTO FDSManagers VALUES (NEW.uid);
-            RAISE NOTICE 'FDSManagers added';
-			RETURN NEW;
-		
-		END IF;	
-	END IF;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER user_trigger
-AFTER INSERT ON Users
-FOR EACH ROW
-EXECUTE PROCEDURE check_user();
 
 /*check whether order placed during operational hours*/
 CREATE OR REPLACE FUNCTION check_operational_hours() --after operating hours, insertion continuessss

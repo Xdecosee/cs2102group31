@@ -67,6 +67,8 @@ router.post('/addschedule', function(req, res, next) {
 	var s4  = req.body.s4;
 	var s5  = req.body.s5;
 
+	var check = true;
+
 	const shouldAbort = err => {
 		if (err) {
 		console.error('Error in transaction', err.stack)
@@ -75,12 +77,13 @@ router.post('/addschedule', function(req, res, next) {
 			console.error('Error rolling back client', err.stack)
 			}
 		})
+		check = false;
 		}
 	}
 
 	caller.query('BEGIN',err=>{
-		if (shouldAbort(err)) return
-
+		if (shouldAbort(err)) return 	
+			
 		caller.query(sql.query.ftschedInsert,[uuid, day1, s1], (err, data) =>{
 			if (shouldAbort(err)) return
 
@@ -99,8 +102,13 @@ router.post('/addschedule', function(req, res, next) {
 							caller.query('COMMIT', err=>{
 								if(err){
 									console.error("Error in adding schedule",err.stack)
+									res.redirect('/rider_ftschedule?schedule=' + encodeURIComponent('fail'));
 								}
-								res.redirect('/rider_ftschedule');
+								else if (check) {
+									res.redirect('/rider_ftschedule?schedule=' + encodeURIComponent('success'));
+								} else{
+									res.redirect('/rider_ftschedule?schedule=' + encodeURIComponent('fail'));
+								}
 							})
 						}) 
 					})

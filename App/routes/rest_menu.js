@@ -49,8 +49,7 @@ router.post('/insertfood', function(req, res, next) {
 
 	caller.query(sql.query.restInsertFood,[foodname, price, restID], (err, data) => {
 		if(err) {
-			console.log ("Error in adding food!");
-			console.log (err);
+			return next(err);
 		}
         res.redirect('/rest_menu');
 	});
