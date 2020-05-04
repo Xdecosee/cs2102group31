@@ -15,12 +15,6 @@ var queryMonth = 0;
 
 
 function restInfo(req, res, next) {
-	
-	
-	if(req.query.selectedmonth !== undefined){
-		queryYear = parseInt(req.query.selectedmonth.slice(0,4));
-		queryMonth = parseInt(req.query.selectedmonth.slice(5));
-	}
 
 	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
         if(err){
@@ -34,6 +28,11 @@ function restInfo(req, res, next) {
 
 function restSummary(req, res, next) {
 	
+	if(req.query.selectedmonth !== undefined){
+		queryYear = parseInt(req.query.selectedmonth.slice(0,4));
+		queryMonth = parseInt(req.query.selectedmonth.slice(5));
+	}
+
 	if(queryMonth == 0 || queryYear == 0){
 		req.restSummary = {};
 		return next();

@@ -36,6 +36,27 @@ function checkFood(event) {
 	}
 }
 
+function updateFood(event) {
+	// Get Values from <form> in ejs file
+	var price = document.getElementById('price').value;
+	var limit = document.getElementById('limit').value;
+	var category = document.getElementById('category').value;
+	var numbers = /^\d*\.?\d{1,2}$/;
+	
+	if(emptyValues(price.toString()) || emptyValues(limit.toString()) || emptyValues(category)){
+		alert("Please key in all information!");
+		event.preventDefault();
+		event.stopPropagation();
+		return false;
+	}
+	
+	if( !price.match(numbers) || price <= 0.00) {
+		alert("price format invalid!");
+		event.preventDefault();
+		event.stopPropagation();
+		return false;
+	}
+}
 
 function checkPromo(event) {
 

@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar_rest') %>
+<h2>Update Food</h2>
+<p> Food Selected: <%= foodname%> </p>
+
+<form id="food_form" action="/rest_menu/update/<%= foodname%>" role="form" method="post">
+    <div class="form-group">
+        <label for="price">Price: </label>
+        <input type="text" class="form-control" id="price" name="price" aria-describedby="priceHelp" value="<%= price%>">
+        <small id="priceHelp" class="form-text text-muted"> Price should be up to two decimal points and more than 0.
+        </small>
+    </div>
+    <div class="form-group">
+        <label for="category">Category: </label>
+
+        <select id="category" name="category" class="form-control">
+
+            <% for(var i = 0; i < categories.length; i++) {  
+                var selected = (category == categories[i].category ) ? "selected" : ""; %>
+                <option value='<%= categories[i].category%>' <%=selected %>><%= categories[i].category%></option>
+           <% } %>
+
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="limit">Daily Limit: </label>
+        <input type="number" min="0" class="form-control" id="limit" name="limit" value="<%= limit %>">
+    </div>
+    <button type="submit" class="btn btn-primary">Update Food</button>
+</form>				
+
+
+<script src = "javascripts/rest.js"></script>
+<script>
+	(function() {
+		window.addEventListener('load', function() {
+			var forms = [document.getElementById('food_form')];
+			var validation = Array.prototype.filter.call(forms, function(form) {
+				form.addEventListener('submit', updateFood, false);
+			});
+		}, false);
+	})();
+</script>
+
+
+<%- include('partials/footer') %>
