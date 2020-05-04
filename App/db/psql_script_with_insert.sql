@@ -691,23 +691,6 @@ INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted)
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-20', '16:00', '20:00', 8);
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-21', '11:00', '15:00', 11);
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-21', '16:00', '20:00', 12);
-<<<<<<< HEAD
-=======
-
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-08', '11:00', '15:00', 10); /*Include others*/
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-08', '16:00', '20:00', 12);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-09', '11:00', '15:00', 11);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-09', '16:00', '20:00', 10);
-
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-03-19', '16:00', '20:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-03-20', '16:00', '20:00', 11);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-03-21', '16:00', '20:00', 12);
-
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-04-20', '11:00', '15:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-04-20', '16:00', '20:00', 8);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-04-21', '11:00', '15:00', 11);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-04-21', '16:00', '20:00', 12);
->>>>>>> 77f12cf8bfc9bac88c09ad06a0ffbefec666e6e6
 COMMIT;
 
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(21, '2020-03-23', 1, 13);
