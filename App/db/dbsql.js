@@ -4,9 +4,9 @@ const sql = {}
 
 sql.query = {
 
-    /*--------Login-----------*/
-    login: 'SELECT DISTINCT U.username, U.password, U.name, U.uid, U.type As type , DR.type As ridertype ' +
-        'FROM Users U Left Join DeliveryRiders DR on U.uid = DR.uid WHERE U.username = $1',
+   /*--------Login-----------*/
+    login:  'SELECT DISTINCT U.username, U.password, U.name, U.uid, U.type As type , DR.type As ridertype ' +
+            'FROM Users U Left Join DeliveryRiders DR on U.uid = DR.uid WHERE U.username = $1',
 
     /*--------Sign Up ------- */
     signupUserWithId: 'INSERT INTO Users(name, username, password, type) VALUES($1, $2, $3, $4) RETURNING uid',
@@ -17,8 +17,7 @@ sql.query = {
     signupRider: 'INSERT INTO DeliveryRiders(uid, type) VALUES($1, $2)',
 
     /*------Restaurant Staff--------*/
-  
-    restInfo:   'SELECT DISTINCT R.restaurantID, name, location, Round(minThreshold::NUMERIC, 2) as minthreshold FROM Restaurants R ' +
+    restIdInfo:   'SELECT DISTINCT R.restaurantID, name, location, Round(minThreshold::NUMERIC, 2) as minthreshold FROM Restaurants R ' +
                 'INNER JOIN RestaurantStaff RS on R.restaurantID =  RS.restaurantID ' +
                 'WHERE RS.uid = $1 LIMIT 1',
     restOrders:     'SELECT DISTINCT FM.orderID, to_char(O.date, \'DD/MM/YYYY\') as date, O.timeOrderPlace, FM.FoodName, FM.quantity ' +
@@ -100,6 +99,7 @@ sql.query = {
     restArchive:   'UPDATE Food SET archive =  \'TRUE\' WHERE restaurantID = $1 and foodname = $2',
     restRestore:   'UPDATE Food SET archive =  \'FALSE\' WHERE restaurantID = $1 and foodname = $2',
     restUpdate:   'UPDATE Food SET price =  ROUND($1::NUMERIC,2) , category = $2, dailylimit = $3 WHERE restaurantID = $4 and foodname = $5',
+                        
          
     /*------FDS Manager--------*/
     totalOrders: 'Select X.num From (SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(orderid) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
