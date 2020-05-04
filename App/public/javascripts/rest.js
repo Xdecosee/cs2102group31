@@ -6,6 +6,18 @@ function emptyValues(str){
 	}
 }
 
+function checkMonth(event) {
+
+	var month = document.getElementById('month').value;
+
+	if(emptyValues(month)){
+		alert("Please select a month!");
+		event.preventDefault();
+		event.stopPropagation();
+		return false;
+	}
+
+}
 function checkFood(event) {
 	// Get Values from <form> in ejs file
 	var food  = document.getElementById('foodname').value;

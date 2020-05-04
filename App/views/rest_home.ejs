@@ -63,6 +63,13 @@
 			  <button type="submit" class="btn btn-primary">Submit</button>
 			</form>
 			
+			<% if (year != 0 && month != 0) {  %>
+			</br>
+
+			<p>You have selected <%= month %> <%= year%>.</p>
+
+			<% } %>
+			
 			</br>
 
 			<div id="accordion2">
@@ -149,6 +156,19 @@
 	</div>
 
 </div>
+
+
+<script src = "javascripts/rest.js"></script>
+<script>
+	(function() {
+		window.addEventListener('load', function() {
+			var forms = [document.getElementById('month_form')];
+			var validation = Array.prototype.filter.call(forms, function(form) {
+				form.addEventListener('submit', checkMonth, false);
+			});
+		}, false);
+	})();
+</script>
 
 
 <%- include('partials/footer') %>

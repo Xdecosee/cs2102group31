@@ -12,6 +12,8 @@ const caller = require('../db/dbcaller');
 var restID = null;
 var queryYear = 0;
 var queryMonth = 0;
+var months = [ "January", "February", "March", "April", "May", "June", 
+           "July", "August", "September", "October", "November", "December" ];
 
 
 function restInfo(req, res, next) {
@@ -76,14 +78,16 @@ function loadPage(req, res, next) {
 		name:req.user.name,
 		restInfo: req.restInfo,
 		restSummary: req.restSummary,
-		restFavFood: req.restFavFood
+		restFavFood: req.restFavFood,
+		year: queryYear,
+		month: months[queryMonth - 1]
 	});
 }
 
 router.get('/', passport.authMiddleware(), restInfo, restSummary, restFavFood, loadPage );
 
 router.post('/selectmonth', function(req, res, next) {
-
+	
 	res.redirect('/rest_home?selectedmonth=' + encodeURIComponent(req.body.month));
 
 });
