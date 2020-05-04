@@ -75,29 +75,31 @@ router.post('/insertpromo', function(req, res, next) {
         const shouldAbort = err => {
             if (err) {
                 console.log("Error in transaction!");
-                caller.query('ROLLBACK', err => {
+                client.query('ROLLBACK', err => {
                     if (err) {
                         console.log("Error in rollback!");
                         return next(new Error("Error in adding restaurant promotion!"));
                     }
                     done()
                 })
+                return next(new Error("Error in adding restaurant promotion!"));
             }
             
            return !!err;
         }
 
-        caller.query('BEGIN', err => {
+        client.query('BEGIN', err => {
             if (shouldAbort(err)) return
 
-            caller.query(selectedquery,[startDate, endDate, startTime, endTime, discount], (err, data) => {
+            client.query(selectedquery,[startDate, endDate, startTime, endTime, discount], (err, data) => {
               if (shouldAbort(err)) return
 
-                 promoid = data.rows[0].promoid;
+                promoid = data.rows[0].promoid;
 
-                caller.query(sql.query.restInsertPromo,[promoid, restID], (err, data) => {
+                client.query(sql.query.restInsertPromo,[promoid, restID], (err, data) => {
                     if (shouldAbort(err)) return
-                    caller.query('COMMIT', err => {
+                    
+                    client.query('COMMIT', err => {
                         if (err) {
                             console.log("Error in committing transaction");
                             return next(new Error("Error in adding restaurant promotion!"));

@@ -9,12 +9,7 @@ module.exports = {
     return pool.query(text, params, callback);
   },
   
-  pool: pool,
-
-  getClient: (callback) => {
-    pool.connect((err, client, done) => {
-      callback(err, client, done)
-    })
-  }
+  //Not sure how to convert to getClient to use for transactions
+  pool: pool
   
 };
