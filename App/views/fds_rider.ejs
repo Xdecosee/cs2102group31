@@ -4,24 +4,53 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <title>Bootstrap Example</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajaxRider/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-</head>
 
 <body>
 
   <div class="container">
     <h1>FDS Manager Rider</h1>
   </div>
+
+  <form id="month_form" action="/fds_rider/selectdate" role="form" method="post">
+    <div class="form-group row">
+      <input type="month" class="form-control" id="date" name="date">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+
+  <h3>Delivery Rider Summary</h3>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">riderID</th>
+			<th scope="col">Hours Worked</th>
+      <th scope="col">Total Orders</th>
+      <th scope="col">Salary</th>
+      <th scope="col">Average Delivery Time</th>
+      <th scope="col">Number of Ratings</th>
+      <th scope="col">Average Ratings</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% for (var i = 0; i < riderSummary.length; i++) { %>
+		<tr>
+			<td><%= riderSummary[i].uid%></td>
+			<td><%= riderSummary[i].totalhours%></td>
+			<td><%= riderSummary[i].totalorders%></td>
+      <td><%= riderSummary[i].monthsalary%></td>
+      <td><%= riderSummary[i].avgduration%></td>
+      <td><%= riderSummary[i].totalratings%></td>
+      <td><%= riderSummary[i].avgratings%></td>
+		</tr>
+		<% } %>
+	</tbody>
+</table>
+
+
 </body>
 
 </html>
+
 
 
 <%- include('partials/footer') %>
