@@ -78,7 +78,7 @@ router.post('/insertpromo', function(req, res, next) {
                 client.query('ROLLBACK', err => {
                     if (err) {
                         console.log("Error in rollback!");
-                        res.redirect('/rest_promo?insert=' + encodeURIComponent('fail'));
+                        return next(err);
                     }
                     done()
                 })
@@ -102,7 +102,7 @@ router.post('/insertpromo', function(req, res, next) {
                     client.query('COMMIT', err => {
                         if (err) {
                             console.log("Error in committing transaction");
-                            res.redirect('/rest_promo?insert=' + encodeURIComponent('fail'));
+                            return next(err);
                         }
                         done()
                         res.redirect('/rest_promo?insert=' + encodeURIComponent('success'));

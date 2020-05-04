@@ -48,7 +48,7 @@ router.post('/cooked/(:orderid)/(:foodname)', function(req, res, next) {
 
 	caller.query(sql.query.restCooked,[orderid, foodname], (err, data) => {
 		if(err) {
-			return next(new Error("Error in hiding order"));
+			return next(err);
 		}
         res.redirect('/rest_order');
 	});
