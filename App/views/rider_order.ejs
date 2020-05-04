@@ -13,7 +13,7 @@
             <div class="form-row align-items-center">
                 <div class="col-auto my-1">
                     <label for="order"><strong>Order Number</strong></label>
-                    <select class="custom-select mr-sm-2" id="orderid" name = "orderid">
+                    <select class="custom-select mr-sm-2" id="orderid" name = "orderid" required>
                         <option selected>Choose...</option>
                         <% for(var i=0; i< pOrderInfo.length; i++) { %>
                             <option value= "<%= pOrderInfo[i].orderid%>"><%= pOrderInfo[i].orderid%></option>
@@ -23,7 +23,7 @@
                 <div class="col-auto my-1">
                 <div class="custom-control custom-checkbox mr-sm-2">
                     <label for="order"><strong>State of Order</strong></label>
-                        <select class="custom-select mr-sm-2" id="step" name = "step">
+                        <select class="custom-select mr-sm-2"  id="step" name = "step" required>
                             <option selected>Choose...</option>
                             <option value= "Depart To Resturant">Depart To Resturant</option>
                             <option value= "Arrive At Resturant">Arrive At Resturant</option>
@@ -106,3 +106,28 @@
 
 
 <%- include('partials/footer') %>
+
+<script>
+    (function() {
+      window.addEventListener('load', function() {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const update = urlParams.get('update');
+  
+        if(update != null && update.localeCompare('success') == 0){
+            alert('Order Successfully Updated!');
+        }
+        else if((update != null && update.localeCompare('fail') == 0))
+            alert('Order failed to be updated!');
+      }, false);
+    })();
+  
+    (function() {
+        window.addEventListener('load', function() {
+          var forms = [document.getElementById('orderUpdate_form')];
+          var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', checkD, false);
+          });
+        }, false);
+      })();
+  </script>

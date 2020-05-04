@@ -43,7 +43,7 @@ app.use(passport.session())
 /* --- IMPT(Section 1): Adding Web Pages --- */
 var mainloginRouter = require('./routes/main_login');
 
-//cust
+var mainSignUpRouter = require('./routes/main_signup');
 var custHomeRouter = require('./routes/cust_home');
 var custProfileRouter = require('./routes/cust_profile');
 var custMenuRouter = require('./routes/cust_menu');
@@ -65,13 +65,9 @@ var riderOrderRouter = require('./routes/rider_order');
 var riderftScheduleRouter = require('./routes/rider_ftschedule');
 var riderptScheduleRouter = require('./routes/rider_ptschedule');
 
-
-
-
-
-
 /* --- IMPT(Section 2): Adding Web Pages --- */
 app.use('/', mainloginRouter);
+app.use('/main_signup', mainSignUpRouter);
 app.use('/cust_home', custHomeRouter);
 app.use('/cust_menu', custMenuRouter);
 app.use('/cust_profile', custProfileRouter);
@@ -91,15 +87,19 @@ app.use('/fds_rider', fdsRiderRouter);
 app.use('/fds_promo', fdsPromoRouter);
 
 
-
 /* --- Don't need to touch: Error Handler ----*/
 app.use(function(req, res, next) {
   next(createError(404));
 });
 app.use(function(err, req, res, next) {
+  var type = null;
+  if(req.isAuthenticated()){
+    type = req.user.type;
+  }
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
+<<<<<<< HEAD
   res.render('main_error');
 });
 
@@ -173,7 +173,9 @@ app.get('/fds_rider', (req, res) => {
 });
 app.get('/fds_cust', (req, res) => {
 	res.render('fds_rider');
+=======
+  res.render('error_app', {error: err, 	type: type});
+>>>>>>> 8696b8cf339914414041fdc4948995a94e672c22
 });
-//-----
 
 module.exports = app;

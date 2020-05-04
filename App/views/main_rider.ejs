@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar_login') %>
+<h2> Sign Up For Delivery Rider</h2>
+<form id="signup_form" role = "form" action="/main_signup/signup/<%= type%>" method="post">
+    <div class="form-group">
+        <label >Username:</label>
+        <input class="form-control" type="text" name="username" id="username"/>
+    </div>
+    <div class="form-group">
+        <label >Name:</label>
+        <input class="form-control" type="text" name="name" id="name"/>
+    </div>
+    <div class="form-group">
+        <label>Password:</label>
+        <input class="form-control" type="password" name="password" id="password"/>
+    </div>
+    <div class="form-group">
+        <label for="ridertype">Choose Work Type</label>
+        <select id="ridertype" name="ridertype" class="form-control">
+            <option value="fulltime">Full Time</option>
+            <option value="parttime">Part Time</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script src="javascripts/main.js"> </script>
+
+<script>
+    (function() {
+      window.addEventListener('load', function() {
+        var forms = [document.getElementById('signup_form')];
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', checkD, false);
+        });
+      }, false);
+    })();
+</script>
+<%- include('partials/footer') %>

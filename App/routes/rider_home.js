@@ -8,8 +8,6 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
-var a = null;
-
 function ratingInfo(req, res, next) {
 	/*----- IMPT: Stuff in [] is for your sql parameters ($) ----- */
 	caller.query(sql.query.ratingInfo, [req.user.uid], (err, data) => {
