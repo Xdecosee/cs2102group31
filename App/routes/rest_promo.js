@@ -49,17 +49,6 @@ function loadPage(req, res, next) {
 	});
 }
 
-function insertPromo(req, res, next){
-
-    caller.query(sql.query.restInsertPromo,[promoid, restID], (err, data) => {
-        if(err) {
-            return next(new Error("Error in adding restaurant promotion!"));
-        } 
-       
-    });   
-
-}
-
 router.get('/', passport.authMiddleware(), restInfo, percInfo, fixedInfo, loadPage );
 
 router.post('/insertpromo', function(req, res, next) {
@@ -80,18 +69,51 @@ router.post('/insertpromo', function(req, res, next) {
     } else {
         res.redirect('/rest_promo');
     }
-        
-    caller.query(selectedquery,[startDate, endDate, startTime, endTime, discount], (err, data) => {
-        if(err) {
-            return next(new Error("Error in adding restaurant promotion!"));
+    
+    caller.pool.connect((err, client, done) => {
+
+        const shouldAbort = err => {
+            if (err) {
+                console.log("Error in transaction!");
+                client.query('ROLLBACK', err => {
+                    if (err) {
+                        console.log("Error in rollback!");
+                        return next(err);
+                    }
+                    done()
+                })
+                res.redirect('/rest_promo?insert=' + encodeURIComponent('fail'));
+            }
+            
+           return !!err;
         }
-        else {
-            promoid = data.rows[0].promoid;
-            insertPromo();
-            res.redirect('/rest_promo');
-        }
-      
-    });   
+
+        client.query('BEGIN', err => {
+            if (shouldAbort(err)) return
+
+            client.query(selectedquery,[startDate, endDate, startTime, endTime, discount], (err, data) => {
+              if (shouldAbort(err)) return
+
+                promoid = data.rows[0].promoid;
+
+                client.query(sql.query.restInsertPromo,[promoid, restID], (err, data) => {
+                    if (shouldAbort(err)) return
+                    
+                    client.query('COMMIT', err => {
+                        if (err) {
+                            console.log("Error in committing transaction");
+                            return next(err);
+                        }
+                        done()
+                        res.redirect('/rest_promo?insert=' + encodeURIComponent('success'));
+                    })
+                   
+                })
+
+            })
+        })
+
+     });
 
 
 });
