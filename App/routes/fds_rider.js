@@ -21,7 +21,6 @@ function riderSummary(req, res, next) {
 
 	} else if (queryMonth == 0 || queryYear == 0) {
 		req.riderSummary = {};
-		//return next();
 		next();
 	}
 	caller.query(sql.query.riderSummary, [queryYear, queryMonth], (err, data) => {
@@ -29,21 +28,38 @@ function riderSummary(req, res, next) {
 			return next(err);
 		}
 
-		console.log(queryYear);
-		console.log(queryMonth);
+		// console.log(queryYear);
+		// console.log(queryMonth);
 		req.riderSummary = data.rows;
 		return next();
 	});
 
 }
 
+function riderSchedule(req, res, next) {
+
+	if (queryMonth == 0 || queryYear == 0) {
+		req.riderSchedule = {};
+		return next();
+	} else {
+		caller.query(sql.query.riderSchedule, [queryYear, queryMonth], (err, data) => {
+			if (err) {
+				return next(err);
+			}
+			req.riderSchedule = data.rows;
+			return next();
+		});
+	}
+}
+
 function loadPage(req, res, next) {
 	res.render('fds_rider', {
-		riderSummary: req.riderSummary
+		riderSummary: req.riderSummary,
+		riderSchedule: req.riderSchedule
 	});
 }
 
-router.get('/', passport.authMiddleware(), riderSummary, loadPage);
+router.get('/', passport.authMiddleware(), riderSummary, riderSchedule, loadPage);
 
 
 router.post('/selectdate', function (req, res, next) {

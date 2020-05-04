@@ -7,44 +7,82 @@
 
 <body>
 
-  <div class="container">
     <h1>FDS Manager Rider</h1>
-  </div>
 
-  <form id="month_form" action="/fds_rider/selectdate" role="form" method="post">
-    <div class="form-group row">
-      <input type="month" class="form-control" id="date" name="date">
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-  </form>
-
+    <form id="month_form" action="/fds_rider/selectdate" role="form" method="post">
+      <div class="form-group row">
+        <input type="month" class="form-control" id="date" name="date">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+ 
   <h3>Delivery Rider Summary</h3>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="col">riderID</th>
-			<th scope="col">Hours Worked</th>
-      <th scope="col">Total Orders</th>
-      <th scope="col">Salary</th>
-      <th scope="col">Average Delivery Time</th>
-      <th scope="col">Number of Ratings</th>
-      <th scope="col">Average Ratings</th>
-		</tr>
-	</thead>
-	<tbody>
-		<% for (var i = 0; i < riderSummary.length; i++) { %>
-		<tr>
-			<td><%= riderSummary[i].uid%></td>
-			<td><%= riderSummary[i].totalhours%></td>
-			<td><%= riderSummary[i].totalorders%></td>
-      <td><%= riderSummary[i].monthsalary%></td>
-      <td><%= riderSummary[i].avgduration%></td>
-      <td><%= riderSummary[i].totalratings%></td>
-      <td><%= riderSummary[i].avgratings%></td>
-		</tr>
-		<% } %>
-	</tbody>
-</table>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">riderID</th>
+        <th scope="col">Hours Worked</th>
+        <th scope="col">Total Orders</th>
+        <th scope="col">Salary</th>
+        <th scope="col">Average Delivery Time</th>
+        <th scope="col">Number of Ratings</th>
+        <th scope="col">Average Ratings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (var i = 0; i < riderSummary.length; i++) { %>
+      <tr>
+        <td><%= riderSummary[i].uid%></td>
+        <td><%= riderSummary[i].totalhours%></td>
+        <td><%= riderSummary[i].totalorders%></td>
+        <td><%= riderSummary[i].monthsalary%></td>
+        <td><%= riderSummary[i].avgduration%></td>
+        <td><%= riderSummary[i].totalratings%></td>
+        <td><%= riderSummary[i].avgratings%></td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+
+  <h3>Current Rider Schedule</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">10:00</th>
+        <th scope="col">11:00</th>
+        <th scope="col">12:00</th>
+        <th scope="col">13:00</th>
+        <th scope="col">14:00</th>
+        <th scope="col">15:00</th>
+        <th scope="col">16:00</th>
+        <th scope="col">17:00</th>
+        <th scope="col">18:00</th>
+        <th scope="col">19:00</th>
+        <th scope="col">20:00</th>
+        <th scope="col">21:00</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (var i = 0; i < riderSchedule.length; i++) { %>
+      <tr>
+        <td><%= riderSchedule[i].ddate%></td>
+        <td><%= riderSchedule[i].t10%></td>
+        <td><%= riderSchedule[i].t11%></td>
+        <td><%= riderSchedule[i].t12%></td>
+        <td><%= riderSchedule[i].t13%></td>
+        <td><%= riderSchedule[i].t14%></td>
+        <td><%= riderSchedule[i].t15%></td>
+        <td><%= riderSchedule[i].t16%></td>
+        <td><%= riderSchedule[i].t17%></td>
+        <td><%= riderSchedule[i].t18%></td>
+        <td><%= riderSchedule[i].t19%></td>
+        <td><%= riderSchedule[i].t20%></td>
+        <td><%= riderSchedule[i].t21%></td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
 
 
 </body>

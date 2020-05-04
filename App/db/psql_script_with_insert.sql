@@ -1483,6 +1483,33 @@ SELECT CF.fuid as uid,
 FROM DeliveryRiders DR LEFT JOIN ConsolidateF CF on DR.uid = CF.fUid 
 );
 
+-- Rider's Schedule Overview
+CREATE VIEW Overview AS(
+	with Alldate as(
+	select generate_series(
+           (date '2019-01-01')::timestamp,
+           (date '2022-12-31')::timestamp,
+           interval '1 day'
+         ) as ddate
+	)
+
+	SELECT ddate as ddate,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='10:00:00' AND W.intervalEnd>'10:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND W.shiftID = 1) as t10,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='11:00:00' AND W.intervalEnd>'11:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2)) as t11,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='12:00:00' AND W.intervalEnd>'12:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t12,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='13:00:00' AND W.intervalEnd>'13:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t13,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='14:00:00' AND W.intervalEnd>'14:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t14,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='15:00:00' AND W.intervalEnd>'15:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =3 OR W.shiftID =4)) as t15,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='16:00:00' AND W.intervalEnd>'16:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =4)) as t16,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='17:00:00' AND W.intervalEnd>'17:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t17,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='18:00:00' AND W.intervalEnd>'18:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t18,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='19:00:00' AND W.intervalEnd>'19:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t19,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='20:00:00' AND W.intervalEnd>'20:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 3 OR W.shiftID =4)) as t20,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='21:00:00' AND W.intervalEnd>'21:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 4)) as t21
+	FROM AllDate D	
+);
+
+
 /*Leave this trigger at the bottom to prevent interference with manual insert statements*/
 CREATE OR REPLACE FUNCTION check_riders()
 RETURNS TRIGGER AS $$
