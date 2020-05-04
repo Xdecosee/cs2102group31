@@ -56,6 +56,8 @@ router.post('/addsched', function(req, res, next){
 	var end4 = req.body.end4;
 	var end5 = req.body.end5;
 	
+	var check = true;
+
 	const shouldAbort = err => {
 		if (err) {
 		console.error('Error in transaction', err.stack)
@@ -64,6 +66,7 @@ router.post('/addsched', function(req, res, next){
 			console.error('Error rolling back client', err.stack)
 			}
 		})
+		check = false;
 		}
 	}
 	
@@ -92,16 +95,24 @@ router.post('/addsched', function(req, res, next){
 											caller.query('COMMIT', err=>{
 												if(err){
 													console.error("Error in adding schedule",err.stack)
-												}						
-												res.redirect('/rider_ptschedule');
+													res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('fail'))
+												} else if(check){
+													res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('success'));	
+												} else{
+													res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('fail'))
+												}
 											})	
 										})
 									} else{
 										caller.query('COMMIT', err=>{
 											if(err){
 												console.error("Error in adding schedule",err.stack)
-											}						
-											res.redirect('/rider_ptschedule');
+												res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('fail'))
+											} else if(check){
+												res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('success'));	
+											} else{
+												res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('fail'))
+											}
 										})
 									}
 								})
@@ -109,8 +120,12 @@ router.post('/addsched', function(req, res, next){
 								caller.query('COMMIT', err=>{
 									if(err){
 										console.error("Error in adding schedule",err.stack)
-									}						
-									res.redirect('/rider_ptschedule');
+										res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('fail'))
+									} else if(check){
+										res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('success'));	
+									} else{
+										res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('fail'))
+									}
 								})
 							}
 						})
@@ -118,8 +133,12 @@ router.post('/addsched', function(req, res, next){
 						caller.query('COMMIT', err=>{
 							if(err){
 								console.error("Error in adding schedule",err.stack)
-							}						
-							res.redirect('/rider_ptschedule');
+								res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('fail'))
+							} else if(check){
+								res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('success'));	
+							} else{
+								res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('fail'))
+							}
 						})
 					}
 				})
@@ -127,8 +146,12 @@ router.post('/addsched', function(req, res, next){
 				caller.query('COMMIT', err=>{
 					if(err){
 						console.error("Error in adding schedule",err.stack)
-					}						
-					res.redirect('/rider_ptschedule');
+						res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('fail'))
+					} else if(check){
+						res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('success'));	
+					} else{
+						res.redirect('/rider_ptschedule?schedule=' + encodeURIComponent('fail'))
+					}
 				})
 			}
 		})

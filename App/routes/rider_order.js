@@ -58,7 +58,7 @@ router.post('/updateOrder', function(req, res, next) {
 				console.error("Error in updating order");
 			} else {
 				// this redirects to same page (i.e. refresh this page) after db success
-				res.redirect('/rider_order');
+				res.redirect('/rider_order?update=' + encodeURIComponent('success'));
 			}
 		});
 	}
@@ -68,7 +68,7 @@ router.post('/updateOrder', function(req, res, next) {
 				console.error("Error in updating order");
 			} else {
 				// this redirects to same page (i.e. refresh this page) after db success
-				res.redirect('/rider_order');
+				res.redirect('/rider_order?update=' + encodeURIComponent('success'));
 			}
 		});
 	}
@@ -78,7 +78,7 @@ router.post('/updateOrder', function(req, res, next) {
 				console.error("Error in updating order");
 			} else {
 				// this redirects to same page (i.e. refresh this page) after db success
-				res.redirect('/rider_order');
+				res.redirect('/rider_order?update=' + encodeURIComponent('success'));
 			}
 		});
 	}
@@ -96,7 +96,7 @@ router.post('/updateOrder', function(req, res, next) {
 								console.error("Error in updating order");
 							} else {
 								// this redirects to same page (i.e. refresh this page) after db success
-								res.redirect('/rider_order');
+								res.redirect('/rider_order?update=' + encodeURIComponent('success'));
 							}
 						});
 					}
@@ -110,7 +110,7 @@ router.post('/updateOrder', function(req, res, next) {
 				console.error("Error in updating order");
 			} else {
 				// this redirects to same page (i.e. refresh this page) after db success
-				res.redirect('/rider_order');
+				res.redirect('/rider_order?update=' + encodeURIComponent('success'));
 			}
 		});
 	}

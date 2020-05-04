@@ -115,3 +115,28 @@
       }
     }
 </script>
+
+<script>
+  (function() {
+    window.addEventListener('load', function() {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      const schedule = urlParams.get('schedule');
+
+      if(schedule != null && schedule.localeCompare('success') == 0){
+          alert('Schedule Successfully Updated!');
+      }
+      else if((schedule != null && schedule.localeCompare('fail') == 0))
+          alert('Schedule has failed to be updated. Please check the requirements!');
+    }, false);
+  })();
+
+  (function() {
+      window.addEventListener('load', function() {
+        var forms = [document.getElementById('schedule_form')];
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', checkD, false);
+        });
+      }, false);
+    })();
+</script>
