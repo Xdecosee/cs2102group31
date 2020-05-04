@@ -9,6 +9,12 @@ module.exports = {
     return pool.query(text, params, callback);
   },
   
-  pool: pool
+  pool: pool,
+
+  getClient: (callback) => {
+    pool.connect((err, client, done) => {
+      callback(err, client, done)
+    })
+  }
   
 };

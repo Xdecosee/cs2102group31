@@ -8,6 +8,22 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
+const shouldAbort = err => {
+    if (err) {
+        console.log("Error in transaction!");
+        caller.query('ROLLBACK', err => {
+            if (err) {
+                console.log("Error in rollback!");
+                return next(new Error("Error in adding restaurant promotion!"));
+            }
+            done()
+        })
+    }
+    
+   return !!err;
+}
+
+
 
 function loadPage(req, res, next) {
     var title = null;
@@ -100,30 +116,41 @@ router.post('/signup/(:type)', function(req, res, next) {
         var restaurantid = null;
         var uid = null;
 
-        caller.query(sql.query.signupRest,[restaurant,location, threshold], (err, data) => {
-            if(err) {
-                return next(new Error('Sign Up Fatal Failure!'));
-            }
+        caller.pool.connect((err, client, done) => {
 
-            restaurantid = data.rows[0].restaurantid;
+            client.query('BEGIN', err => {
+                if (shouldAbort(err)) return
+    
+                client.query(sql.query.signupRest,[restaurant,location, threshold], (err, data) => {
+                  if (shouldAbort(err)) return
+    
+                    restaurantid = data.rows[0].restaurantid;
+    
+                    client.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
+                        if (shouldAbort(err)) return
 
-            caller.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
-                if(err) {
-                    return next(new Error('Sign Up Failed! Perhaps try another username?'));
-                }
+                        uid = data.rows[0].uid;
 
-                uid = data.rows[0].uid;
+                        client.query(sql.query.signupRestStaff,[uid, restaurantid], (err, data) => {
+                            if (shouldAbort(err)) return
 
-                caller.query(sql.query.signupRestStaff,[uid, restaurantid], (err, data) => {
-                    if(err) {
-                        return next(new Error('Sign Up Fatal Failure!'));
-                    }
-
-                    res.redirect('/?signup=' + encodeURIComponent('success'));
-                });   
-
-            });   
-        });   
+                            caller.query('COMMIT', err => {
+                                if (err) {
+                                    console.log("Error in committing transaction");
+                                    return next(new Error('Sign Up Failed! Perhaps try another username?'));
+                                }
+                                done()
+                                res.redirect('/?signup=' + encodeURIComponent('success'));
+                            })
+                        })
+                       
+                    })
+    
+                })
+            })
+    
+         });
+                 
     }
     
     else if(type == 'DeliveryRiders'){

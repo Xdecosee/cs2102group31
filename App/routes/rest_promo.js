@@ -106,7 +106,7 @@ router.post('/insertpromo', function(req, res, next) {
                         res.redirect('/rest_promo?insert=' + encodeURIComponent('success'));
                     })
                    
-                });   
+                })
 
             })
         })
