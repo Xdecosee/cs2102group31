@@ -28,7 +28,7 @@ function riderSummary(req, res, next) {
 		if (err) {
 			return next(err);
 		}
-		confirm.log(data.rows[0].uid);
+
 		console.log(queryYear);
 		console.log(queryMonth);
 		req.riderSummary = data.rows;
