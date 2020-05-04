@@ -1,85 +1,154 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_rest') %>
 
-<h2>Profile Summary</h2>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="col">Name</th>
-			<th scope="col">Username</th>
-			<th scope="col">Restaurant</th>
-            <th scope="col">Location</th>
-            <th scope="col">Min. Threshold($)</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td><%= name%></td>
-			<td><%= username%></td>
-			<td><%= restInfo[0].name%></td>
-			<td><%= restInfo[0].location%></td>
-			<td><%= restInfo[0].minthreshold%></td>    
-		</tr>
-	</tbody>
-</table>
-
-<h2> Restaurant Summary </h2>
-<p>Key in or select a month and year (e.g March/2020) to view summary information for the following sections: </p>
-<p> 1. Order Summary - Shows the total number of completed orders and the total cost of all completed orders for selected month</p>
-<p> 2. Favourite Food - Shows the top 5 favorite food items in terms of completed orders for selected month </p>
-
-<form id="month_form" action="/rest_home/selectmonth" role="form" method="post">
-	<div class="form-group">
-		<input  type="month" class="form-control" id="month" name="month" >
- 	 </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<h2>Welcome, <%= username%>!</h2>
 
 </br>
 
-<h3>Order Summary</h3>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="col">Year</th>
-			<th scope="col">Month</th>
-			<th scope="col">Total Orders</th>
-            <th scope="col">Total Cost</th>
-		</tr>
-	</thead>
-	<tbody>
-		<% for (var i = 0; i < restSummary.length; i++) { %>
-		<tr>
-			<td><%= restSummary[i].year%></td>
-			<td><%= restSummary[i].month%></td>
-			<td><%= restSummary[i].totalorders%></td>
-			<td><%= restSummary[i].totalcost%></td>
-		</tr>
-		<% } %>
-	</tbody>
-</table>
+<div id="accordion">
 
-<h3>Favourite Food</h3>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="col">Year</th>
-			<th scope="col">Month</th>
-			<th scope="col">Food</th>
-            <th scope="col">Total Orders</th>
-		</tr>
-	</thead>
-	<tbody>
-		<% for (var i = 0; i < restFavFood.length; i++) { %>
-		<tr>
-			<td><%= restFavFood[i].year%></td>
-			<td><%= restFavFood[i].month%></td>
-			<td><%= restFavFood[i].food%></td>
-			<td><%= restFavFood[i].totalorders%></td>
-		</tr>
-		<% } %>
-	</tbody>
-</table>
+	<div class="card">
+		<div class="card-header" id="headingTwo">
+		  <h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+				Profile Summary
+			</button>
+		  </h5>
+		</div>
+		<div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+		  <div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">Name</th>
+						<th scope="col">Username</th>
+						<th scope="col">Restaurant</th>
+						<th scope="col">Location</th>
+						<th scope="col">Min. Threshold($)</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><%= name%></td>
+						<td><%= username%></td>
+						<td><%= restInfo[0].name%></td>
+						<td><%= restInfo[0].location%></td>
+						<td><%= restInfo[0].minthreshold%></td>    
+					</tr>
+				</tbody>
+			</table>
+		  </div>
+		</div>
+	</div>
+
+	</br>
+
+	<div class="card">
+		<div class="card-header" id="headingThree">
+		  <h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+				Restaurant Summary 
+			</button>
+		  </h5>
+		</div>
+		<div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+		  <div class="card-body">
+
+			<p>Key in or select a month and year (e.g March/2020) to view summary information. </p>
+
+			<form id="month_form" action="/rest_home/selectmonth" role="form" method="post">
+				<div class="form-group">
+					<input  type="month" class="form-control" id="month" name="month" >
+				  </div>
+			  <button type="submit" class="btn btn-primary">Submit</button>
+			</form>
+			
+			</br>
+
+			<div id="accordion2">
+
+				<div class="card">
+					<div class="card-header" id="subheadingTwo">
+					  <h5 class="mb-0">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseTwo" aria-expanded="true" aria-controls="subcollapseTwo">
+							Order Summary
+						</button>
+					  </h5>
+					</div>
+					<div id="subcollapseTwo" class="collapse show" aria-labelledby="subheadingTwo" data-parent="#accordion2">
+					  <div class="card-body">
+						<p> Shows the total number of completed orders and the total cost of all completed orders for selected month</p>
+						<table class="table">
+							<thead>
+								<tr>
+									<th scope="col">Year</th>
+									<th scope="col">Month</th>
+									<th scope="col">Total Orders</th>
+									<th scope="col">Total Cost</th>
+								</tr>
+							</thead>
+							<tbody>
+								<% for (var i = 0; i < restSummary.length; i++) { %>
+								<tr>
+									<td><%= restSummary[i].year%></td>
+									<td><%= restSummary[i].month%></td>
+									<td><%= restSummary[i].totalorders%></td>
+									<td><%= restSummary[i].totalcost%></td>
+								</tr>
+								<% } %>
+							</tbody>
+						</table>						
+					  </div>
+					</div>
+				</div>
+
+				</br>
+
+				<div class="card">
+					<div class="card-header" id="subheadingThree">
+					  <h5 class="mb-0">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseThree" aria-expanded="true" aria-controls="subcollapseThree">
+							Favourite Food
+						</button>
+					  </h5>
+					</div>
+					<div id="subcollapseThree" class="collapse show" aria-labelledby="subheadingThree" data-parent="#accordion2">
+					  <div class="card-body">
+						<p> Shows the top 5 favorite food items in terms of completed orders for selected month </p>
+						<table class="table">
+							<thead>
+								<tr>
+									<th scope="col">Year</th>
+									<th scope="col">Month</th>
+									<th scope="col">Food</th>
+									<th scope="col">Total Orders</th>
+								</tr>
+							</thead>
+							<tbody>
+								<% for (var i = 0; i < restFavFood.length; i++) { %>
+								<tr>
+									<td><%= restFavFood[i].year%></td>
+									<td><%= restFavFood[i].month%></td>
+									<td><%= restFavFood[i].food%></td>
+									<td><%= restFavFood[i].totalorders%></td>
+								</tr>
+								<% } %>
+							</tbody>
+						</table>						
+					  </div>
+					</div>
+				</div>
+			
+			
+			
+			</div>
+
+
+		  </div>
+		</div>
+	</div>
+
+</div>
 
 
 <%- include('partials/footer') %>
