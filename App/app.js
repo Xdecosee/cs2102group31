@@ -42,10 +42,12 @@ app.use(passport.session())
 
 /* --- IMPT(Section 1): Adding Web Pages --- */
 var mainloginRouter = require('./routes/main_login');
+
 var mainSignUpRouter = require('./routes/main_signup');
 var custHomeRouter = require('./routes/cust_home');
-// var custHomeRouter = require('./routes/cust_profile');
-// var custHomeRouter = require('./routes/cust_view_menu');
+var custProfileRouter = require('./routes/cust_profile');
+var custMenuRouter = require('./routes/cust_menu');
+
 var fdsHomeRouter = require('./routes/fds_home');
 //fds
 var fdsCustRouter = require('./routes/fds_cust');
@@ -67,6 +69,8 @@ var riderptScheduleRouter = require('./routes/rider_ptschedule');
 app.use('/', mainloginRouter);
 app.use('/main_signup', mainSignUpRouter);
 app.use('/cust_home', custHomeRouter);
+app.use('/cust_menu', custMenuRouter);
+app.use('/cust_profile', custProfileRouter);
 app.use('/fds_home', fdsHomeRouter);
 app.use('/rest_home', restHomeRouter);
 app.use('/rest_menu', restMenuRouter);

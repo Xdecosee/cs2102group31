@@ -1,0 +1,207 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar_cust') %>
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		body {
+			font-family: Arial;
+		}
+
+		/* Style the tab */
+		.tab {
+			overflow: hidden;
+			border: 1px solid #ccc;
+			background-color: #f1f1f1;
+		}
+
+		/* Style the buttons inside the tab */
+		.tab button {
+			background-color: inherit;
+			float: left;
+			border: none;
+			outline: none;
+			cursor: pointer;
+			padding: 14px 16px;
+			transition: 0.3s;
+			font-size: 17px;
+		}
+
+		/* Change background color of buttons on hover */
+		.tab button:hover {
+			background-color: #ddd;
+		}
+
+		/* Create an active/current tablink class */
+		.tab button.active {
+			background-color: #ccc;
+		}
+
+		/* Style the tab content */
+		.tabcontent {
+			display: none;
+			padding: 6px 12px;
+			border: 1px solid #ccc;
+			border-top: none;
+		}
+	</style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Customer Restaurant Menu</h1>
+
+    <div class="col-auto my-1">
+      <form id="getRest" action="/cust_menu/getRest" role="form" method="post">
+        <label for="order"><strong>Select Restaurant</strong></label>
+        <select class="custom-select mr-sm-2" id="restName" name="restName">
+          <% for(var i=0; i< restInfo.length; i++) { %>
+          <option value="<%= restInfo[i].name%>"><%= restInfo[i].name%></option>
+          <% } %>
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </div>
+
+    <div class="tab">
+      <button class="tablinks" onclick="openCust(event, 'Reviews')">Reviews</button>
+      <button class="tablinks" onclick="openCust(event, 'Menu')">Menu</button>
+      <button class="tablinks" onclick="openCust(event, 'Order')">Order</button>
+    </div>
+    <div id="Reviews" class="tabcontent">
+      <h3>Average Rating : </h3><p><%= avgRating%></p>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Order Date</th>
+            <th scope="col">Restaurant</th>
+            <th scope="col">Review</th>
+            <th scope="col">Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(var i=0; i < reviewInfo.length; i++) { %>
+          <tr>
+            <td><%= reviewInfo[i].date%></td>
+            <td><%= reviewInfo[i].name%></td>
+            <td><%= reviewInfo[i].review%></td>
+            <td><%= reviewInfo[i].star%></td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="Menu" class="tabcontent">
+      <label  for="myInput"><strong>Input FoodName: </strong></label>
+      <input type="text" id="myInput" onkeyup="myFunction()" title="Search for food" size="50">
+      <br>
+      <table class="table" id='myTable'>
+          <thead>
+              <tr>
+                <th scope="col">Food Name</th>
+                <th scope="col">Category</th>
+                <th scope="col">Price</th>
+                <th scope="col">Limit</th>
+              </tr>
+          </thead>
+          <tbody>
+            <% for(var i=0; i < menuInfo.length; i++) { %>
+              <tr>
+                <td><%= menuInfo[i].foodname%></td>
+                <td><%= menuInfo[i].category%></td>
+                <td><%= menuInfo[i].price%></td>
+                <td><%= menuInfo[i].dailylimit%></td>
+              </tr>
+              <% } %>
+          </tbody>
+      </table>
+    </div>
+
+
+    <div id="Order" class="tabcontent">
+      <div class="col-auto my-1">
+      <form id="addOrder" action="/cust_menu/addOrder" role="form" method="post">
+        <label for="order"><strong>Add Order</strong></label>
+        <table class="table" id='orderInfo'>
+          <thead>
+              <tr>
+                <th scope="col">Food Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">Amount</th>
+              </tr>
+          </thead>
+          <tbody>
+            <% for(var i=0; i < orderInfo.length; i++) { %>
+              <tr>
+                <td><%= orderInfo[i].foodname%></td>
+                <td><%= orderInfo[i].price%></td>
+                <td><%= orderInfo[i].amount%></td>
+              </tr>
+              <% } %>
+          </tbody>
+      </table>
+
+        <select class="custom-select mr-sm-2" id="orderItem" name="orderItem">
+          <% for(var i=0; i< menuInfo.length; i++) { %>
+          <option value="<%= menuInfo[i].foodname%>"><%= menuInfo[i].foodname%></option>
+          <% } %>
+        </select>
+        <select class="custom-select mr-sm-2" id="orderAmount" name="orderAmount">
+          <% for(var i=1; i< 6; i++) { %>
+          <option value="<%=i%>"><%=i%></option>
+          <% } %>
+        </select>
+        <button type="submit" class="btn btn-primary">Add</button>
+        <button> </button>
+      </form>
+    </div>
+    </div>
+
+</body>
+
+</html>
+
+<!-- JS script for the tabs -->
+<script>
+  function openCust(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+
+    function myFunction() {
+      var input, filter, table, tr, td, i;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    }
+</script>
+
+
+<%- include('partials/footer') %>

@@ -137,10 +137,14 @@ sql.query = {
     custInfo: 'SELECT * FROM Customers WHERE uid = $1',
     updateUserCard: 'UPDATE Users SET cardDetails = $2 WHERE uid = $1',
     updateCustomerCard: 'UPDATE Customers SET cardDetails = $2 WHERE uid = $1',
-    //orderInfo: 'SELECT distinct * FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
-    reviewInfo: 'SELECT DISTINCT to_char(O.date,\'DD-Mon-YYYY\') as date, R.name, P.review, P.star FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
-    orderInfo: 'SELECT to_char(O.date,\'DD-Mon-YYYY\') as date, R.name, F.foodName, F.quantity FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
 
+    reviewInfo :'SELECT DISTINCT  to_char(O.date,\'DD-Mon-YYYY\') as date, P.review, P.star FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
+    orderInfo:'SELECT  to_char(O.date,\'DD-Mon-YYYY\') as date, R.name, F.foodName, F.quantity FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
+    restInfo: 'SELECT * FROM restaurants',
+    restReview :'SELECT DISTINCT  to_char(O.date,\'DD-Mon-YYYY\') as date, R.name, P.review, P.star FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE R.name = $1',
+    avgRating : 'SELECT Round(AVG(ALL p.star),2) as avg FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE R.name = $1',
+    menuInfo : 'SELECT distinct f.foodname, f.category, R.name, f.price, f.dailylimit from Restaurants R JOIN Food f using (restaurantid) where r.name = $1',
+    addfood: 'SELECT f.foodname, (f.price * $3) as price ,$3 as amount from food f join restaurants r using(restaurantid) where f.foodname = $1 and r.name = $2',
 }
 
 module.exports = sql;
