@@ -432,7 +432,6 @@ DECLARE hour_in INTEGER;
 
 
 BEGIN
-
     SELECT sum(EXTRACT(HOUR FROM w.intervalEnd) - EXTRACT(HOUR FROM w.intervalStart)) INTO hour_in
     FROM workingDays W
     WHERE EXTRACT(WEEK FROM w.WorkDate) = EXTRACT(WEEK FROM NEW.WorkDate)
