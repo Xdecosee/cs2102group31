@@ -78,11 +78,11 @@ router.post('/insertpromo', function(req, res, next) {
                 client.query('ROLLBACK', err => {
                     if (err) {
                         console.log("Error in rollback!");
-                        return next(new Error("Error in adding restaurant promotion!"));
+                        res.redirect('/rest_promo?insert=' + encodeURIComponent('fail'));
                     }
                     done()
                 })
-                return next(new Error("Error in adding restaurant promotion!"));
+                res.redirect('/rest_promo?insert=' + encodeURIComponent('fail'));
             }
             
            return !!err;
@@ -102,7 +102,7 @@ router.post('/insertpromo', function(req, res, next) {
                     client.query('COMMIT', err => {
                         if (err) {
                             console.log("Error in committing transaction");
-                            return next(new Error("Error in adding restaurant promotion!"));
+                            res.redirect('/rest_promo?insert=' + encodeURIComponent('fail'));
                         }
                         done()
                         res.redirect('/rest_promo?insert=' + encodeURIComponent('success'));

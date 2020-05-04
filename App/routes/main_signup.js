@@ -69,7 +69,7 @@ router.post('/signup/(:type)', function(req, res, next) {
                             return next(err);
                         }
                         done()
-                        return next(new Error('Sign Up Failed! Perhaps try another username?'));
+                        res.redirect('/?signup=' + encodeURIComponent('fail'));
                     })
                 }
                 
@@ -89,7 +89,7 @@ router.post('/signup/(:type)', function(req, res, next) {
                         client.query('COMMIT', err => {
                             if (err) {
                                 console.log("Error in committing transaction");
-                                return next(new Error('Sign Up Failed! Perhaps try another username?'));
+                                return next(err);
                             }
                             done()
                             res.redirect('/?signup=' + encodeURIComponent('success'));
@@ -116,7 +116,7 @@ router.post('/signup/(:type)', function(req, res, next) {
                             return next(err);
                         }
                         done()
-                        return next(new Error('Sign Up Failed! Perhaps try another username?'));
+                        res.redirect('/?signup=' + encodeURIComponent('fail'));
                     })
                 }
                 
@@ -136,7 +136,7 @@ router.post('/signup/(:type)', function(req, res, next) {
                         client.query('COMMIT', err => {
                             if (err) {
                                 console.log("Error in committing transaction");
-                                return next(new Error('Sign Up Failed! Perhaps try another username?'));
+                                return next(err);
                             }
                             done()
                             res.redirect('/?signup=' + encodeURIComponent('success'));
@@ -171,7 +171,7 @@ router.post('/signup/(:type)', function(req, res, next) {
                             return next(err);
                         }
                         done()
-                        return next(new Error('Sign Up Failed! Perhaps try another username?'));
+                        res.redirect('/?signup=' + encodeURIComponent('fail'));
                     })
                 }
                 
@@ -197,7 +197,7 @@ router.post('/signup/(:type)', function(req, res, next) {
                             client.query('COMMIT', err => {
                                 if (err) {
                                     console.log("Error in committing transaction");
-                                    return next(new Error('Sign Up Failed! Perhaps try another username?'));
+                                    return next(err);
                                 }
                                 done()
                                 res.redirect('/?signup=' + encodeURIComponent('success'));
@@ -239,7 +239,7 @@ router.post('/signup/(:type)', function(req, res, next) {
                             return next(err);
                         }
                         done()
-                        return next(new Error('Sign Up Failed! Perhaps try another username?'));
+                        res.redirect('/?signup=' + encodeURIComponent('fail'));
                     })
                 }
                 
@@ -259,7 +259,7 @@ router.post('/signup/(:type)', function(req, res, next) {
                         client.query('COMMIT', err => {
                             if (err) {
                                 console.log("Error in committing transaction");
-                                return next(new Error('Sign Up Failed! Perhaps try another username?'));
+                                return next(err);
                             }
                             done()
                             res.redirect('/?signup=' + encodeURIComponent('success'));

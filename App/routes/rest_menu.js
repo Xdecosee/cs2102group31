@@ -94,8 +94,7 @@ router.post('/insertfood', function(req, res, next) {
 
 	caller.query(sql.query.restInsertFood,[foodname, price, category, limit, restID], (err, data) => {
 		if(err) {
-			return next(new Error('Error in adding food! Maybe there is another food with the same name' +
-			' in your menu or your food archives!'));
+			res.redirect('/rest_menu?fail=' + encodeURIComponent('insert'));
 		}
         res.redirect('/rest_menu?success=' + encodeURIComponent('insert'));
 	});
@@ -108,7 +107,7 @@ router.post('/archive', function(req, res, next) {
 
 	caller.query(sql.query.restArchive,[restID, foodname], (err, data) => {
 		if(err) {
-			return next(new Error('Error in archiving food!'));
+			res.redirect('/rest_menu?fail=' + encodeURIComponent('archive'));
 		}
 		res.redirect('/rest_menu?success=' + encodeURIComponent('archive'));
 	});
@@ -121,7 +120,7 @@ router.post('/restore', function(req, res, next) {
 
 	caller.query(sql.query.restRestore,[restID, foodname], (err, data) => {
 		if(err) {
-			return next(new Error('Error in restoring food!'));
+			res.redirect('/rest_menu?fail=' + encodeURIComponent('restore'));
 		}
 		res.redirect('/rest_menu?success=' + encodeURIComponent('restore'));
 	});
@@ -144,7 +143,7 @@ router.post('/update/(:foodname)', function(req, res, next) {
 
 	caller.query(sql.query.restUpdate,[price, category, limit, restID, foodname], (err, data) => {
 		if(err) {
-			return next(new Error('Error in updating food details!'));
+			res.redirect('/rest_menu?fail=' + encodeURIComponent('update'));
 		}
         res.redirect('/rest_menu?success=' + encodeURIComponent('update'));
 	});

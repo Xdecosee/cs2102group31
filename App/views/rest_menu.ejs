@@ -159,17 +159,30 @@
 
 			const queryString = window.location.search;
         	const urlParams = new URLSearchParams(queryString);
-       		const insert = urlParams.get('success');
+			const success = urlParams.get('success');
+			const fail = urlParams.get('fail');
 
-       		if(insert != null) {
-				if(insert == "update"){
+       		if(success != null) {
+				if(success == "update"){
 					alert('Food updated!');
-				} else if(insert == "restore"){
+				} else if(success == "restore"){
 					alert('Food restored!');
-				} else if(insert == "archive"){
+				} else if(success == "archive"){
 					alert('Food archived!');
-			 	} else if(insert == "insert"){
+			 	} else if(success == "insert"){
 					alert('Food added!');
+				}  
+			}
+
+			if(fail != null) {
+				if(fail == "update"){
+					alert('Failed to update food!');
+				} else if(fail == "restore"){
+					alert('Failed to restore food!');
+				} else if(fail == "archive"){
+					alert('Failed to archive food!');
+			 	} else if(fail == "insert"){
+					alert('Failed to add food! Perhaps there is another food with the same name in your menu or food archives');
 				}  
 			}
 		

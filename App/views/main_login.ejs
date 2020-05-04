@@ -24,8 +24,12 @@
         const login = urlParams.get('login');
         const signup = urlParams.get('signup');
 
-        if(signup != null && signup.localeCompare('success') == 0){
-            alert('Sign Up Success. You can login now!');
+        if(signup != null ){
+            if(signup.localeCompare('success') == 0){
+                alert('Sign Up Success. You can login now!');
+            } else if (signup.localeCompare('fail') == 0){
+                alert('Sign Up Failed! Perhaps try another username?');
+            }
         }
 
         if(login != null && login.localeCompare('fail') == 0){

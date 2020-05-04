@@ -155,8 +155,14 @@
         const urlParams = new URLSearchParams(queryString);
         const insert = urlParams.get('insert');
 
-        if(insert != null && insert.localeCompare('success') == 0){
+        if(insert != null ){
+        
+          if(insert.localeCompare('success') == 0){
             alert('Promotion added!');
+          }
+          else if (insert.localeCompare('fail') == 0){
+            alert('Failed to add Promotion!');
+          }
         }
         
       }, false);

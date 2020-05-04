@@ -16,6 +16,11 @@ var queryMonth = 0;
 
 function restInfo(req, res, next) {
 
+	if(req.query.selectedmonth !== undefined){
+		queryYear = parseInt(req.query.selectedmonth.slice(0,4));
+		queryMonth = parseInt(req.query.selectedmonth.slice(5));
+	}
+
 	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
         if(err){
             return next(err);
@@ -27,11 +32,6 @@ function restInfo(req, res, next) {
 }
 
 function restSummary(req, res, next) {
-	
-	if(req.query.selectedmonth !== undefined){
-		queryYear = parseInt(req.query.selectedmonth.slice(0,4));
-		queryMonth = parseInt(req.query.selectedmonth.slice(5));
-	}
 
 	if(queryMonth == 0 || queryYear == 0){
 		req.restSummary = {};
@@ -40,7 +40,7 @@ function restSummary(req, res, next) {
 	else {
 		caller.query(sql.query.restSummary, [restID, queryYear, queryMonth], (err, data) => {
 			if(err){
-				return next(err);
+				return next(new Error('Failed to retreieve summary information'));
 			}
 			req.restSummary = data.rows;
 			return next();
@@ -59,7 +59,7 @@ function restFavFood(req, res, next) {
 
 		caller.query(sql.query.restFavFood, [restID, queryYear, queryMonth], (err, data) => {
 			if(err){
-				return next(err);
+				return next(new Error('Failed to retreieve summary information'));
 			}
 			req.restFavFood = data.rows;
 			return next();
