@@ -89,7 +89,12 @@ sql.query = {
     restMenuInfo:       'SELECT DISTINCT * FROM Food F ' +
                         'INNER JOIN Restaurants R on F.restaurantID = R.restaurantID ' +
                         'WHERE R.restaurantID = $1 AND archive = \'FALSE\'',
+    restArchiveInfo:    'SELECT DISTINCT foodname FROM Food F ' +
+                        'INNER JOIN Restaurants R on F.restaurantID = R.restaurantID ' +
+                        'WHERE R.restaurantID = $1 AND archive = \'TRUE\'',
     restSelectCategories:   'SELECT * FROM Categories',
+    restArchive:   'UPDATE Food SET archive =  \'TRUE\' WHERE restaurantID = $1 and foodname = $2',
+    restRestore:   'UPDATE Food SET archive =  \'FALSE\' WHERE restaurantID = $1 and foodname = $2',
                         
     /*------FDS Manager--------*/
     totalOrders: 'Select X.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(orderid) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',

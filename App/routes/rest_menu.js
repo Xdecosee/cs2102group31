@@ -42,17 +42,27 @@ function categoriesInfo(req, res, next) {
 	});
 }
 
+function archiveInfo(req, res, next) {
+	caller.query(sql.query.restArchiveInfo, [restID], (err, data) => {
+        if(err){
+            return next(err);
+		}
+		req.archives = data.rows;
+        return next();
+	});
+}
 
 
 function loadPage(req, res, next) {
 	res.render('rest_menu', { 
 		menuInfo: req.menuInfo,
-		categories: req.categories
+		categories: req.categories,
+		archiveInfo: req.archives
 	});
 	
 }
 
-router.get('/', passport.authMiddleware(), restInfo, menuInfo, categoriesInfo, loadPage );
+router.get('/', passport.authMiddleware(), restInfo, menuInfo, categoriesInfo, archiveInfo, loadPage );
 
 
 
@@ -71,5 +81,32 @@ router.post('/insertfood', function(req, res, next) {
         res.redirect('/rest_menu');
 	});
 });
+
+
+router.post('/archive', function(req, res, next) {
+
+	var foodname  = req.body.archive;
+
+	caller.query(sql.query.restArchive,[restID, foodname], (err, data) => {
+		if(err) {
+			return next(new Error('Error in archiving food!'));
+		}
+        res.redirect('/rest_menu');
+	});
+});
+
+
+router.post('/restore', function(req, res, next) {
+
+	var foodname  = req.body.restore;
+
+	caller.query(sql.query.restRestore,[restID, foodname], (err, data) => {
+		if(err) {
+			return next(new Error('Error in restoring food!'));
+		}
+        res.redirect('/rest_menu');
+	});
+});
+
 
 module.exports = router;

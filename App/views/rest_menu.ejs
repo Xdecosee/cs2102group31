@@ -3,7 +3,7 @@
 <h2>Restaurant Menu</h2>
 
 <p> You can manage your menu here. Once the daily limit reaches 0 for a food, customers will not be able 
-	to make orders for that food. 
+	to make orders for that food. </p>
 
 <h3>Menu Details</h3>
 <table class="table">
@@ -34,13 +34,13 @@
 		<input type="text" class="form-control" id="foodname" name="foodname">
 	</div>
 	<div class="form-group">
-		<label for="username">Price: </label>
+		<label for="price">Price: </label>
 		<input type="text" class="form-control" id="price" name="price" aria-describedby="priceHelp">
 		<small id="priceHelp" class="form-text text-muted"> Price should be up to two decimal points and more than 0.
 		</small>
 	</div>
 	<div class="form-group">
-		<label for="username">Category: </label>
+		<label for="category">Category: </label>
 		<select id="category" name="category" class="form-control">
 			<% for(var i = 0; i < categories.length; i++) { %>
 				<option value='<%= categories[i].category%>'><%= categories[i].category%></option>
@@ -52,6 +52,39 @@
 		<input type="number" min="0" class="form-control" id="limit" name="limit">
 	</div>
 	<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<h2>Update Food</h2>
+
+<h2>Archive Food</h2>
+
+<p>This section allows you to archive food items or restore food items from the archives into your menu.</p>
+
+
+<form id="archive_form" action="/rest_menu/archive" role="form" method="post">
+	<div class="form-group">
+		<label for="archive"> Select a food to archive: </label>
+		<select id="archive" name="archive" class="form-control">
+			<% for(var i=0; i< menuInfo.length; i++) { %>
+				<option value='<%= menuInfo[i].foodname%>'><%= menuInfo[i].foodname%></option>
+			  <% } %>
+		</select>
+	</div>
+	<button type="submit" class="btn btn-primary">Archive</button>
+</form>
+
+</br>
+
+<form id="restore_form" action="/rest_menu/restore" role="form" method="post">
+	<div class="form-group">
+		<label for="restore"> Select a food to restore: </label>
+		<select id="restore" name="restore" class="form-control">
+			<% for(var i = 0; i < archiveInfo.length; i++) { %>
+				<option value='<%= archiveInfo[i].foodname%>'><%= archiveInfo[i].foodname%></option>
+			  <% } %>
+		</select>
+	</div>
+	<button type="submit" class="btn btn-primary">Restore</button>
 </form>
 
 <script src = "javascripts/rest.js"></script>
@@ -66,8 +99,5 @@
 	})();
 </script>
 
-<h2>Update Food</h2>
-
-<h2>Archive Food</h2>
 
 <%- include('partials/footer') %>
