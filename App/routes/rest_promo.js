@@ -15,7 +15,7 @@ var promoid = null;
 function restInfo(req, res, next) {
 	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
         if(err){
-            return next(error);
+            return next(err);
         }
 		restID = data.rows[0].restaurantid;
         return next();
@@ -25,7 +25,7 @@ function restInfo(req, res, next) {
 function percInfo(req, res, next) {
 	caller.query(sql.query.restPercSummary, [restID, restID], (err, data) => {
         if(err){
-            return next(error);
+            return next(err);
         }
 		req.percInfo = data.rows;
         return next();
@@ -35,9 +35,9 @@ function percInfo(req, res, next) {
 function fixedInfo(req, res, next) {
 	caller.query(sql.query.restAmtSummary, [restID, restID], (err, data) => {
         if(err){
-            return next(error);
+            return next(err);
         }
-		req.fixedInfo = data.rows;
+        req.fixedInfo = data.rows;
         return next();
 	});
 }
@@ -53,8 +53,7 @@ function insertPromo(req, res, next){
 
     caller.query(sql.query.restInsertPromo,[promoid, restID], (err, data) => {
         if(err) {
-            console.log ("Error in adding restaurant promotion!");
-            console.log (err);
+            return next(new Error("Error in adding restaurant promotion!"));
         } 
        
     });   
@@ -84,8 +83,7 @@ router.post('/insertpromo', function(req, res, next) {
         
     caller.query(selectedquery,[startDate, endDate, startTime, endTime, discount], (err, data) => {
         if(err) {
-            console.log ("Error in adding restaurant promotion!");
-            console.log (err);
+            return next(new Error("Error in adding restaurant promotion!"));
         }
         else {
             promoid = data.rows[0].promoid;

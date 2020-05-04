@@ -3,42 +3,31 @@
 ## IMPORTANT NOTE
 This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well.
 
-For team: 
-1. Run "npm install" again to reinstall all packages again!
-2. I didn't implement any async or synchonization codes. (Just in case you need to know)
-3. I tried to optimise code as much as I can by reducing repeating codes. But if I optimised too much and its affecting your code, do let me know. If I optimise too little, you can just change it.
-
 ## Setting Up Repo
 1. Download Node js at https://nodejs.org/en/
 2. In a terminal (from vscode or cmd) change directory to /App folder and run 'npm install'.
 
-A "node_modules" folder should be created in your directory and as this folder shouldn't be pushed to github, I have added it in a gitignore file. 
+A "node_modules" folder should be created in your directory.
 
 3. Import psql_script_with_insert.sql under /App/db folder to psql.
 
 4. Create a .env file under the /App folder and insert with a single line: 
 DATABASE_URL=postgres://username:password@host address:port/database_name
-For example. DATABASE_URL=postgres://postgres:1@localhost:5432/postgres
+For example. DATABASE_URL=postgres://postgres:12345@localhost:5432/postgres
 
-This .env should be ignored through .gitignore and not pushed to github. 
-
-If gitignore isn't working for you, do these steps: http://www.codeblocq.com/2016/01/Untrack-files-already-added-to-git-repository-based-on-gitignore/. In vscode, the ignored files should be greyed out
+For Developers: This .env and node_modules folder should be ignored through .gitignore and not pushed to github. If gitignore isn't working for you, do these steps: http://www.codeblocq.com/2016/01/Untrack-files-already-added-to-git-repository-based-on-gitignore/. In vscode, the ignored files should be greyed out
 
 ## Running the App
-1. In your terminal (at /App), type 'npm start'. 
-
-I added a 'console.log' in app.js that will show your database connection string at your terminal if successful connected to postgres. 
+1. In your terminal (at /App), type 'npm start'. Your database connection string in .env will be shown at your terminal if successful connected to postgres. 
 
 2. Open http://localhost:3000 in your browser. 
-
-For testing subpages that require no authentication, you can access through http://localhost:3000/{page_name}
 
 3. To stop running the app, Ctrl + C in your terminal to terminate the server. 
 
 Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For windows, go your task manager, select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
 
 ## File Name Prefixes
-Seperating files into subfolders was hard. So I decided to differentiate files with these naming:
+Files are differentiated with these naming:
 1. cust - Customers related files
 2. rider - Delivery Riders related files
 3. fds - FDS Manager related files
@@ -88,6 +77,8 @@ const caller = require('../db/dbcaller');
 function loadPage(req, res, next) {
 	res.render('page');
 }
+
+/*Define Router for page*/
 router.get('/', loadPage );
 
 
@@ -102,11 +93,6 @@ var pageRouter = require('./routes/page');
 ...
 /* --- IMPT(Section 2): Adding Web Pages --- */
 app.use('/page', pageRouter);
-...
-/* --- IMPT(Section 3): Traverse Sections--- */
-app.get('/page', (req, res) => {
-	res.render('page');
-});
 ```
 
 Lets create lesser pages by using multiple sql statements on one page (see restaurant staff example).

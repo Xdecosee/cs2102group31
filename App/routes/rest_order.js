@@ -14,7 +14,7 @@ var restID = null;
 function restInfo(req, res, next) {
 	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
         if(err){
-            return next(error);
+            return next(err);
         }
 		restID = data.rows[0].restaurantid;
         return next();
@@ -24,7 +24,7 @@ function restInfo(req, res, next) {
 function currentOrders(req, res, next) {
 	caller.query(sql.query.restOrders, [restID], (err, data) => {
         if(err){
-            return next(error);
+            return next(err);
 		}
         req.restOrders = data.rows;
         return next();
@@ -48,8 +48,7 @@ router.post('/cooked/(:orderid)/(:foodname)', function(req, res, next) {
 
 	caller.query(sql.query.restCooked,[orderid, foodname], (err, data) => {
 		if(err) {
-			console.log ("Error in updating order!");
-			console.log (err);
+			return next(new Error("Error in hiding order"));
 		}
         res.redirect('/rest_order');
 	});

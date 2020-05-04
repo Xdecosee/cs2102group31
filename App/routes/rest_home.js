@@ -10,11 +10,21 @@ const caller = require('../db/dbcaller');
 
 //Global Variable
 var restID = null;
+var queryYear = 0;
+var queryMonth = 0;
+
 
 function restInfo(req, res, next) {
+	
+	
+	if(req.query.selectedmonth !== undefined){
+		queryYear = parseInt(req.query.selectedmonth.slice(0,4));
+		queryMonth = parseInt(req.query.selectedmonth.slice(5));
+	}
+
 	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
         if(err){
-            return next(error);
+            return next(err);
         }
 		req.restInfo = data.rows;
 		restID = data.rows[0].restaurantid;
@@ -23,23 +33,41 @@ function restInfo(req, res, next) {
 }
 
 function restSummary(req, res, next) {
-	caller.query(sql.query.restSummary, [restID], (err, data) => {
-        if(err){
-            return next(error);
-        }
-		req.restSummary = data.rows;
-        return next();
-	});
+	
+	if(queryMonth == 0 || queryYear == 0){
+		req.restSummary = {};
+		return next();
+	}
+	else {
+		caller.query(sql.query.restSummary, [restID, queryYear, queryMonth], (err, data) => {
+			if(err){
+				return next(err);
+			}
+			req.restSummary = data.rows;
+			return next();
+		});
+	}
+
 }
 
 function restFavFood(req, res, next) {
-	caller.query(sql.query.restFavFood, [restID], (err, data) => {
-        if(err){
-            return next(error);
-        }
-		req.restFavFood = data.rows;
-        return next();
-	});
+
+	if(queryMonth == 0 || queryYear == 0){
+		req.restFavFood = {};
+		return next();
+	}
+	else {
+
+		caller.query(sql.query.restFavFood, [restID, queryYear, queryMonth], (err, data) => {
+			if(err){
+				return next(err);
+			}
+			req.restFavFood = data.rows;
+			return next();
+		});
+
+	}
+	
 }
 
 
@@ -54,5 +82,11 @@ function loadPage(req, res, next) {
 }
 
 router.get('/', passport.authMiddleware(), restInfo, restSummary, restFavFood, loadPage );
+
+router.post('/selectmonth', function(req, res, next) {
+
+	res.redirect('/rest_home?selectedmonth=' + encodeURIComponent(req.body.month));
+
+});
 
 module.exports = router;
