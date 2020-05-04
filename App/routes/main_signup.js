@@ -79,12 +79,12 @@ router.post('/signup/(:type)', function(req, res, next) {
             client.query('BEGIN', err => {
                 if (shouldAbort(err)) return
     
-                caller.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
+                client.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
                   if (shouldAbort(err)) return
     
                     uid = data.rows[0].uid;
     
-                    caller.query(sql.query.signupCustomer,[uid], (err, data) => {
+                    client.query(sql.query.signupCustomer,[uid], (err, data) => {
                         if (shouldAbort(err)) return
                         client.query('COMMIT', err => {
                             if (err) {
@@ -126,12 +126,12 @@ router.post('/signup/(:type)', function(req, res, next) {
             client.query('BEGIN', err => {
                 if (shouldAbort(err)) return
     
-                caller.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
+                client.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
                   if (shouldAbort(err)) return
     
                     uid = data.rows[0].uid;
     
-                    caller.query(sql.query.signupFDS,[uid], (err, data) => {
+                    client.query(sql.query.signupFDS,[uid], (err, data) => {
                         if (shouldAbort(err)) return
                         client.query('COMMIT', err => {
                             if (err) {
@@ -249,12 +249,12 @@ router.post('/signup/(:type)', function(req, res, next) {
             client.query('BEGIN', err => {
                 if (shouldAbort(err)) return
     
-                caller.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
+                client.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
                   if (shouldAbort(err)) return
     
                     uid = data.rows[0].uid;
     
-                    caller.query(sql.query.signupRider,[uid, ridertype], (err, data) => {
+                    client.query(sql.query.signupRider,[uid, ridertype], (err, data) => {
                         if (shouldAbort(err)) return
                         client.query('COMMIT', err => {
                             if (err) {

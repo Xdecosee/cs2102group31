@@ -12,7 +12,7 @@ const caller = require('../db/dbcaller');
 var restID = null;
 
 function restInfo(req, res, next) {
-	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
+	caller.query(sql.query.restIdInfo, [req.user.uid], (err, data) => {
         if(err){
             return next(err);
         }

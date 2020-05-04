@@ -23,7 +23,7 @@ function restInfo(req, res, next) {
 		queryMonth = parseInt(req.query.selectedmonth.slice(5));
 	}
 
-	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
+	caller.query(sql.query.restIdInfo, [req.user.uid], (err, data) => {
         if(err){
             return next(err);
         }
