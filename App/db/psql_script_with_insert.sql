@@ -586,7 +586,6 @@ DECLARE hour_in INTEGER;
 
 
 BEGIN
-
     SELECT sum(EXTRACT(HOUR FROM w.intervalEnd) - EXTRACT(HOUR FROM w.intervalStart)) INTO hour_in
     FROM workingDays W
     WHERE EXTRACT(WEEK FROM w.WorkDate) = EXTRACT(WEEK FROM NEW.WorkDate)
@@ -855,10 +854,10 @@ INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted)
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-03-20', '16:00', '20:00', 11);
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-03-21', '16:00', '20:00', 12);
 
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '11:00', '15:00', 10);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-20', '16:00', '20:00', 8);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '11:00', '15:00', 11);
-INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(41, '2020-04-21', '16:00', '20:00', 12);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-20', '11:00', '15:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-20', '16:00', '20:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-21', '11:00', '15:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-21', '16:00', '20:00', 12);
 COMMIT;
 
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(20, '2020-03-23', 1, 13);
