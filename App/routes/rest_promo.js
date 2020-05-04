@@ -88,7 +88,7 @@ router.post('/insertpromo', function(req, res, next) {
         else {
             promoid = data.rows[0].promoid;
             insertPromo();
-            res.redirect('/rest_promo');
+            res.redirect('/rest_promo?insert=' + encodeURIComponent('success'));
         }
       
     });   

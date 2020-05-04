@@ -155,6 +155,24 @@
 			var validation = Array.prototype.filter.call(forms, function(form) {
 				form.addEventListener('submit', checkFood, false);
 			});
+
+
+			const queryString = window.location.search;
+        	const urlParams = new URLSearchParams(queryString);
+       		const insert = urlParams.get('success');
+
+       		if(insert != null) {
+				if(insert == "update"){
+					alert('Food updated!');
+				} else if(insert == "restore"){
+					alert('Food restored!');
+				} else if(insert == "archive"){
+					alert('Food archived!');
+			 	} else if(insert == "insert"){
+					alert('Food added!');
+				}  
+			}
+		
 		}, false);
 	})();
 </script>

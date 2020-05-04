@@ -97,7 +97,7 @@ router.post('/insertfood', function(req, res, next) {
 			return next(new Error('Error in adding food! Maybe there is another food with the same name' +
 			' in your menu or your food archives!'));
 		}
-        res.redirect('/rest_menu');
+        res.redirect('/rest_menu?success=' + encodeURIComponent('insert'));
 	});
 });
 
@@ -110,7 +110,7 @@ router.post('/archive', function(req, res, next) {
 		if(err) {
 			return next(new Error('Error in archiving food!'));
 		}
-        res.redirect('/rest_menu');
+		res.redirect('/rest_menu?success=' + encodeURIComponent('archive'));
 	});
 });
 
@@ -123,7 +123,7 @@ router.post('/restore', function(req, res, next) {
 		if(err) {
 			return next(new Error('Error in restoring food!'));
 		}
-        res.redirect('/rest_menu');
+		res.redirect('/rest_menu?success=' + encodeURIComponent('restore'));
 	});
 });
 
@@ -146,7 +146,7 @@ router.post('/update/(:foodname)', function(req, res, next) {
 		if(err) {
 			return next(new Error('Error in updating food details!'));
 		}
-        res.redirect('/rest_menu');
+        res.redirect('/rest_menu?success=' + encodeURIComponent('update'));
 	});
 });
 

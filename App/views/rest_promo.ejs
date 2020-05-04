@@ -150,6 +150,15 @@
         var validation = Array.prototype.filter.call(forms, function(form) {
           form.addEventListener('submit', checkPromo, false);
         });
+
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const insert = urlParams.get('insert');
+
+        if(insert != null && insert.localeCompare('success') == 0){
+            alert('Promotion added!');
+        }
+        
       }, false);
     })();
 </script>
