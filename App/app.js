@@ -42,9 +42,12 @@ app.use(passport.session())
 
 /* --- IMPT(Section 1): Adding Web Pages --- */
 var mainloginRouter = require('./routes/main_login');
+
+//cust
 var custHomeRouter = require('./routes/cust_home');
-// var custHomeRouter = require('./routes/cust_profile');
-// var custHomeRouter = require('./routes/cust_view_menu');
+var custProfileRouter = require('./routes/cust_profile');
+var custMenuRouter = require('./routes/cust_menu');
+
 var fdsHomeRouter = require('./routes/fds_home');
 //fds
 var fdsCustRouter = require('./routes/fds_cust');
@@ -70,6 +73,8 @@ var riderptScheduleRouter = require('./routes/rider_ptschedule');
 /* --- IMPT(Section 2): Adding Web Pages --- */
 app.use('/', mainloginRouter);
 app.use('/cust_home', custHomeRouter);
+app.use('/cust_menu', custMenuRouter);
+app.use('/cust_profile', custProfileRouter);
 app.use('/fds_home', fdsHomeRouter);
 app.use('/rest_home', restHomeRouter);
 app.use('/rest_menu', restMenuRouter);
@@ -105,6 +110,14 @@ app.get('/', (req, res) => {
 
 app.get('/cust_home', (req, res) => {
 	res.render('cust_home');
+});
+
+app.get('/cust_menu', (req, res) => {
+	res.render('cust_menu');
+});
+
+app.get('/cust_profile', (req, res) => {
+	res.render('cust_profile');
 });
 
 app.get('/fds_home', (req, res) => {
