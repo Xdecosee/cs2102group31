@@ -286,13 +286,9 @@ RETURNS TRIGGER AS $$
 DECLARE currStatus VARCHAR(50);
 DECLARE riderId Integer;
 DECLARE riderType VARCHAR(255);
-DECLARE dateO DATE;
-DECLARE timeO TIME;
 
 BEGIN
     currStatus := NEW.orderStatus;
-	dateO := NEW.date;
-	timeO := NEW.timeOrderPlace;
 
     SELECT uid INTO riderId
     FROM Delivers
@@ -306,15 +302,11 @@ BEGIN
         IF (riderType = 'FullTime') THEN
             UPDATE WorkingWeeks
             SET numCompleted = numCompleted + 1
-            WHERE riderId = WorkingWeeks.uid
-			AND dateO = WorkingWeeks.workDate;
+            WHERE riderId = WorkingWeeks.uid;
         ELSIF (riderType = 'PartTime') THEN
             UPDATE WorkingDays 
             SET numCompleted = numCompleted + 1
-            WHERE riderId = WorkingDays.uid
-			AND dateO = WorkingDays.workDate
-			AND timeO >= WorkingDays.intervalStart
-			AND timeO <= WorkingDays.intervalEnd;
+            WHERE riderId = WorkingDays.uid;
         END IF;
     END IF;
     RETURN NULL;
@@ -421,7 +413,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER add_shift_trigger
-BEFORE UPDATE OR INSERT ON WorkingDays
+BEFORE INSERT ON WorkingDays
 FOR EACH ROW
 EXECUTE PROCEDURE check_shift();
 

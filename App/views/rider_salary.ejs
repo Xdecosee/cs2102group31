@@ -1,24 +1,42 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_rider') %>
-<h1>Rider's Salary</h1>
-<br>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="col">Year</th>
-            <th scope="col">Month</th>
-            <th scope="col">Salary</th>
-		</tr>
-	</thead>
-	<tbody>
-        <% for(var i=0; i< salaryInfo.length; i++) { %>
-		<tr>
-			<td><%= salaryInfo[i].year%></td>
-            <td><%= salaryInfo[i].month%></td>
-			<td><%= salaryInfo[i].salary%></td>
-        </tr>
-        <% } %>
-	</tbody>
-</table>
+<h2>Rider Salary </h2>
 
+<br>
+
+<div id="accordion">
+
+	<div class="card">
+		<div class="card-header" id="headingTwo">
+		  <h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+				Monthly Salary
+			</button>
+		  </h5>
+		</div>
+		<div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+		  <div class="card-body">
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Year</th>
+					<th scope="col">Month</th>
+					<th scope="col">Salary</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% for(var i=0; i< salaryInfo.length; i++) { %>
+				<tr>
+					<td><%= salaryInfo[i].year%></td>
+					<td><%= salaryInfo[i].month%></td>
+					<td><%= salaryInfo[i].salary%></td>
+				</tr>
+				<% } %>
+			</tbody>
+		</table>
+		<small><strong>Note:</strong> Only the latest twelve months salary will be displayed. Please save a copy of your month's salary for your own reference.</small>
+	</div>
+	</div>
+</div>
+</div>
 <%- include('partials/footer') %>

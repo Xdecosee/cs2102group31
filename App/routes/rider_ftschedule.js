@@ -9,26 +9,35 @@ const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
 //Global variable to store info
+var uuid = null;
 var queryYear = 0;
 var queryMonth = 0;
+var months = [ "January", "February", "March", "April", "May", "June", 
+           "July", "August", "September", "October", "November", "December" ];
+
 
 function ftShiftInfo(req, res, next) {
+	if (req.query.selecteddate !== undefined) {
+		queryYear = parseInt(req.query.selecteddate.slice(0, 4));
+		queryMonth = parseInt(req.query.selecteddate.slice(5));
+	}
 	/*----- IMPT: Stuff in [] is for your sql parameters ($) ----- */
 	caller.query(sql.query.ftShiftInfo, (err, data) => {
         if(err){
             return next(error);
         }
 		req.ftShiftInfo = data.rows;
+		uuid = req.user.uid;
         return next();
 	});
 }
 
 function indshedInfo(req, res, next) {
 	
-	if (req.query.selecteddate !== undefined) {
-		queryYear = parseInt(req.query.selecteddate.slice(0, 4));
-		queryMonth = parseInt(req.query.selecteddate.slice(5));
-
+	if (queryMonth == 0 || queryYear == 0) {
+		req.indshedInfo = {};
+		return next();
+	} else {
 		caller.query(sql.query.indshedInfo, [queryYear,queryMonth,req.user.uid],(err, data) => {
 			if(err){
 				return next(error);
@@ -37,13 +46,7 @@ function indshedInfo(req, res, next) {
 			req.indshedInfo = data.rows;
 			return next();
 		});
-	} else if (queryMonth == 0 || queryYear == 0) {
-		req.indshedInfo = {};
-
-		return next();
 	}
-
-	
 }
 
 function loadPage(req, res, next) {
@@ -53,7 +56,9 @@ function loadPage(req, res, next) {
 		name:req.user.name,
 		type:req.user.ridertype,
 		ftShiftInfo: req.ftShiftInfo,
-		indshedInfo:req.indshedInfo
+		indshedInfo:req.indshedInfo,
+		year: queryYear,
+		month: months[queryMonth - 1]
 	});
 }
 

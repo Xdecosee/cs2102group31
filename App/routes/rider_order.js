@@ -8,20 +8,18 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
-
-function cOrderInfo(req, res, next) {
-	/*----- IMPT: Stuff in [] is for your sql parameters ($) ----- */
-	caller.query(sql.query.cOrderInfo, [req.user.uid], (err, data) => {
-        if(err){
-            return next(error);
-        }
-		req.cOrderInfo = data.rows;
-        return next();
-	});
-}
+//Global Variable
+var queryYear = 0;
+var queryMonth = 0;
+var months = [ "January", "February", "March", "April", "May", "June", 
+           "July", "August", "September", "October", "November", "December" ];
 
 function pOrderInfo(req, res, next) {
 	/*----- IMPT: Stuff in [] is for your sql parameters ($) ----- */
+	if (req.query.selecteddate !== undefined) {
+		queryYear = parseInt(req.query.selecteddate.slice(0, 4));
+		queryMonth = parseInt(req.query.selecteddate.slice(5));
+	}
 	caller.query(sql.query.pOrderInfo, [req.user.uid], (err, data) => {
         if(err){
             return next(error);
@@ -31,6 +29,21 @@ function pOrderInfo(req, res, next) {
 	});
 }
 
+function cOrderInfo(req, res, next) {
+	if (queryMonth == 0 || queryYear == 0) {
+		req.cOrderInfo = {};
+		return next();
+	} else {
+		caller.query(sql.query.cOrderInfo, [req.user.uid,queryYear,queryMonth], (err, data) => {
+			if(err){
+				return next(error);
+			}
+			req.cOrderInfo = data.rows;
+			return next();
+		});
+	}
+}
+
 function loadPage(req, res, next) {
 	/*-- IMPT: How to send data to your frontend ejs file --- */
 	res.render('rider_order',{
@@ -38,13 +51,21 @@ function loadPage(req, res, next) {
 		name:req.user.name,
 		type:req.user.ridertype,
 		cOrderInfo:req.cOrderInfo,
-		pOrderInfo:req.pOrderInfo
+		pOrderInfo:req.pOrderInfo,
+		year: queryYear,
+		month: months[queryMonth - 1]
 	});
 }
 
 /* USEFUL: passport.authMiddleware() make sure user is autheticated before accessing page*/
-router.get('/', passport.authMiddleware(), cOrderInfo, pOrderInfo, loadPage);
+router.get('/', passport.authMiddleware(), pOrderInfo, cOrderInfo, loadPage);
 
+router.post('/selectdate', function (req, res, next) {
+	console.log(req.body.date);
+
+	res.redirect('/rider_order?selecteddate=' + encodeURIComponent(req.body.date));
+
+});
 
 /*---- IMPT: Retrieve HTML EJS Form Information ----- */
 router.post('/updateOrder', function(req, res, next) {
@@ -88,10 +109,13 @@ router.post('/updateOrder', function(req, res, next) {
 				console.error("Error in updating order");
 			} else {
 				caller.query(sql.query.statusUpdate,[orderid], (err, data) => {
+					console.log('twy');
 					if(err) {
+						console.log('tri');
 						console.error("Error in updating order");
 					} else {
 						caller.query(sql.query.durationUpate,[orderid], (err, data) => {
+							console.log('fwooop');
 							if(err) {
 								console.error("Error in updating order");
 							} else {

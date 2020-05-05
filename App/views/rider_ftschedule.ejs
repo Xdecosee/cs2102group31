@@ -1,131 +1,157 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_rider') %>
 <link rel = 'stylesheet' href='stylesheets/form.css'>
-<h1>Rider's Schedule</h1>
-<br>
-<details>
-    <summary style="font-size:20px" ><strong>Add Schedule</strong></summary>
-    <p></p>
-    <div line-height:1.6 style="margin-left:1.0em"> 
-    Full Time Riders are required to select a 5 consecutive day shift each week. <br>
-    To fill up the schedule form, please choose the first of the five consecutive days and select the timeslot for each day shift. 
-    </div>
-    <br>
+<h2>Rider Schedule </h2>
 
-    
-    <form id="schedule_form" action="/rider_ftschedule/addSchedule" role="form" method="post">
-      <fieldset class="scheduler-border">
-        <legend class="scheduler-border">Weekly Schedule Form</legend>
-              <p> 
-              <label for=schedule><strong>1. Select Day 1 of your 5 consecutive day shifts: </strong></label>
-              <input type="date" id="day1" name="day1">
-              </p>
-              <p><strong>2. Select the timeslot shift for each day</strong></p>
-              <label for="s1" style="margin-left:2.0em"><strong>Shift 1:</strong></label>
-              <select id="s1" name="s1" required>
-                <option selected>Choose...</option>
-                <% for(var i=0; i< ftShiftInfo.length; i++) { %>
-                    <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
-                <% } %>
-              </select>
-       
-              <label for="s2" style="margin-left:2.0em"><strong>Shift 2:</strong></label>
-              <select id="s2" name="s2" required>
-                <option selected>Choose...</option>
-                <% for(var i=0; i< ftShiftInfo.length; i++) { %>
-                    <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
-                <% } %>
-              </select>
-              <label for="s3" style="margin-left:2.0em"><strong>Shift 3:</strong></label>
-              <select id="s3" name="s3" required>
-                <option selected>Choose...</option>
-                <% for(var i=0; i< ftShiftInfo.length; i++) { %>
-                    <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
-                <% } %>
-              </select>
+<p> You can manage and view your future schedule here. </br>
+    Do ensure that you meet the minimum requirements for your schedule </p>
 
-              <label for="s4" style="margin-left:2.0em"><strong>  Shift 4:</strong></label>
-              <select id="s4" name="s4" required>
-                <option selected>Choose...</option>
-                <% for(var i=0; i< ftShiftInfo.length; i++) { %>
-                    <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
-                <% } %>
-              </select>
-          
-              <label for="s5" style="margin-left:2.0em"><strong>  Shift 5:</strong></label>
-              <select id="s5" name="s5" required>
-                <option selected>Choose...</option>
-                <% for(var i=0; i< ftShiftInfo.length; i++) { %>
-                    <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
-                <% } %>
-              </select>
-      <button style="margin-left:2.0em" type="submit" class="btn btn-primary">Submit</button>
-      <button style="margin-left:0.5em" type="reset" class="btn btn-primary">Reset</button>
-      <p></p>
-      <small><strong>Note:</strong> Schedule cannot be altered once submitted for processing</small>
-    </fieldset>
-  </form>  
-    
 
-</details>
+<div id="accordion">
 
-<p> </p>
-
-<details>
+	<div class="card">
+		<div class="card-header" id="headingTwo">
+		  <h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+				Add Schedule
+			</button>
+		  </h5>
+		</div>
+    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+		  <div class="card-body">
+        <div line-height:1.6> 
+          Full Time Riders are required to select a 5 consecutive day shift each week. <br>
+          To fill up the schedule form, choose the first of the five consecutive days and select the timeslot for each day shift. <br>
+          Please ensure that you do not select weeks with existing shifts. 
+        </div>  
+      </br>
+      <form id="schedule_form" action="/rider_ftschedule/addSchedule" role="form" method="post">
+        <fieldset class="scheduler-border">
+          <legend class="scheduler-border">Weekly Schedule Form</legend>
+                <p> 
+                <label for=schedule><strong>1. Select Day 1 of your 5 consecutive day shifts: </strong></label>
+                <input type="date" id="day1" name="day1" required>
+                </p>
+                <p><strong>2. Select the timeslot shift for each day</strong></p>
+                <label for="s1" style="margin-left:2.0em"><strong>Shift 1:</strong></label>
+                <select id="s1" name="s1" required>
+                  <option value=""X>Choose...</option>
+                  <% for(var i=0; i< ftShiftInfo.length; i++) { %>
+                      <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
+                  <% } %>
+                </select>
+         
+                <label for="s2" style="margin-left:2.0em"><strong>Shift 2:</strong></label>
+                <select id="s2" name="s2" required>
+                  <option value="">Choose...</option>
+                  <% for(var i=0; i< ftShiftInfo.length; i++) { %>
+                      <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
+                  <% } %>
+                </select>
+                <label for="s3" style="margin-left:2.0em"><strong>Shift 3:</strong></label>
+                <select id="s3" name="s3" required>
+                  <option value="">Choose...</option>
+                  <% for(var i=0; i< ftShiftInfo.length; i++) { %>
+                      <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
+                  <% } %>
+                </select>
   
-    <summary style="font-size:20px"><strong>View Schedule</strong></summary>
-    <br>
+                <label for="s4" style="margin-left:2.0em"><strong>  Shift 4:</strong></label>
+                <select id="s4" name="s4" required>
+                  <option value="">Choose...</option>
+                  <% for(var i=0; i< ftShiftInfo.length; i++) { %>
+                      <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
+                  <% } %>
+                </select>
+            
+                <label for="s5" style="margin-left:2.0em"><strong>  Shift 5:</strong></label>
+                <select id="s5" name="s5" required>
+                  <option value="">Choose...</option>
+                  <% for(var i=0; i< ftShiftInfo.length; i++) { %>
+                      <option value= "<%= ftShiftInfo[i].shiftid%>"><%= ftShiftInfo[i].shiftdetail1 + " , " + ftShiftInfo[i].shiftdetail2 %></option>
+                  <% } %>
+                </select>
+        <button style="margin-left:2.0em" type="submit" class="btn btn-primary">Submit</button>
+        <button style="margin-left:0.5em" type="reset" class="btn btn-primary">Reset</button>
+        <p></p>
+        <small><strong>Note:</strong> Schedule cannot be altered once submitted for processing</small>
+      </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+</br>
+
+<div class="card">
+  <div class="card-header" id="headingThree">
+    <h5 class="mb-0">
+    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+      View Schedule
+    </button>
+    </h5>
+  </div>
+  <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+    <div class="card-body">
+
+    <p>Key in or select a month and year (e.g March 2020) to view the month's schedule. </p>
 
     <form id="month_form" action="/rider_ftschedule/selectdate" role="form" method="post">
-      <label for=schedule>Select 'Month Year' (e.g. January 2020)</label>
+      <div class="form-group">
         <input type="month" class="form-control" id="date" name="date" >
-        <p></p>
+        </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 
-    <br>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Date</th>
-          <th scope="col">10:00</th>
-          <th scope="col">11:00</th>
-          <th scope="col">12:00</th>
-          <th scope="col">13:00</th>
-          <th scope="col">14:00</th>
-          <th scope="col">15:00</th>
-          <th scope="col">16:00</th>
-          <th scope="col">17:00</th>
-          <th scope="col">18:00</th>
-          <th scope="col">19:00</th>
-          <th scope="col">20:00</th>
-          <th scope="col">21:00</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for (var i = 0; i < indshedInfo.length; i++) { %>
-        <tr>
-          <td><%= indshedInfo[i].ddate%></td>
-          <td><%= indshedInfo[i].t10%></td>
-          <td><%= indshedInfo[i].t11%></td>
-          <td><%= indshedInfo[i].t12%></td>
-          <td><%= indshedInfo[i].t13%></td>
-          <td><%= indshedInfo[i].t14%></td>
-          <td><%= indshedInfo[i].t15%></td>
-          <td><%= indshedInfo[i].t16%></td>
-          <td><%= indshedInfo[i].t17%></td>
-          <td><%= indshedInfo[i].t18%></td>
-          <td><%= indshedInfo[i].t19%></td>
-          <td><%= indshedInfo[i].t20%></td>
-          <td><%= indshedInfo[i].t21%></td>
-        </tr>
-        <% } %>
-    </tbody>
-  </table>
-    
-</details>
+    <% if (year != 0 && month != 0) {  %>
+    </br>
+    <p>You have selected <%= month %> <%= year%>.</p>
+    <% } %>
 
-</body>
+    </br>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">10:00</th>
+              <th scope="col">11:00</th>
+              <th scope="col">12:00</th>
+              <th scope="col">13:00</th>
+              <th scope="col">14:00</th>
+              <th scope="col">15:00</th>
+              <th scope="col">16:00</th>
+              <th scope="col">17:00</th>
+              <th scope="col">18:00</th>
+              <th scope="col">19:00</th>
+              <th scope="col">20:00</th>
+              <th scope="col">21:00</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (var i = 0; i < indshedInfo.length; i++) { %>
+            <tr>
+              <td><%= indshedInfo[i].ddate%></td>
+              <td><%= indshedInfo[i].t10%></td>
+              <td><%= indshedInfo[i].t11%></td>
+              <td><%= indshedInfo[i].t12%></td>
+              <td><%= indshedInfo[i].t13%></td>
+              <td><%= indshedInfo[i].t14%></td>
+              <td><%= indshedInfo[i].t15%></td>
+              <td><%= indshedInfo[i].t16%></td>
+              <td><%= indshedInfo[i].t17%></td>
+              <td><%= indshedInfo[i].t18%></td>
+              <td><%= indshedInfo[i].t19%></td>
+              <td><%= indshedInfo[i].t20%></td>
+              <td><%= indshedInfo[i].t21%></td>
+            </tr>
+            <% } %>
+        </tbody>
+      </table>
+     </div>
+		</div>
+	</div>
 
 <%- include('partials/footer') %>
 
@@ -137,10 +163,10 @@
       const schedule = urlParams.get('schedule');
 
       if(schedule != null && schedule.localeCompare('success') == 0){
-          alert('Schedule Successfully Updated!');
+          alert('Schedule successfully added!');
       }
       else if((schedule != null && schedule.localeCompare('fail') == 0))
-          alert('Schedule has failed to be updated. Please check that you do not have any existing schedule on the same day!');
+          alert('Schedule has failed to be updated. Please check that you do not have any existing schedule on the same week!');
     }, false);
   })();
 

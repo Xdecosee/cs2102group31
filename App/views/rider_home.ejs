@@ -1,48 +1,78 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_rider') %>
-<h1>Delivery Riders Home</h1>
-<p>Welcome, <%= username%>!</p>
 
-<h2>Profile Details</h2>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="col">Name</th>
-            <th scope="col">Username</th>
-            <th scope="col">Ratings</th>
-		</tr>
-	</thead>
-	<tbody>
-        
-		<tr>
-			<td><%= name%></td>
-            <td><%= username%></td>
-			<td><%= ratingInfo[0].rating%></td>
-		</tr>
-	</tbody>
-</table>
+<h2>Welcome, <%= username%>!</h2>
 
-<h2>Work Details</h2>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="col">Year</th>
-            <th scope="col">Month</th>
-			<th scope="col">Orders Delivered</th>
-			<th scope="col">Hours Worked</th>
-		</tr>
-	</thead>
-	<tbody>
-        <% for(var i=0; i< workdInfo.length; i++) { %>
-		<tr>
-			<td><%= workdInfo[i].year%></td>
-			<td><%= workdInfo[i].month%></td>
-			<td><%= workdInfo[i].com%></td>
-			<td><%= workdInfo[i].hour%></td>
-		</tr>
-		<% } %>
-	</tbody>
-</table>
+</br>
 
+<div id="accordion">
+
+	<div class="card">
+		<div class="card-header" id="headingTwo">
+		  <h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+				Profile Summary
+			</button>
+		  </h5>
+		</div>
+		<div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+		  <div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">Name</th>
+						<th scope="col">Username</th>
+						<th scope="col">Ratings</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+					<tr>
+						<td><%= name%></td>
+						<td><%= username%></td>
+						<td><%= ratingInfo[0].rating%></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</div>
+
+	</br>
+
+	<div class="card">
+		<div class="card-header" id="headingThree">
+		  <h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+				Work Details
+			</button>
+		  </h5>
+		</div>
+		<div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+		  <div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">Year</th>
+						<th scope="col">Month</th>
+						<th scope="col">Orders Delivered</th>
+						<th scope="col">Hours Worked</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% for(var i=0; i< workdInfo.length; i++) { %>
+					<tr>
+						<td><%= workdInfo[i].year%></td>
+						<td><%= workdInfo[i].month%></td>
+						<td><%= workdInfo[i].com%></td>
+						<td><%= workdInfo[i].hour%></td>
+					</tr>
+					<% } %>
+				</tbody>
+			</table>
+		</div>
+	</div>	
+	</div>
+</div>
 
 <%- include('partials/footer') %>
