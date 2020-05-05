@@ -42,7 +42,7 @@ CREATE TABLE FDSpromo (
 CREATE TABLE Restaurants ( 
 	restaurantID    INTEGER GENERATED ALWAYS AS IDENTITY,
 	name            VARCHAR(100)         NOT NULL,
-	location        VARCHAR(255)         NOT NUll,
+	location        VARCHAR(255)  UNIQUE NOT NUll,
 	minThreshold   	NUMERIC  DEFAULT 0   NOT NULL,
 	PRIMARY KEY (RestaurantID)
 );

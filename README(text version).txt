@@ -31,17 +31,17 @@ testrider, testrest, testcust, testfds
 
 5. The prepopulated data from psql script is solely for developers to test their pages. Hence, it may be incompelete e.g. not every rider has a existing schedule. Nonetheless, you may see part of sample/testing data for restaurant staff and delivery riders through these accounts:
 
-* Restaurant Staff
-	* Username: minestrone
-	* Password: 12345
+Restaurant Staff
+Username: minestrone
+Password: 12345
 
-* Full Time Delivery Rider
-	* Username: aveldens3
-	* Password: cdqUwd81YzX
+Full Time Delivery Rider
+Username: aveldens3
+Password: cdqUwd81YzX
 
-* Part Time Delivery Rider
-	* Username: gtarrier9
-	* Password: G92FSUJuvL9e
+Part Time Delivery Rider
+Username: gtarrier9
+Password: G92FSUJuvL9e
 
 6. Sql Statements used throughout the application is complied under /App/db/dbsql.js
 
