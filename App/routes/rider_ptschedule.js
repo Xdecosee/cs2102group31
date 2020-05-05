@@ -8,16 +8,29 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
-function ptshedInfo(req, res, next) {
-	/*----- IMPT: Stuff in [] is for your sql parameters ($) ----- */
-	caller.query(sql.query.ptshedInfo, [req.user.uid], (err, data) => {
-        if(err){
-            return next(error);
-        }
-		req.ptshedInfo = data.rows;
-		uuid = req.user.uid;
-        return next();
-	});
+//Global variable to store info
+var queryYear = 0;
+var queryMonth = 0;
+
+function indshedInfo(req, res, next) {
+	
+	if (req.query.selecteddate !== undefined) {
+		queryYear = parseInt(req.query.selecteddate.slice(0, 4));
+		queryMonth = parseInt(req.query.selecteddate.slice(5));
+
+		caller.query(sql.query.indshedInfo, [queryYear,queryMonth,req.user.uid],(err, data) => {
+			if(err){
+				return next(error);
+			}
+	
+			req.indshedInfo = data.rows;
+			return next();
+		});
+	} else if (queryMonth == 0 || queryYear == 0) {
+		req.indshedInfo = {};
+
+		return next();
+	}
 }
 
 function loadPage(req, res, next) {
@@ -26,7 +39,7 @@ function loadPage(req, res, next) {
 		username:req.user.username, 
 		name:req.user.name,
 		type:req.user.ridertype,
-		ptshedInfo:req.ptshedInfo
+		indshedInfo:req.indshedInfo
 
 		
 	});
@@ -35,7 +48,15 @@ function loadPage(req, res, next) {
 
 
 /* USEFUL: passport.authMiddleware() make sure user is autheticated before accessing page*/
-router.get('/', passport.authMiddleware(), ptshedInfo, loadPage);
+router.get('/', passport.authMiddleware(), indshedInfo, loadPage);
+
+router.post('/selectdate', function (req, res, next) {
+	console.log(req.body.date);
+
+	res.redirect('/rider_ptschedule?selecteddate=' + encodeURIComponent(req.body.date));
+
+});
+
 
 router.post('/addsched', function(req, res, next){
 	var day1 = new Date(req.body.day1);

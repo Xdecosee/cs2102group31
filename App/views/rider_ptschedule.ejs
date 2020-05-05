@@ -65,56 +65,59 @@
 <details>
     <summary style="font-size:20px"><strong>View Schedule</strong></summary>
     <br>
-    <label  for="myInput"><strong>Input Period: </strong></label>
-    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="e.g. Jan-2020" title="Type in a Period" size="50">
-    <br>
-    <small style="margin-left:8.0em">Fill the month period to view schedule for the month</small>
-    <br>
-    <br>
-    <table class="table" id='myTable'>
-        <thead>
-            <tr>
-                <th scope="col">Period</th>
-                <th scope="col">Work Date</th>
-                <th scope="col">Start Time</th>
-                <th scope="col">End Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(var i=0; i< ptshedInfo.length; i++) { %>
-            <tr>
-                <td><%= ptshedInfo[i].period%></td>
-                <td><%= ptshedInfo[i].date%></td>
-                <td><%= ptshedInfo[i].intervstart%></td>
-                <td><%= ptshedInfo[i].intervend%></td>
-            </tr>
-            <% } %>
-        </tbody>
-    </table>
 
+    <form id="month_form" action="/rider_ptschedule/selectdate" role="form" method="post">
+      <label for=schedule>Select 'Month Year' (e.g. January 2020)</label>
+        <input type="month" class="form-control" id="date" name="date" >
+        <p></p>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <br>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">10:00</th>
+          <th scope="col">11:00</th>
+          <th scope="col">12:00</th>
+          <th scope="col">13:00</th>
+          <th scope="col">14:00</th>
+          <th scope="col">15:00</th>
+          <th scope="col">16:00</th>
+          <th scope="col">17:00</th>
+          <th scope="col">18:00</th>
+          <th scope="col">19:00</th>
+          <th scope="col">20:00</th>
+          <th scope="col">21:00</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (var i = 0; i < indshedInfo.length; i++) { %>
+        <tr>
+          <td><%= indshedInfo[i].ddate%></td>
+          <td><%= indshedInfo[i].t10%></td>
+          <td><%= indshedInfo[i].t11%></td>
+          <td><%= indshedInfo[i].t12%></td>
+          <td><%= indshedInfo[i].t13%></td>
+          <td><%= indshedInfo[i].t14%></td>
+          <td><%= indshedInfo[i].t15%></td>
+          <td><%= indshedInfo[i].t16%></td>
+          <td><%= indshedInfo[i].t17%></td>
+          <td><%= indshedInfo[i].t18%></td>
+          <td><%= indshedInfo[i].t19%></td>
+          <td><%= indshedInfo[i].t20%></td>
+          <td><%= indshedInfo[i].t21%></td>
+        </tr>
+        <% } %>
+    </tbody>
+  </table>
+    
 </details>
 
-<%- include('partials/footer') %>
+</body>
 
-<script>
-    function myFunction() {
-      var input, filter, table, tr, td, i;
-      input = document.getElementById("myInput");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("myTable");
-      tr = table.getElementsByTagName("tr");
-      for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[0];
-        if (td) {
-          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-            tr[i].style.display = "";
-          } else {
-            tr[i].style.display = "none";
-          }
-        }       
-      }
-    }
-</script>
+<%- include('partials/footer') %>
 
 <script>
   (function() {

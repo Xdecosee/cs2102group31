@@ -8,20 +8,9 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
-//Global variable to store restID
-var uuid = null;
-
-function ftshedInfo(req, res, next) {
-	/*----- IMPT: Stuff in [] is for your sql parameters ($) ----- */
-	caller.query(sql.query.ftshedInfo, [req.user.uid], (err, data) => {
-        if(err){
-            return next(error);
-        }
-		req.ftshedInfo = data.rows;
-		uuid = req.user.uid;
-        return next();
-	});
-}
+//Global variable to store info
+var queryYear = 0;
+var queryMonth = 0;
 
 function ftShiftInfo(req, res, next) {
 	/*----- IMPT: Stuff in [] is for your sql parameters ($) ----- */
@@ -34,20 +23,51 @@ function ftShiftInfo(req, res, next) {
 	});
 }
 
+function indshedInfo(req, res, next) {
+	
+	if (req.query.selecteddate !== undefined) {
+		queryYear = parseInt(req.query.selecteddate.slice(0, 4));
+		queryMonth = parseInt(req.query.selecteddate.slice(5));
+
+		caller.query(sql.query.indshedInfo, [queryYear,queryMonth,req.user.uid],(err, data) => {
+			if(err){
+				return next(error);
+			}
+	
+			req.indshedInfo = data.rows;
+			return next();
+		});
+	} else if (queryMonth == 0 || queryYear == 0) {
+		req.indshedInfo = {};
+
+		return next();
+	}
+
+	
+}
+
 function loadPage(req, res, next) {
 	/*-- IMPT: How to send data to your frontend ejs file --- */
 	res.render('rider_ftschedule',{
 		username:req.user.username, 
 		name:req.user.name,
 		type:req.user.ridertype,
-		ftshedInfo: req.ftshedInfo,
-		ftShiftInfo: req.ftShiftInfo
+		ftShiftInfo: req.ftShiftInfo,
+		indshedInfo:req.indshedInfo
 	});
 }
 
 
 /* USEFUL: passport.authMiddleware() make sure user is autheticated before accessing page*/
-router.get('/', passport.authMiddleware(), ftshedInfo, ftShiftInfo, loadPage);
+router.get('/', passport.authMiddleware(), ftShiftInfo, indshedInfo, loadPage);
+
+router.post('/selectdate', function (req, res, next) {
+	console.log(req.body.date);
+
+	res.redirect('/rider_ftschedule?selecteddate=' + encodeURIComponent(req.body.date));
+
+});
+
 
 router.post('/addschedule', function(req, res, next) {
 	//from <form> in ejs file
