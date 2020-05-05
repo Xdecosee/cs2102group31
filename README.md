@@ -1,30 +1,52 @@
 #  FDS Applicaion AY2019/20 Sem 1
 
-## IMPORTANT NOTE
-This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well.
+## IMPORTANT NOTE!
+This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well. The README and code is availabe at https://github.com/Xdecosee/cs2102group31 for easier readability!
+
+For NUS CS2102 graders, please look at the following sections:
+1. Setting Up Repo
+2. Running and Testing the App
 
 ## Setting Up Repo
 1. Download Node js at https://nodejs.org/en/
-2. In a terminal (from vscode or cmd) change directory to /App folder and run 'npm install'.
+2. In a terminal, change directory to the /App folder and run 'npm install'. A "node_modules" folder should be created in your /App directory.
 
-A "node_modules" folder should be created in your directory.
-
-3. Import psql_script_with_insert.sql under /App/db folder to psql.
+3. Import psql_script_with_insert.sql under /App/db folder to psql. Recommended: psql version 12.1.
 
 4. Create a .env file under the /App folder and insert with a single line: 
 DATABASE_URL=postgres://username:password@host address:port/database_name
 For example. DATABASE_URL=postgres://postgres:12345@localhost:5432/postgres
 
-For Developers: This .env and node_modules folder should be ignored through .gitignore and not pushed to github. If gitignore isn't working for you, do these steps: http://www.codeblocq.com/2016/01/Untrack-files-already-added-to-git-repository-based-on-gitignore/. In vscode, the ignored files should be greyed out
+5. For Developers: This .env and node_modules folder should be ignored through .gitignore and not pushed to github. If gitignore isn't working for you, do these steps: http://www.codeblocq.com/2016/01/Untrack-files-already-added-to-git-repository-based-on-gitignore/. In vscode, the ignored files should be greyed out
 
-## Running the App
-1. In your terminal (at /App), type 'npm start'. Your database connection string in .env will be shown at your terminal if successful connected to postgres. 
+## Running and Testing the App
+1. Please test the application between 10am to 10pm as customer accounts can only make food orders within 10am to 10pm. In addition, Safari and Firefox currently doesn't support certain html form features in this repo. Recommended to use Chrome for testing the pages. 
 
-2. Open http://localhost:3000 in your browser. 
+2. In your terminal (at /App), type 'npm start'. Your database connection string in .env will be shown at your terminal. 
 
-3. To stop running the app, Ctrl + C in your terminal to terminate the server. 
+3. Open http://localhost:3000 in your browser.
 
-Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For windows, go your task manager, select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
+4. As no two users should have the same username, here are some usernames available use for sign up:
+testrider, testrest, testcust, testfds 
+
+5. The prepopulated data from psql script is solely for developers to test their pages. Hence, it may be incompelete e.g. not every rider has a existing schedule. Nonetheless, you may see part of sample/testing data for restaurant staff and delivery riders through these accounts:
+
+Restaurant Staff
+Username: minestrone
+Password: 12345
+
+Full Time Delivery Rider
+Username: aveldens3
+Password: cdqUwd81YzX
+
+Part Time Delivery Rider
+Username: gtarrier9
+Password: G92FSUJuvL9e
+
+6. Sql Statements used throughout the application is complied under /App/db/dbsql.js
+
+
+7. To stop running the app, Ctrl + C in your terminal to terminate the server after using the website. Supposedly, you forget to Ctrl + C, just kill the process at port 3000. For windows, go your task manager, select the 'Processes tab', search for 'Node.js: Server-side JavaScript', select it and click on 'End task' button.
 
 ## File Name Prefixes
 Files are differentiated with these naming:
