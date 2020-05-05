@@ -1,67 +1,94 @@
 <%- include('partials/header') %>
-<%- include('partials/navbar_fds') %>
+<%- include('partials/navbar_rest') %>
 
-<!DOCTYPE html>
-<html lang="en">
+<h2>Welcome, <%=name%>!</h2>
 
-<body>
+<div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+  <div class="card-body">
 
-<div class="container">
-  <h1>FDS Manager Customers</h1>
-  <p>Welcome, <%= name%>!</p>
-  <h2>Select Date</h2>
+    <p>Select the month and year (e.g. May 2020) to view customer related summary information. </p>
+    <form id="month_form" action="/fds_cust/selectdate" role="form" method="post">
+      <div class="form-group">
+        <input type="month" class="form-control" id="date" name="date">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
 
-  <form id="month_form" action="/fds_cust/selectdate" role="form" method="post">
-    <div class="form-group">
-      <input type="month" class="form-control" id="date" name="date">
-      <button type="submit" class="btn btn-primary">Submit</button>
+    <div id="accordion2">
+
+      <div class="card">
+        <div class="card-header" id="subheadingTwo">
+          <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseTwo" aria-expanded="true"
+              aria-controls="subcollapseTwo">
+              Summary Information
+            </button>
+          </h5>
+        </div>
+        <div id="subcollapseTwo" class="collapse show" aria-labelledby="subheadingTwo" data-parent="#accordion2">
+          <div class="card-body">
+            <p> Shows the total number of active customers and new customers based on the selected date.</p>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Year</th>
+                  <th scope="col">Month</th>
+                  <th scope="col">Active Customers</th>
+                  <th scope="col">New Customers</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (var i = 0; i < fdsCustInfo.length; i++) { %>
+                <tr>
+                  <td><%= fdsCustInfo[i].year%></td>
+                  <td><%= fdsCustInfo[i].month%></td>
+                  <td><%= fdsCustInfo[i].activecus%></td>
+                  <td><%= fdsCustInfo[i].newcus%></td>
+                  <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      </br>
+      <div class="card">
+        <div class="card-header" id="subheadingThree">
+          <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseThree" aria-expanded="true"
+              aria-controls="subcollapseThree">
+              Individual Customer
+            </button>
+          </h5>
+        </div>
+        <div id="subcollapseThree" class="collapse show" aria-labelledby="subheadingThree" data-parent="#accordion2">
+          <div class="card-body">
+            <p> Shows the number of orders placed and the total cost for all these orders for each customer based on the
+              selected date./p>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Customer's ID</th>
+                  <th scope="col">Total Spending</th>
+                  <th scope="col">Number of Orders</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (var i = 0; i < totalOrderEachCust.length; i++) { %>
+                <tr>
+                  <td><%= totalOrderEachCust[i].customer%></td>
+                  <td><%= totalOrderEachCust[i].totalcost%></td>
+                  <td><%= totalOrderEachCust[i].num%></td>
+                  <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </form>
-
-  <h3>Summary</h3>
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Year</th>
-        <th scope="col">Month</th>
-        <th scope="col">Active Customers</th>
-        <th scope="col">New Customers</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% for (var i = 0; i < fdsCustInfo.length; i++) { %>
-      <tr>
-        <td><%= fdsCustInfo[i].year%></td>
-        <td><%= fdsCustInfo[i].month%></td>
-        <td><%= fdsCustInfo[i].activecus%></td>
-        <td><%= fdsCustInfo[i].newcus%></td>
-      <% } %>
-    </tbody>
-  </table>
-
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Customer's ID</th>
-        <th scope="col">Total Spending</th>
-        <th scope="col">Number of Orders</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% for (var i = 0; i < totalOrderEachCust.length; i++) { %>
-      <tr>
-        <td><%= totalOrderEachCust[i].customer%></td>
-        <td><%= totalOrderEachCust[i].totalcost%></td>
-        <td><%= totalOrderEachCust[i].num%></td>
-      <% } %>
-    </tbody>
-  </table>
- 
-
+  </div>
 </div>
-
-</body>
-</html>
-
+</div>
 
 <%- include('partials/footer') %>
