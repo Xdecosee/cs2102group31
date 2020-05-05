@@ -36,7 +36,7 @@
           <td><%= fdsAllRestInfo[i].month%></td>
           <td><%= fdsAllRestInfo[i].totalorders%></td>
           <td><%= fdsAllRestInfo[i].totalcost%></td>
-        <% } %>
+          <% } %>
       </tbody>
     </table>
 
@@ -58,11 +58,67 @@
           <td><%= fdsEachRestInfo[i].restaurantid%></td>
           <td><%= fdsEachRestInfo[i].totalorders%></td>
           <td><%= fdsEachRestInfo[i].totalcost%></td>
+          <% } %>
+      </tbody>
+    </table>
+
+    <h2>Area Information</h2>
+    <form id="area_form" action="/fds_rest/selectArea" role="form" method="POST">
+      <div class="form-group">
+        <label for="area">Select area:</label>
+        <select class="form-control" id="area" name="area">
+          <option value="N">North</option>
+          <option value="S">South</option>
+          <option value="E">East</option>
+          <option value="W">West</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Area</th>
+          <th scope="col">Hour</th>
+          <th scope="col">Total Order</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(var i=0; i< areaInfo.length; i++) { %>
+        <tr>
+          <td><%= areaInfo[i].area%></td>
+          <td><%= areaInfo[i].hour%></td>
+          <td><%= areaInfo[i].num%></td>
+        </tr>
         <% } %>
       </tbody>
     </table>
-   
 
+    <h2>Available Categories</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Categories</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(var i=0; i< catInfo.length; i++) { %>
+        <tr>
+          <td><%= catInfo[i].category%></td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+    <form id="cat_form" action="/fds_rest/add_cat" role="form" method="POST">
+      <div class="form-group">
+        <label>Add new category:</label>
+        <input class="form-control" type="text" name="category" />
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
 
 </body>
 

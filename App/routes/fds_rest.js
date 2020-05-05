@@ -8,11 +8,7 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
-var numOrder = 0;
-var costOrder = 0;
-var newCustomers = 0;
-var areaInfo = [];
-
+var areaInfo = {};
 var queryYear = 0;
 var queryMonth = 0;
 
@@ -56,15 +52,15 @@ function fdsEachRestInfo(req, res, next) {
 	}
 }
 
-// function catInfo(req, res, next) {
-// 	caller.query(sql.query.viewCat, (err, data) => {
-//         if(err){
-//             return next(err);
-//         }
-// 		req.catInfo = data.rows;
-//         return next();
-// 	});
-// }
+function catInfo(req, res, next) {
+	caller.query(sql.query.viewCat, (err, data) => {
+        if(err){
+            return next(err);
+        }
+		req.catInfo = data.rows;
+        return next();
+	});
+}
 
 
 
@@ -74,13 +70,8 @@ function loadPage(req, res, next) {
 		name: req.user.name,
 		fdsAllRestInfo: req.fdsAllRestInfo,
 		fdsEachRestInfo: req.fdsEachRestInfo,
-
-
-		// numOrder: numOrder,
-		// costOrder: costOrder,
-		// newCustomers : newCustomers,
-		// areaInfo: areaInfo,
-		// catInfo: req.catInfo
+		areaInfo: areaInfo,
+		catInfo: req.catInfo
 	});
 }
 
@@ -118,39 +109,35 @@ function loadPage(req, res, next) {
 // 	res.redirect('/fds_rest');
 // });
 
-// router.post('/selectArea', function (req, res, next) {
-// 	var area = req.body.area;
+router.post('/selectArea', function (req, res, next) {
+	var area = req.body.area;
+	caller.query(sql.query.viewArea, [area], (err, data) => {
+		if (err){
+			next(err);
+		}
+		if (data.rows[0] == null) {
+			console.log("area: null");
+			areaInfo = {};
+		} else {
+			console.log("area: " + data.rows[0].area);
+			areaInfo = data.rows;
+		}
+	});
+	res.redirect('/fds_rest');
+});
 
-// 	caller.query(sql.query.viewArea, [area], (err, data) => {
-// 		if (err){
-// 			next(err);
-// 		}
-// 		if (data.rows[0] == null) {
-// 			console.log("area: null");
-// 			areaInfo = [];
-// 		} else {
-// 			console.log("area: " + data.rows[0].area);
-// 			areaInfo = data.rows;
-// 		}
-// 	});
-// 	res.redirect('/fds_rest');
-// });
+router.post('/add_cat', function (req, res, next) {
+	var newCat = req.body.category;
 
-// router.post('/add_cat', function (req, res, next) {
-// 	//from <form> in ejs file
-// 	var newCat = req.body.category;
+	caller.query(sql.query.insertCat, [newCat], (err, data) => {
+		if (err){
+			next(err);
+		}
+	});
+	res.redirect('/fds_rest');
+});
 
-// 	caller.query(sql.query.insertCat, [newCat], (err, data) => {
-// 		if (err){
-// 			next(err);
-// 		}
-// 	});
-// 	res.redirect('/fds_rest');
-// });
-
-
-
-router.get('/', passport.authMiddleware(), fdsAllRestInfo, fdsEachRestInfo, loadPage);
+router.get('/', passport.authMiddleware(), fdsAllRestInfo, fdsEachRestInfo, catInfo, loadPage);
 
 router.post('/selectdate', function (req, res, next) {
 
