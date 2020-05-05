@@ -8,65 +8,64 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
-var newCustomers = 0;
-var actCustomers = 0;
-var custInfo = [];
+var queryYear = 0;
+var queryMonth = 0;
+
+function fdsCustInfo(req, res, next) {
+
+	if (req.query.selecteddate !== undefined) {
+		queryYear = parseInt(req.query.selecteddate.slice(0, 4));
+		queryMonth = parseInt(req.query.selecteddate.slice(5));
+		console.log(queryYear);
+		console.log(queryMonth);
+
+	} else if (queryMonth == 0 || queryYear == 0) {
+		req.fdsCustInfo = {};
+		next();
+	}
+	console.log(queryYear);
+	console.log(queryMonth);
+	caller.query(sql.query.fds_custInfo, [queryYear, queryMonth], (err, data) => {
+		if (err) {
+			return next(err);
+		}
+
+		req.fdsCustInfo = data.rows;
+		return next();
+	});
+}
+
+function totalOrderEachCust(req, res, next) {
+
+	if (queryMonth == 0 || queryYear == 0) {
+		req.totalOrderEachCust = {};
+		return next();
+	} else {
+		caller.query(sql.query.totalOrderEachCust, [queryYear, queryMonth], (err, data) => {
+			if (err) {
+				return next(err);
+			}
+			req.totalOrderEachCust = data.rows;
+			return next();
+		});
+	}
+}
 
 function loadPage(req, res, next) {
 	res.render('fds_cust', {
 		username: req.user.username,
 		name: req.user.name,
-		newCustomers: newCustomers,
-		actCustomers: actCustomers,
-		custInfo: custInfo
+		fdsCustInfo: req.fdsCustInfo,
+		totalOrderEachCust: req.totalOrderEachCust
 	});
 }
 
-router.post('/selectMonth', function (req, res, next) {
-	//from <form> in ejs file
-	var index = req.body.month;
+router.get('/', passport.authMiddleware(), fdsCustInfo,totalOrderEachCust,loadPage);
 
-	caller.query(sql.query.totalNewCus, [index], (err, data) => {
-		if (err){
-			next(err);
-		}
-		if (data.rows[0] == null) {
-			console.log("new: 0");
-			newCustomers = 0;
-		} else {
-			console.log("new: " + data.rows[0].num);
-			newCustomers = data.rows[0].num;
-		}
-	});
+router.post('/selectdate', function (req, res, next) {
 
-	caller.query(sql.query.activeCus, [index], (err, data) => {
-		if (err){
-			next(err);
-		}
-		if (data.rows[0] == null) {
-			console.log("active : 0");
-			actCustomers = 0;
-		} else {
-			console.log("active: " + data.rows[0].num);
-			actCustomers = data.rows[0].num;
-		}
-	});
+	res.redirect('/fds_cust?selecteddate=' + encodeURIComponent(req.body.date));
 
-	caller.query(sql.query.totalOrderEachCust, [index], (err, data) => {
-		if (err){
-			next(err);
-		}
-		if (data.rows[0] == null) {
-			console.log("table : null");
-			custInfo = [];
-		} else {
-			console.log("table: " + data.rows[0].totalcost);
-			custInfo = data.rows;
-		}
-	});
-
-	res.redirect('/fds_cust');
 });
 
-router.get('/', passport.authMiddleware(), loadPage);
 module.exports = router;

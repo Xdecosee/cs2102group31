@@ -102,16 +102,20 @@ sql.query = {
                         
          
     /*------FDS Manager--------*/
-    totalOrders: 'Select X.num From (SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(orderid) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
-    totalCost: 'Select X.num From (SELECT EXTRACT(MONTH FROM (date)) AS month, SUM(cost) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
-    totalNewCus: 'Select X.num From (SELECT EXTRACT(MONTH FROM (signupDate)) AS month, COUNT(distinct uid) AS num FROM Customers GROUP BY EXTRACT(MONTH FROM (signupDate))) as X Where CAST(X.month as INT) = $1',
-    totalOrderEachCust: 'Select x.customer, x.totalcost, x.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, uid as Customer, SUM(cost) AS totalcost, count(cost) as num FROM (Orders natural join (Place natural join Customers)) GROUP BY uid,EXTRACT(MONTH FROM (Date))) as X Where CAST(X.month as INT) = $1',
-    activeCus: 'Select X.num From (SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(uid) as num FROM Place natural join Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
+    // totalOrders: 'Select X.num From (SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(orderid) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
+    // totalCost: 'Select X.num From (SELECT EXTRACT(MONTH FROM (date)) AS month, SUM(cost) AS num FROM Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
+    // totalNewCus: 'Select X.num From (SELECT EXTRACT(MONTH FROM (signupDate)) AS month, COUNT(distinct uid) AS num FROM Customers GROUP BY EXTRACT(MONTH FROM (signupDate))) as X Where CAST(X.month as INT) = $1',
+    // totalOrderEachCust: 'Select x.customer, x.totalcost, x.num From ( SELECT EXTRACT(MONTH FROM (date)) AS month, uid as Customer, SUM(cost) AS totalcost, count(cost) as num FROM (Orders natural join (Place natural join Customers)) GROUP BY uid,EXTRACT(MONTH FROM (Date))) as X Where CAST(X.month as INT) = $1',
+    // activeCus: 'Select X.num From (SELECT EXTRACT(MONTH FROM (date)) AS month, COUNT(uid) as num FROM Place natural join Orders GROUP BY EXTRACT(MONTH FROM (date))) as X Where CAST(X.month as INT) = $1',
 
-    viewArea: 'Select X.area, X.hour, X.num From(SELECT EXTRACT(HOUR FROM (timeorderplace)) AS hour, area, COUNT(*) AS num FROM Orders GROUP BY EXTRACT(HOUR FROM (timeorderplace)), area) as X WHERE X.area = $1',
-    viewCat: 'Select * from categories',
+    fds_custInfo:'With activeCus as (Select EXTRACT(YEAR FROM (date)) as year, EXTRACT(MONTH FROM (date)) AS month, COUNT(distinct uid) as activeCus FROM Place natural join Orders WHERE EXTRACT(YEAR FROM (date)) = $1 AND EXTRACT(MONTH FROM (date)) = $2 GROUP BY EXTRACT(YEAR FROM (date)), EXTRACT(MONTH FROM (date))), newCus as (SELECT EXTRACT(YEAR FROM (signupDate)) AS year, EXTRACT(MONTH FROM (signupDate)) AS month, COUNT(distinct uid) AS newCus FROM Customers WHERE EXTRACT(YEAR FROM (signupDate)) =  $1 AND EXTRACT(MONTH FROM (signupDate)) = $2 GROUP BY EXTRACT(YEAR FROM (signupDate)), EXTRACT(MONTH FROM (signupDate))) SELECT * FROM newCus natural full join activeCus ',
+    totalOrderEachCust:'SELECT EXTRACT(YEAR FROM (Date)) as Year, EXTRACT(MONTH FROM (date)) AS month, uid as Customer, SUM(cost) AS totalcost, count(cost) as num FROM (Orders natural join (Place natural join Customers)) WHERE EXTRACT(YEAR FROM (Date)) = $1 AND EXTRACT(MONTH FROM (Date)) = $2 GROUP BY uid, EXTRACT(YEAR FROM (Date)), EXTRACT(MONTH FROM (Date))',
+    fds_allRestInfo:'SELECT EXTRACT(YEAR FROM (date)) AS year, EXTRACT(MONTH FROM (date)) AS month, COUNT(orderid) AS totalOrders, sum(Cost) as totalCost FROM Orders WHERE EXTRACT(YEAR FROM (date)) = $1 AND  EXTRACT(MONTH FROM (date)) = $2 GROUP BY EXTRACT(YEAR FROM (date)),  EXTRACT(MONTH FROM (date))',
+    fds_eachRestInfo:'SELECT EXTRACT(YEAR FROM (date)) AS year, EXTRACT(MONTH FROM (date)) AS month,FM.restaurantID, COUNT(distinct O.orderid) AS totalOrders, sum(Cost) as totalCost FROM (Select distinct orderid, restaurantId from frommenu) as FM natural join Orders O WHERE EXTRACT(YEAR FROM (date)) = $1 AND  EXTRACT(MONTH FROM (date)) = $2 GROUP BY restaurantID, EXTRACT(YEAR FROM (date)),  EXTRACT(MONTH FROM (date))',
+    //viewArea: 'Select X.area, X.hour, X.num From(SELECT EXTRACT(HOUR FROM (timeorderplace)) AS hour, area, COUNT(*) AS num FROM Orders GROUP BY EXTRACT(HOUR FROM (timeorderplace)), area) as X WHERE X.area = $1',
+    //viewCat: 'Select * from categories',
 
-    insertCat: 'INSERT INTO categories(category) Values($1)',
+    //insertCat: 'INSERT INTO categories(category) Values($1)',
 
     fdsPercentPromo: 'INSERT INTO Promotion(startDate, endDate, discPerc, type) ' +
         'Values($1, $2, $3, \'FDSpromo\') RETURNING promoID',

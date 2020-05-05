@@ -63,7 +63,7 @@ router.get('/', passport.authMiddleware(), riderSummary, riderSchedule, loadPage
 
 
 router.post('/selectdate', function (req, res, next) {
-
+	
 	res.redirect('/fds_rider?selecteddate=' + encodeURIComponent(req.body.date));
 
 });
