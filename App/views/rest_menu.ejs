@@ -2,8 +2,8 @@
 <%- include('partials/navbar_rest') %>
 <h2>Restaurant Menu</h2>
 
-<p> You can manage your menu here. Once the daily limit reaches 0 for a food, customers will not be able 
-	to make orders for that food. It would be better to make changes to the menu before or after operating hours.</p>
+<p> You can manage your menu here. It would be better to make price changes to the menu 
+	or remove menu item before or after operating hours.</p>
 
 
 <div id="accordion">
@@ -15,9 +15,16 @@
 			</button>
 		</h5>
 		</div>
+
+	
 	
 		<div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
 			<div class="card-body">
+
+				<p> The daily limit here indicates the number of orders can still be made for a food currently. It will decrease each time a customer 
+					make an order. Once the daily limit reaches 0 for a food, customers will not be able 
+					to make orders for that food. </p>
+
 				<table class="table">
 					<thead>
 						<tr>
