@@ -1510,6 +1510,15 @@ CREATE VIEW Overview AS(
 	FROM AllDate D	
 );
 
+-- Rider's Overall Review
+CREATE VIEW ReviewInfo AS (
+SELECT distinct DR.uid, EXTRACT(Year FROM (O.date)) AS year, EXTRACT(Month FROM 
+(O.date)) as month, count(D.rating) as totalRatings, ROUND(avg(D.rating),1) as avgRatings,  
+to_char(avg(O.timeOrderDelivered - O.timeOrderPlace), 'HH24:MI:SS') as avgDuration
+FROM DeliveryRiders DR LEFT JOIN Delivers D on DR.uid = D.uid LEFT JOIN Orders O on D.orderID = O.orderID 
+GROUP BY DR.uid, year, month
+);
+
 
 /*Leave this trigger at the bottom to prevent interference with manual insert statements*/
 CREATE OR REPLACE FUNCTION check_riders()
