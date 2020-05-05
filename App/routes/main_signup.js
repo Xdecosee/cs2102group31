@@ -171,7 +171,7 @@ router.post('/signup/(:type)', function(req, res, next) {
                             return next(err);
                         }
                         done()
-                        res.redirect('/?signup=' + encodeURIComponent('fail'));
+                        res.redirect('/?signup=' + encodeURIComponent('fail') + '&rest=' + encodeURIComponent('fail'));
                     })
                 }
                 
