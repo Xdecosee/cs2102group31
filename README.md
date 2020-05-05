@@ -1,7 +1,7 @@
 #  FDS Application AY2019/20 Sem 1
 
 ## IMPORTANT NOTE!
-This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well. This README and code is availabe at https://github.com/Xdecosee/cs2102group31 for easier readability!
+This FDS application is not meant to be realistic like food delivery apps in real life. It is not meant to be secure as well. This README and code is available at https://github.com/Xdecosee/cs2102group31 for easier readability!
 
 For NUS CS2102 graders, please look at the following sections:
 1. Setting Up Repo
