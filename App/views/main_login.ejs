@@ -23,13 +23,20 @@
         const urlParams = new URLSearchParams(queryString);
         const login = urlParams.get('login');
         const signup = urlParams.get('signup');
+        const rest = urlParams.get('rest');
 
         if(signup != null ){
             if(signup.localeCompare('success') == 0){
                 alert('Sign Up Success. You can login now!');
             } else if (signup.localeCompare('fail') == 0){
-                alert('Sign Up Failed! Perhaps try another username?');
-            }
+                if(rest != null && rest.localeCompare('fail') == 0){
+                    alert('Sign Up Failed! Perhaps try another username? Or there is another restaurant with the same location');
+                } else{
+
+                    alert('Sign Up Failed! Perhaps try another username?');
+                }
+                
+            } 
         }
 
         if(login != null && login.localeCompare('fail') == 0){
