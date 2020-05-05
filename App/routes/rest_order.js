@@ -12,7 +12,7 @@ const caller = require('../db/dbcaller');
 var restID = null;
 
 function restInfo(req, res, next) {
-	caller.query(sql.query.restInfo, [req.user.uid], (err, data) => {
+	caller.query(sql.query.restIdInfo, [req.user.uid], (err, data) => {
         if(err){
             return next(err);
         }
@@ -48,7 +48,7 @@ router.post('/cooked/(:orderid)/(:foodname)', function(req, res, next) {
 
 	caller.query(sql.query.restCooked,[orderid, foodname], (err, data) => {
 		if(err) {
-			return next(new Error("Error in hiding order"));
+			return next(err);
 		}
         res.redirect('/rest_order');
 	});

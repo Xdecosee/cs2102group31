@@ -827,6 +827,7 @@ INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Steak', 4.50
 INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Creamy Pasta', 3.50, 5, 'Western Cuisine');
 INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Tomato Pasta', 3.00, 5, 'Western Cuisine');
 INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Aglio Olio', 3.30, 5, 'Western Cuisine');
+INSERT INTO Food (foodName, price, RestaurantID, category, archive) VALUES ('Seafood Pasta', 4.00, 5, 'Western Cuisine', 'TRUE');
 
 /*Restaurant 6*/
 INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Sushi', 29.9, 6, 'Japanese Cuisine');
