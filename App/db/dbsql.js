@@ -55,7 +55,7 @@ sql.query = {
                         'WHERE P.discPerc IS NOT NULL  AND R.restID = $1), ' +
                         'OrderInfo As ( ' +
                         'SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
-                        'FROM Promotion P LEFT JOIN FromMenu FM on P.promoID = FM.promoID ' +
+                        'FROM Promotion P INNER JOIN FromMenu FM on P.promoID = FM.promoID ' +
                         'WHERE P.discPerc IS NOT NULL AND FM.restaurantID = $2 ' +
                         'GROUP BY P.promoID ) ' + 
                         'SELECT DISTINCT PI.promoID, discPerc * 100 as discPerc, totalOrders, ' + 
@@ -74,7 +74,7 @@ sql.query = {
                         'WHERE P.discAmt IS NOT NULL  AND R.restID = $1), ' +
                         'OrderInfo As ( ' +
                         'SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
-                        'FROM Promotion P LEFT JOIN FromMenu FM on P.promoID = FM.promoID ' +
+                        'FROM Promotion P INNER JOIN FromMenu FM on P.promoID = FM.promoID ' +
                         'WHERE P.discAmt IS NOT NULL AND FM.restaurantID = $2 ' +
                         'GROUP BY P.promoID ) ' + 
                         'SELECT DISTINCT PI.promoID, discAmt, totalOrders, ' +
