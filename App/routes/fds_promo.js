@@ -71,7 +71,7 @@ router.post('/insertpromo', function (req, res, next) {
 			console.log(promoId);
 			caller.query(sql.query.fdsInsertPromo, [promoId], (err, data) => {
 				if (err) {
-					console.log("Error in adding FDS promotion!");
+					console.log("Error in inserting into promotion!");
 					return next(err);
 				}
 			});
