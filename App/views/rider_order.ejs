@@ -1,109 +1,164 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_rider') %>
 <link rel = 'stylesheet' href='stylesheets/form.css'>
-<h1>Rider's Orders</h1>
-<p> </p>
-<br>
-<details>
-    <summary style="font-size:20px"><strong>Pending Orders</strong></summary>
-    <p> </p>
-    <form id="orderUpdate_form" action="/rider_order/updateOrder" role="form" method="post">
-        <fieldset class="scheduler-border">
-            <legend class="scheduler-border">Order Update Form</legend>
-            <div class="form-row align-items-center">
-                <div class="col-auto my-1">
-                    <label for="order"><strong>Order Number</strong></label>
-                    <select class="custom-select mr-sm-2" id="orderid" name = "orderid" required>
-                        <option selected>Choose...</option>
-                        <% for(var i=0; i< pOrderInfo.length; i++) { %>
-                            <option value= "<%= pOrderInfo[i].orderid%>"><%= pOrderInfo[i].orderid%></option>
-                        <% } %>
-                    </select>
+<h2>Rider Orders </h2>
+
+<p> You can manage your current orders and view past orders here. </br>
+    Do remember to update the pending orders at each point to allow customers to trace their orders </p>
+
+<div id="accordion">
+	<div class="card">
+		<div class="card-header" id="headingTwo">
+		  <h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+				Pending Orders
+			</button>
+		  </h5>
+		</div>
+		<div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+		  <div class="card-body">
+            <form id="orderUpdate_form" action="/rider_order/updateOrder" role="form" method="post">
+                <fieldset class="scheduler-border">
+                    <legend class="scheduler-border">Order Update Form</legend>
+                    <div class="form-row align-items-center">
+                        <div class="col-auto my-1">
+                            <label for="order"><strong>Order Number</strong></label>
+                            <select class="custom-select mr-sm-2" id="orderid" name = "orderid" required>
+                                <option value="">Choose...</option>
+                                <% for(var i=0; i< pOrderInfo.length; i++) { %>
+                                    <option value= "<%= pOrderInfo[i].orderid%>"><%= pOrderInfo[i].orderid%></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="col-auto my-1">
+                        <div class="custom-control custom-checkbox mr-sm-2">
+                            <label for="order"><strong>State of Order</strong></label>
+                                <select class="custom-select mr-sm-2"  id="step" name = "step" required>
+                                    <option value="">Choose...</option>
+                                    <option value= "Depart To Resturant">Depart To Resturant</option>
+                                    <option value= "Arrive At Resturant">Arrive At Resturant</option>
+                                    <option value= "Depart From Resturant">Depart To Location</option>
+                                    <option value= "Order Delivered">Order Delivered</option>
+                                    <option value= "Order Failed">Order Failed</option>
+                                </select>
+                        </div>
+                        </div>
+                        <button style="margin-top:30px;margin-left:0.5em;" type="submit" class="btn btn-primary">Update</button>
+                        <button style="margin-top:30px;margin-left:0.5em;" type=" reset " class="btn btn-primary">Reset</button>
+                    </div>
+                    
+                </fieldset>
+            </form>
+
+            </br>
+
+            <div id="accordion2">
+
+				<div class="card">
+					<div class="card-header" id="subheadingTwo">
+					  <h5 class="mb-0">
+						<button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseTwo" aria-expanded="false" aria-controls="subcollapseTwo">
+							Order Summary
+						</button>
+					  </h5>
+					</div>
+					<div id="subcollapseTwo" class="collapse show" aria-labelledby="subheadingTwo" data-parent="#accordion2">
+					  <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">orderID</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Delivery Location</th>
+                                    <th scope="col">Time: Placed</th>
+                                    <th scope="col">Time: To Restaurant</th>
+                                    <th scope="col">Time: At Restaurant</th>
+                                    <th scope="col">Time: To Location</th>
+                                    <th scope="col">Time: Delivered</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for(var i=0; i< pOrderInfo.length; i++) { %>
+                                <tr>
+                                    <td><%= pOrderInfo[i].orderid%></td>
+                                    <td><%= pOrderInfo[i].date%></td>
+                                    <td><%= pOrderInfo[i].location%></td>
+                                    <td><%= pOrderInfo[i].timeplace%></td>
+                                    <td><%= pOrderInfo[i].timetorest%></td>
+                                    <td><%= pOrderInfo[i].timearrive%></td>
+                                    <td><%= pOrderInfo[i].timedepart%></td>
+                                    <td><%= pOrderInfo[i].timedelivered%></td>
+                                    <td><%= pOrderInfo[i].orderstatus%></td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="col-auto my-1">
-                <div class="custom-control custom-checkbox mr-sm-2">
-                    <label for="order"><strong>State of Order</strong></label>
-                        <select class="custom-select mr-sm-2"  id="step" name = "step" required>
-                            <option selected>Choose...</option>
-                            <option value= "Depart To Resturant">Depart To Resturant</option>
-                            <option value= "Arrive At Resturant">Arrive At Resturant</option>
-                            <option value= "Depart From Resturant">Depart To Location</option>
-                            <option value= "Order Delivered">Order Delivered</option>
-                            <option value= "Order Failed">Order Failed</option>
-                        </select>
-                </div>
-                </div>
-                <button style="margin-top:30px;margin-left:0.5em;" type="submit" class="btn btn-primary">Update</button>
-                <button style="margin-top:30px;margin-left:0.5em;" type=" reset " class="btn btn-primary">Reset</button>
             </div>
+        </div>
+        </div>
+        </div>
+    </div>
+   
+    </br>
+
+    <div class="card">
+        <div class="card-header" id="headingThree">
+        <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                Past Orders 
+            </button>
+        </h5>
+        </div>
+        <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+        <div class="card-body">
             
-        </fieldset>
-    </form>
-    <p> </p>
+            <p>Key in or select a month and year (e.g March 2020) to view summary information. </p>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">orderID</th>
-                <th scope="col">Date</th>
-                <th scope="col">Delivery Location</th>
-                <th scope="col">Time: Placed</th>
-                <th scope="col">Time: To Restaurant</th>
-                <th scope="col">Time: At Restaurant</th>
-                <th scope="col">Time: To Location</th>
-                <th scope="col">Time: Delivered</th>
-                <th scope="col">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(var i=0; i< pOrderInfo.length; i++) { %>
-            <tr>
-                <td><%= pOrderInfo[i].orderid%></td>
-                <td><%= pOrderInfo[i].date%></td>
-                <td><%= pOrderInfo[i].location%></td>
-                <td><%= pOrderInfo[i].timeplace%></td>
-                <td><%= pOrderInfo[i].timetorest%></td>
-                <td><%= pOrderInfo[i].timearrive%></td>
-                <td><%= pOrderInfo[i].timedepart%></td>
-                <td><%= pOrderInfo[i].timedelivered%></td>
-                <td><%= pOrderInfo[i].orderstatus%></td>
-            </tr>
-            <% } %>
-        </tbody>
-    </table>
-</details>
-<p></p>
-
-<details>
-    <summary style="font-size:20px"><strong>Past Orders</strong></summary>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">orderID</th>
-                <th scope="col">Date</th>
-                <th scope="col">Time</th>
-                <th scope="col">Delivery Location</th>
-                <th scope="col">Duration</th>
-                <th scope="col">Status</th>
-                <th scope="col">Rating</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(var i=0; i< cOrderInfo.length; i++) { %>
-            <tr>
-                <td><%= cOrderInfo[i].orderid%></td>
-                <td><%= cOrderInfo[i].date%></td>
-                <td><%= cOrderInfo[i].timeplace%></td>
-                <td><%= cOrderInfo[i].location%></td>
-                <td><%= cOrderInfo[i].deliveryduration%></td>
-                <td><%= cOrderInfo[i].orderstatus%></td>
-                <td><%= cOrderInfo[i].rating%></td>
-            </tr>
-            <% } %>
-        </tbody>
-    </table>
-</details>
-
+            <form id="month_form" action="/rider_order/selectdate" role="form" method="post">
+                <div class="form-group">
+                  <input type="month" class="form-control" id="date" name="date" >
+                  </div>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+                
+                <% if (year != 0 && month != 0) {  %>
+                </br>
+                <p>You have selected <%= month %> <%= year%>.</p>
+                <% } %>
+                </br>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">orderID</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Delivery Location</th>
+                            <th scope="col">Duration</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(var i=0; i< cOrderInfo.length; i++) { %>
+                        <tr>
+                            <td><%= cOrderInfo[i].orderid%></td>
+                            <td><%= cOrderInfo[i].date%></td>
+                            <td><%= cOrderInfo[i].timeplace%></td>
+                            <td><%= cOrderInfo[i].location%></td>
+                            <td><%= cOrderInfo[i].deliveryduration%></td>
+                            <td><%= cOrderInfo[i].orderstatus%></td>
+                            <td><%= cOrderInfo[i].rating%></td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 <%- include('partials/footer') %>
 
