@@ -1,3 +1,16 @@
+function checkMonth(event) {
+
+    var month = document.getElementById('month').value;
+
+    if (emptyValues(month)) {
+        alert("Please select a month!");
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+    }
+
+}
+
 function emptyValues(str) {
     if (!str || str.length === 0) {
         return true;
@@ -5,12 +18,11 @@ function emptyValues(str) {
 }
 
 function checkPromo(event) {
-    //new date().getTime() for comparison between dates 
     var start = new Date(document.getElementById('startdate').value).getTime();
     var end = new Date(document.getElementById('enddate').value).getTime();
     var type = document.getElementById('type').value;
     var discount = document.getElementById('discount').value;
-    var twodecimal = /^\d*\.?\d{1,2}$/;
+    var twodecimal = ^\d+\.\d{0,2}$;
     var whole = /^\d{1,3}$/;
 
     console.log(start);
@@ -39,7 +51,7 @@ function checkPromo(event) {
         }
     } else if (type == "fixed") {
         if (!discount.match(twodecimal) || discount <= 0.00) {
-            alert("discount format invalid!");
+            alert("Discount Format Invalid!");
             event.preventDefault();
             event.stopPropagation();
             return false;

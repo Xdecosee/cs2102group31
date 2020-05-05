@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<%- include('partials/navbar_rest') %>
+<%- include('partials/navbar_fds') %>
 
 <h2>Welcome, <%=name%>!</h2>
 
@@ -64,7 +64,7 @@
         <div id="subcollapseThree" class="collapse show" aria-labelledby="subheadingThree" data-parent="#accordion2">
           <div class="card-body">
             <p> Shows the number of orders placed and the total cost for all these orders for each customer based on the
-              selected date./p>
+              selected date.</p>
             <table class="table">
               <thead>
                 <tr>
@@ -90,5 +90,17 @@
   </div>
 </div>
 </div>
+
+<script src = "javascripts/fds.js"></script>
+<script>
+	(function() {
+		window.addEventListener('load', function() {
+			var forms = [document.getElementById('month_form')];
+			var validation = Array.prototype.filter.call(forms, function(form) {
+				form.addEventListener('submit', checkMonth, false);
+			});
+		}, false);
+	})();
+</script>
 
 <%- include('partials/footer') %>

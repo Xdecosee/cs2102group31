@@ -4,124 +4,228 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<body>
+<h2>Welcome, <%=name%>!</h2>
 
-  <div class="container">
-    <h1>FDS Manager Resturant</h1>
-    <p>Welcome, <%= name%>!</p>
+<div id="accordion">
 
-    <h2>Select Date</h2>
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
+          aria-controls="collapseOne">
+          Summary Information
+        </button>
+      </h5>
+    </div>
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        <p>Select the month and year (e.g. May 2020) to view restaurant related summary information. </p>
+        <form id="month_form" action="/fds_rest/selectdate" role="form" method="post">
+          <div class="form-group">
+            <input type="month" class="form-control" id="date" name="date">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
 
-    <form id="month_form" action="/fds_rest/selectdate" role="form" method="post">
-      <div class="form-group">
-        <input type="month" class="form-control" id="date" name="date">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        </br>
+        <div id="accordion2">
+          <div class="card">
+            <div class="card-header" id="subheadingTwo">
+              <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseTwo" aria-expanded="true"
+                  aria-controls="subcollapseTwo">
+                  Restaurants' Summary
+                </button>
+              </h5>
+            </div>
+            <div id="subcollapseTwo" class="collapse show" aria-labelledby="subheadingTwo" data-parent="#accordion2">
+              <div class="card-body">
+                <p> Shows the total number of orders and total cost of orders for all restaurants.</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Year</th>
+                      <th scope="col">Month</th>
+                      <th scope="col">Total Number of Orders</th>
+                      <th scope="col">Total Cost of Orders</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for (var i = 0; i < fdsAllRestInfo.length; i++) { %>
+                    <tr>
+                      <td><%= fdsAllRestInfo[i].year%></td>
+                      <td><%= fdsAllRestInfo[i].month%></td>
+                      <td><%= fdsAllRestInfo[i].totalorders%></td>
+                      <td><%= fdsAllRestInfo[i].totalcost%></td>
+                      <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          </br>
+
+          <div class="card">
+            <div class="card-header" id="subheadingThree">
+              <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseThree" aria-expanded="true"
+                  aria-controls="subcollapseThree">
+                  Each Restaurant
+                </button>
+              </h5>
+            </div>
+            <div id="subcollapseThree" class="collapse show" aria-labelledby="subheadingThree"
+              data-parent="#accordion2">
+              <div class="card-body">
+                <p> Shows the total number of orders and total cost of orders for each restaurant based on the
+                  selected date.</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Year</th>
+                      <th scope="col">Month</th>
+                      <th scope="col">Resturant's ID</th>
+                      <th scope="col">Total Number of Orders</th>
+                      <th scope="col">Total Cost of Orders</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for (var i = 0; i < fdsEachRestInfo.length; i++) { %>
+                    <tr>
+                      <td><%= fdsEachRestInfo[i].year%></td>
+                      <td><%= fdsEachRestInfo[i].month%></td>
+                      <td><%= fdsEachRestInfo[i].restaurantid%></td>
+                      <td><%= fdsEachRestInfo[i].totalorders%></td>
+                      <td><%= fdsEachRestInfo[i].totalcost%></td>
+                      <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </form>
-
-    <h2>Summary Information</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Year</th>
-          <th scope="col">Month</th>
-          <th scope="col">Total Number of Orders</th>
-          <th scope="col">Total Cost of Orders</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for (var i = 0; i < fdsAllRestInfo.length; i++) { %>
-        <tr>
-          <td><%= fdsAllRestInfo[i].year%></td>
-          <td><%= fdsAllRestInfo[i].month%></td>
-          <td><%= fdsAllRestInfo[i].totalorders%></td>
-          <td><%= fdsAllRestInfo[i].totalcost%></td>
-          <% } %>
-      </tbody>
-    </table>
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Year</th>
-          <th scope="col">Month</th>
-          <th scope="col">Resturant's ID</th>
-          <th scope="col">Total Number of Orders</th>
-          <th scope="col">Total Cost of Orders</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for (var i = 0; i < fdsEachRestInfo.length; i++) { %>
-        <tr>
-          <td><%= fdsEachRestInfo[i].year%></td>
-          <td><%= fdsEachRestInfo[i].month%></td>
-          <td><%= fdsEachRestInfo[i].restaurantid%></td>
-          <td><%= fdsEachRestInfo[i].totalorders%></td>
-          <td><%= fdsEachRestInfo[i].totalcost%></td>
-          <% } %>
-      </tbody>
-    </table>
-
-    <h2>Area Information</h2>
-    <form id="area_form" action="/fds_rest/selectArea" role="form" method="POST">
-      <div class="form-group">
-        <label for="area">Select area:</label>
-        <select class="form-control" id="area" name="area">
-          <option value="N">North</option>
-          <option value="S">South</option>
-          <option value="E">East</option>
-          <option value="W">West</option>
-        </select>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
+          aria-controls="collapseTwo">
+          Area Information
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+        <form id="area_form" action="/fds_rest/selectArea" role="form" method="POST">
+          <div class="form-group">
+            <label for="area">Select delivery location:</label>
+            <select class="form-control" id="area" name="area">
+              <option value="N">North</option>
+              <option value="S">South</option>
+              <option value="E">East</option>
+              <option value="W">West</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        </br>
+        <p> Shows the total number of orders based on the selected delivery location area.</p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Area</th>
+              <th scope="col">Hour</th>
+              <th scope="col">Total Order</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(var i=0; i< areaInfo.length; i++) { %>
+            <tr>
+              <td><%= areaInfo[i].area%></td>
+              <td><%= areaInfo[i].hour%></td>
+              <td><%= areaInfo[i].num%></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Area</th>
-          <th scope="col">Hour</th>
-          <th scope="col">Total Order</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(var i=0; i< areaInfo.length; i++) { %>
-        <tr>
-          <td><%= areaInfo[i].area%></td>
-          <td><%= areaInfo[i].hour%></td>
-          <td><%= areaInfo[i].num%></td>
-        </tr>
-        <% } %>
-      </tbody>
-    </table>
-
-    <h2>Available Categories</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Categories</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(var i=0; i< catInfo.length; i++) { %>
-        <tr>
-          <td><%= catInfo[i].category%></td>
-        </tr>
-        <% } %>
-      </tbody>
-    </table>
-
-    <form id="cat_form" action="/fds_rest/add_cat" role="form" method="POST">
-      <div class="form-group">
-        <label>Add new category:</label>
-        <input class="form-control" type="text" name="category" />
-      </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    </div>
   </div>
 
-</body>
+  <div class="card">
+    <div class="card-header" id="headingThree">
+		  <h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+				Categories Information
+			</button>
+		  </h5>
+		</div>
+		<div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+    <div class="card-body">
+      <div id="accordion2">
+        <div class="card">
+          <div class="card-header" id="subheadingTwo">
+            <h5 class="mb-0">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseTwo" aria-expanded="true"
+                aria-controls="subcollapseTwo">
+                View Available Categories
+              </button>
+            </h5>
+          </div>
+          <div id="subcollapseTwo" class="collapse show" aria-labelledby="subheadingTwo" data-parent="#accordion2">
+            <div class="card-body">
+              <p> Shows the total number of orders and total cost of orders for all restaurants.</p>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Categories</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for(var i=0; i< catInfo.length; i++) { %>
+                  <tr>
+                    <td><%= catInfo[i].category%></td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </br>
+      <div class="card">
+        <div class="card-header" id="subheadingThree">
+          <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseThree" aria-expanded="true"
+              aria-controls="subcollapseThree">
+              Add Category
+            </button>
+          </h5>
+        </div>
+        <div id="subcollapseThree" class="collapse show" aria-labelledby="subheadingThree"
+          data-parent="#accordion2">
+          <div class="card-body">
+            <form id="cat_form" action="/fds_rest/add_cat" role="form" method="POST">
+              <div class="form-group">
+                <label>Add new category:</label>
+                <input class="form-control" type="text" name="category" />
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
 
+
+
+    </div>
+    </div>
+  </div>
+</div>
 </html>
 
 
