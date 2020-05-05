@@ -8,7 +8,7 @@ For NUS CS2102 graders, please look at the following sections:
 2. Running and Testing the App
 
 ## Setting Up Repo
-1. Download Node js at https://nodejs.org/en/
+1. Download Node js at https://nodejs.org/en/. Download the version that is under "Recommended for most users". The version used for creating this repo is v12.16.1.
 2. In a terminal, change directory to the /App folder and run 'npm install'. A "node_modules" folder should be created in your /App directory.
 
 3. Import psql_script_with_insert.sql under /App/db folder to psql. Recommended: psql version 12.1.
