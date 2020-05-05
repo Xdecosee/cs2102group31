@@ -1,120 +1,153 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_rider') %>
 <link rel = 'stylesheet' href='stylesheets/form.css'>
-<h1>Rider's Schedule</h1>
-<br>
-<details>
-    <summary style="font-size:20px"><strong>Add Schedule</strong></summary>
-    <div line-height:1.6 style="margin-left:1.4em"> 
-      Maximum of 5 slots per form. <br>
-      <strong>Do note</strong> the following points while filing the form: <br>
-      <li style="margin-left:1.4em"> Date and time should not clash with your previous schedule</li>
-      <li style="margin-left:1.4em"> Maximum time per shift is 4 hours</li>
-      <li style="margin-left:1.4em"> Interval between each shift must be at least 1 hour difference</li>
-      <li style="margin-left:1.4em"> Minimum of 10 hours per week for your insert</li>
-      <li style="margin-left:1.4em"> Maximum of 48 hours per week </li>
+<h2>Rider Schedule </h2>
 
+<p> You can manage and view your future schedule here. </br>
+    Do ensure that you meet the minimum requirements for your schedule </p>
+
+<div id="accordion">
+
+	<div class="card">
+		<div class="card-header" id="headingTwo">
+		  <h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+				Add Schedule
+			</button>
+		  </h5>
+		</div>
+    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+		  <div class="card-body">
+        <div line-height:1.6> 
+          Maximum of 5 slots per form. <br>
+          <strong>Do note</strong> the following points while filing the form: <br>
+          <li style="margin-left:1.4em"> Date and time should not clash with your previous schedule</li>
+          <li style="margin-left:1.4em"> Maximum time per shift is 4 hours</li>
+          <li style="margin-left:1.4em"> Interval between each shift must be at least 1 hour difference</li>
+          <li style="margin-left:1.4em"> Minimum of 10 hours per week for your insert</li>
+          <li style="margin-left:1.4em"> Maximum of 48 hours per week </li>
+        </div>
+      </br>
+      <form id="schedule_form" action="/rider_ptschedule/addSched" role="form" method="post">
+        <fieldset class="scheduler-border">
+          <legend class="scheduler-border">Schedule Form</legend>
+          <label for="day1" style="margin-left:1.0em"><strong>Date:</strong></label>
+          <input type="date" id="day1" name="day1" required>
+          <label for="start1" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+          <input type="time" id="start1" name="start1" min="10:00" max="22:00" step = "3600" required> 
+          <label for="end1" style="margin-left:2.0em"><strong>End Time:</strong></label>
+          <input type="time" id="end1" name="end1" min="10:00" max="22:00" step = "3600" required>
+          <p></p>
+          <label for="day2" style="margin-left:1.0em"><strong>Date:</strong></label>
+          <input type="date" id="day2" name="day2" >
+          <label for="start2" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+          <input type="time" id="start2" name="start2" min="10:00" max="22:00" step = "3600">
+          <label for="end1" style="margin-left:2.0em"><strong>End Time:</strong></label>
+          <input type="time" id="end2" name="end2" min="10:00" max="22:00" step = "3600">
+          <p></p>
+          <label for="day3" style="margin-left:1.0em"><strong>Date:</strong></label>
+          <input type="date" id="day3" name="day3">
+          <label for="start3" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+          <input type="time" id="start3" name="start3" min="10:00" max="22:00" step = "3600">
+          <label for="end3" style="margin-left:2.0em"><strong>End Time:</strong></label>
+          <input type="time" id="end3" name="end3" min="10:00" max="22:00" step = "3600">
+          <p></p>
+          <label for="day4" style="margin-left:1.0em"><strong>Date:</strong></label>
+          <input type="date" id="day4" name="day4">
+          <label for="start4" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+          <input type="time" id="start4" name="start4" min="10:00" max="22:00" step = "3600">
+          <label for="end4" style="margin-left:2.0em"><strong>End Time:</strong></label>
+          <input type="time" id="end4" name="end4" min="10:00" max="22:00"  step = "3600">
+          <p></p>
+          <label for="day5" style="margin-left:1.0em"><strong>Date:</strong></label>
+          <input type="date" id="day5" name="day5">
+          <label for="start5" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+          <input type="time" id="start5" name="start5" min="10:00" max="22:00" step = "3600">
+          <label for="end5" style="margin-left:2.0em"><strong>End Time:</strong></label>
+          <input type="time" id="end5" name="end5" min="10:00" max="22:00" step = "3600">
+          <p></p>
+          <button style="margin-left:1.0em" type="submit" class="btn btn-primary">Submit</button>
+          <button  type="reset" class="btn btn-primary">Reset</button>
+          <p></p>
+          <small><strong>Note:</strong> Schedule cannot be altered once submitted for processing</small>
+        </fieldset>
+      </form> 
+      </div>
     </div>
-    <p line-height:1.6 style="margin-left:1.0em"> </p>
-    <form id="schedule_form" action="/rider_ptschedule/addSched" role="form" method="post">
-      <fieldset class="scheduler-border">
-        <legend class="scheduler-border">Schedule Form</legend>
-        <label for="day1" style="margin-left:1.0em"><strong>Date:</strong></label>
-        <input type="date" id="day1" name="day1" required>
-        <label for="start1" style="margin-left:2.0em"><strong>Start Time:</strong></label>
-        <input type="time" id="start1" name="start1" min="10:00" max="22:00" step = "3600" required> 
-        <label for="end1" style="margin-left:2.0em"><strong>End Time:</strong></label>
-        <input type="time" id="end1" name="end1" min="10:00" max="22:00" step = "3600" required>
+  </div>
+
+  </br>
+
+  <div class="card">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+        View Schedule
+      </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+      <div class="card-body">
+  
+      <p>Key in or select a month and year (e.g March 2020) to view the month's schedule. </p>
+
+      <form id="month_form" action="/rider_ptschedule/selectdate" role="form" method="post">
+        <input type="month" class="form-control" id="date" name="date" >
         <p></p>
-        <label for="day2" style="margin-left:1.0em"><strong>Date:</strong></label>
-        <input type="date" id="day2" name="day2" >
-        <label for="start2" style="margin-left:2.0em"><strong>Start Time:</strong></label>
-        <input type="time" id="start2" name="start2" min="10:00" max="22:00" step = "3600">
-        <label for="end1" style="margin-left:2.0em"><strong>End Time:</strong></label>
-        <input type="time" id="end2" name="end2" min="10:00" max="22:00" step = "3600">
-        <p></p>
-        <label for="day3" style="margin-left:1.0em"><strong>Date:</strong></label>
-        <input type="date" id="day3" name="day3">
-        <label for="start3" style="margin-left:2.0em"><strong>Start Time:</strong></label>
-        <input type="time" id="start3" name="start3" min="10:00" max="22:00" step = "3600">
-        <label for="end3" style="margin-left:2.0em"><strong>End Time:</strong></label>
-        <input type="time" id="end3" name="end3" min="10:00" max="22:00" step = "3600">
-        <p></p>
-        <label for="day4" style="margin-left:1.0em"><strong>Date:</strong></label>
-        <input type="date" id="day4" name="day4">
-        <label for="start4" style="margin-left:2.0em"><strong>Start Time:</strong></label>
-        <input type="time" id="start4" name="start4" min="10:00" max="22:00" step = "3600">
-        <label for="end4" style="margin-left:2.0em"><strong>End Time:</strong></label>
-        <input type="time" id="end4" name="end4" min="10:00" max="22:00"  step = "3600">
-        <p></p>
-        <label for="day5" style="margin-left:1.0em"><strong>Date:</strong></label>
-        <input type="date" id="day5" name="day5">
-        <label for="start5" style="margin-left:2.0em"><strong>Start Time:</strong></label>
-        <input type="time" id="start5" name="start5" min="10:00" max="22:00" step = "3600">
-        <label for="end5" style="margin-left:2.0em"><strong>End Time:</strong></label>
-        <input type="time" id="end5" name="end5" min="10:00" max="22:00" step = "3600">
-        <p></p>
-        <button style="margin-left:1.0em" type="submit" class="btn btn-primary">Submit</button>
-        <button  type="reset" class="btn btn-primary">Reset</button>
-        <p></p>
-        <small><strong>Note:</strong> Schedule cannot be altered once submitted for processing</small>
-      </fieldset>
-    </form> 
-</details>
-<p></p>
-<details>
-    <summary style="font-size:20px"><strong>View Schedule</strong></summary>
-    <br>
-    <label  for="myInput"><strong>Input Period: </strong></label>
-    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="e.g. Jan-2020" title="Type in a Period" size="50">
-    <br>
-    <small style="margin-left:8.0em">Fill the month period to view schedule for the month</small>
-    <br>
-    <br>
-    <table class="table" id='myTable'>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+
+      <% if (year != 0 && month != 0) {  %>
+           </br>
+           <p>You have selected <%= month %> <%= year%>.</p>
+      <% } %>
+  
+      </br>
+      <table class="table">
         <thead>
-            <tr>
-                <th scope="col">Period</th>
-                <th scope="col">Work Date</th>
-                <th scope="col">Start Time</th>
-                <th scope="col">End Time</th>
-            </tr>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">10:00</th>
+            <th scope="col">11:00</th>
+            <th scope="col">12:00</th>
+            <th scope="col">13:00</th>
+            <th scope="col">14:00</th>
+            <th scope="col">15:00</th>
+            <th scope="col">16:00</th>
+            <th scope="col">17:00</th>
+            <th scope="col">18:00</th>
+            <th scope="col">19:00</th>
+            <th scope="col">20:00</th>
+            <th scope="col">21:00</th>
+          </tr>
         </thead>
         <tbody>
-            <% for(var i=0; i< ptshedInfo.length; i++) { %>
-            <tr>
-                <td><%= ptshedInfo[i].period%></td>
-                <td><%= ptshedInfo[i].date%></td>
-                <td><%= ptshedInfo[i].intervstart%></td>
-                <td><%= ptshedInfo[i].intervend%></td>
-            </tr>
-            <% } %>
-        </tbody>
+          <% for (var i = 0; i < indshedInfo.length; i++) { %>
+          <tr>
+            <td><%= indshedInfo[i].ddate%></td>
+            <td><%= indshedInfo[i].t10%></td>
+            <td><%= indshedInfo[i].t11%></td>
+            <td><%= indshedInfo[i].t12%></td>
+            <td><%= indshedInfo[i].t13%></td>
+            <td><%= indshedInfo[i].t14%></td>
+            <td><%= indshedInfo[i].t15%></td>
+            <td><%= indshedInfo[i].t16%></td>
+            <td><%= indshedInfo[i].t17%></td>
+            <td><%= indshedInfo[i].t18%></td>
+            <td><%= indshedInfo[i].t19%></td>
+            <td><%= indshedInfo[i].t20%></td>
+            <td><%= indshedInfo[i].t21%></td>
+          </tr>
+          <% } %>
+      </tbody>
     </table>
-
-</details>
+    </div>
+  </div>
+</div>
+</div>
+      
 
 <%- include('partials/footer') %>
-
-<script>
-    function myFunction() {
-      var input, filter, table, tr, td, i;
-      input = document.getElementById("myInput");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("myTable");
-      tr = table.getElementsByTagName("tr");
-      for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[0];
-        if (td) {
-          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-            tr[i].style.display = "";
-          } else {
-            tr[i].style.display = "none";
-          }
-        }       
-      }
-    }
-</script>
 
 <script>
   (function() {

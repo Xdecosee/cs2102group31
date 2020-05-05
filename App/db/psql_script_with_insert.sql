@@ -286,13 +286,9 @@ RETURNS TRIGGER AS $$
 DECLARE currStatus VARCHAR(50);
 DECLARE riderId Integer;
 DECLARE riderType VARCHAR(255);
-DECLARE dateO DATE;
-DECLARE timeO TIME;
 
 BEGIN
     currStatus := NEW.orderStatus;
-	dateO := NEW.date;
-	timeO := NEW.timeOrderPlace;
 
     SELECT uid INTO riderId
     FROM Delivers
@@ -306,15 +302,11 @@ BEGIN
         IF (riderType = 'FullTime') THEN
             UPDATE WorkingWeeks
             SET numCompleted = numCompleted + 1
-            WHERE riderId = WorkingWeeks.uid
-			AND dateO = WorkingWeeks.workDate;
+            WHERE riderId = WorkingWeeks.uid;
         ELSIF (riderType = 'PartTime') THEN
             UPDATE WorkingDays 
             SET numCompleted = numCompleted + 1
-            WHERE riderId = WorkingDays.uid
-			AND dateO = WorkingDays.workDate
-			AND timeO >= WorkingDays.intervalStart
-			AND timeO <= WorkingDays.intervalEnd;
+            WHERE riderId = WorkingDays.uid;
         END IF;
     END IF;
     RETURN NULL;
@@ -421,7 +413,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER add_shift_trigger
-BEFORE UPDATE OR INSERT ON WorkingDays
+BEFORE INSERT ON WorkingDays
 FOR EACH ROW
 EXECUTE PROCEDURE check_shift();
 
@@ -1484,41 +1476,48 @@ SELECT CF.fuid as uid,
 FROM DeliveryRiders DR LEFT JOIN ConsolidateF CF on DR.uid = CF.fUid 
 );
 
--- Rider's Schedule Overview
-CREATE VIEW Overview AS(
+/* To view individual schedule on a monthly basis */
+CREATE VIEW IndiRiderShed AS(
 	with Alldate as(
-	select generate_series(
-           (date '2019-01-01')::timestamp,
-           (date '2022-12-31')::timestamp,
-           interval '1 day'
-         ) as ddate
-	)
-
-	SELECT ddate as ddate,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='10:00:00' AND W.intervalEnd>'10:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND W.shiftID = 1) as t10,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='11:00:00' AND W.intervalEnd>'11:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2)) as t11,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='12:00:00' AND W.intervalEnd>'12:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t12,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='13:00:00' AND W.intervalEnd>'13:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t13,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='14:00:00' AND W.intervalEnd>'14:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t14,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='15:00:00' AND W.intervalEnd>'15:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =3 OR W.shiftID =4)) as t15,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='16:00:00' AND W.intervalEnd>'16:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =4)) as t16,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='17:00:00' AND W.intervalEnd>'17:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t17,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='18:00:00' AND W.intervalEnd>'18:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t18,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='19:00:00' AND W.intervalEnd>'19:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t19,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='20:00:00' AND W.intervalEnd>'20:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 3 OR W.shiftID =4)) as t20,
-		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='21:00:00' AND W.intervalEnd>'21:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 4)) as t21
-	FROM AllDate D	
+		select generate_series(
+           	(date '2019-01-01')::timestamp,
+           	(date '2022-12-31')::timestamp,
+           	interval '1 day'
+         	) as ddate
+        )
+	SELECT distinct A.ddate as ddate,WD.uid as uid,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='10:00:00' AND W.intervalEnd>'10:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t10,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='11:00:00' AND W.intervalEnd>'11:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t11,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='12:00:00' AND W.intervalEnd>'12:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t12,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='13:00:00' AND W.intervalEnd>'13:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t13,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='14:00:00' AND W.intervalEnd>'14:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t14,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='15:00:00' AND W.intervalEnd>'15:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t15,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='16:00:00' AND W.intervalEnd>'16:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t16,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='17:00:00' AND W.intervalEnd>'17:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t17,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='18:00:00' AND W.intervalEnd>'18:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t18,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='19:00:00' AND W.intervalEnd>'19:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t19,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='20:00:00' AND W.intervalEnd>'20:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t20,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='21:00:00' AND W.intervalEnd>'21:00:00' and W.workDate = A.ddate and WD.uid=W.uid) as t21
+	FROM AllDate A Join WorkingDays WD ON (A.ddate = WD.workDate)
+	UNION 
+	SELECT distinct A.ddate as ddate,WW.uid as uid,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND W.shiftID = 1) as t10,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2)) as t11,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t12,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t13,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t14,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =3 OR W.shiftID =4)) as t15,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =4)) as t16,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t17,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t18,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t19,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 3 OR W.shiftID =4)) as t20,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 4)) as t21
+	FROM AllDate A Join WorkingWeeks WW ON (A.ddate = WW.workDate)
+    UNION
+    SELECT 	distinct A.ddate, 0 as uid, 0 as t10, 0 as t11,0 as t12,0 as t13,0 as t14,0 as t15,0 as t16,0 as t17,0 as t18,0 as t19,0 as t20,0 as t21
+	FROM AllDate A 
 );
-
--- Rider's Overall Review
-CREATE VIEW ReviewInfo AS (
-SELECT distinct DR.uid, EXTRACT(Year FROM (O.date)) AS year, EXTRACT(Month FROM 
-(O.date)) as month, count(D.rating) as totalRatings, ROUND(avg(D.rating),1) as avgRatings,  
-to_char(avg(O.timeOrderDelivered - O.timeOrderPlace), 'HH24:MI:SS') as avgDuration
-FROM DeliveryRiders DR LEFT JOIN Delivers D on DR.uid = D.uid LEFT JOIN Orders O on D.orderID = O.orderID 
-GROUP BY DR.uid, year, month
-);
-
 
 /*Leave this trigger at the bottom to prevent interference with manual insert statements*/
 CREATE OR REPLACE FUNCTION check_riders()
