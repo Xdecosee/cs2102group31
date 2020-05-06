@@ -188,85 +188,34 @@ router.post('/getRest', function (req, res, next) {
 	res.redirect('/cust_menu');
 });
 
-// this one is kinda complicated -.- 
+
 router.post('/addOrder', function (req, res, next) {
-	var promo_info = req.body.promo;
-	var promo_per = 1; // defoult no promo
-	var promo_amt = 0; // default no promo
-	//var id_rest = null;
-	var d = new Date();
-	if (promo_info == '-') {
-		promo_info = null;
-		caller.query(sql.query.addfoodper, [req.body.orderItem, restId, req.body.orderAmount, promo_per, promo_info], (err, data) => {
-			if (err) {
-				return next(err);
-			}
-			OrderInfo.push(data.rows[0]);
-			totalPrice += Number(data.rows[0].price);
-		});
-	} else {
 
-		// check for valid promo code
-		caller.query(sql.query.promoD, [promo_info], (err, data) => {
-			if (err) {
-				return next(err);
-			}
-			promo_per = data.rows[0].discperc;
-			promo_amt = data.rows[0].discamt;
-
-			console.log(promo_per);
-			console.log(promo_amt);
-
-			time = (d.toTimeString()).substring(0, 8);
-
-			// check for valid promo code
-			if (!dates.inRange(d, data.rows[0].startdate, data.rows[0].enddate)) {
-				// do nothing 
-				console.log("datefail")
-			} else if (data.rows[0].endtime < time) {
-				// do nothing	
-				console.log("timefail")
-			}
-			else {
-				if (promo_amt == null) {
-					promo_per = 1 - promo_per;
-					console.log(promo_per);
-
-					// without checking time yet ...
-					caller.query(sql.query.addfoodper, [req.body.orderItem, restId, req.body.orderAmount, promo_per, promo_info], (err, data) => {
-						if (err) {
-							return next(err);
-						}
-						OrderInfo.push(data.rows[0]);
-						totalPrice += Number(data.rows[0].price);
-					});
-				} else if (promo_per == null) {
-					caller.query(sql.query.addfoodamt, [req.body.orderItem, restId, req.body.orderAmount, promo_amt, promo_info], (err, data) => {
-						if (err) {
-							return next(err);
-						}
-						OrderInfo.push(data.rows[0]);
-						totalPrice += Number(data.rows[0].price);
-					});
-				}
-			}
-		});
-	}
+	caller.query(sql.query.addfood, [req.body.orderItem, restId, req.body.orderAmount], (err, data) => {
+		if (err) {
+			return next(err);
+		}
+		OrderInfo.push(data.rows[0]);
+		totalPrice += Number(data.rows[0].price);
+		console.log(totalPrice);
+	});
 	res.redirect('/cust_menu');
 });
 
+// this one is kinda complicated -.- 
 router.post('/cfmOrder', function (req, res, next) {
-	if (minThreshold > totalPrice) {
-		//do nothing 
-	} else if (totalPrice > rewardPts) {
-		//do nothing
-	} else {
-		var addr = null;
-		var area = req.body.area;
-		var payopt = req.body.paytype;
-		var orderID = null;
-		totalPrice += 4;
+	var addr = null;
+	var area = req.body.area;
+	var payopt = req.body.paytype;
+	var orderID = null;
+	var promo_info = req.body.promo;
 
+
+	if (minThreshold > totalPrice) {
+		res.redirect('/cust_menu');//do nothing 
+	} else if (payopt == "RewardPts" && totalPrice > rewardPts) {
+		res.redirect('/cust_menu');//do nothing
+	} else {
 
 		if (req.body.pastAddr == "null") {
 			addr = req.body.newAddr;
@@ -275,9 +224,8 @@ router.post('/cfmOrder', function (req, res, next) {
 		}
 
 		if (payopt == "RewardPts") {
-			console.log ("I pay by rewardpts");
-			console.log (totalPrice);
-			console.log (rewardPts);
+			console.log(totalPrice);
+			console.log(rewardPts);
 			var newpts = Math.round(rewardPts - totalPrice);
 			caller.query(sql.query.payReward, [req.user.uid, newpts], (err, data) => {
 				if (err) {
@@ -287,34 +235,106 @@ router.post('/cfmOrder', function (req, res, next) {
 			});
 		}
 
-		caller.query(sql.query.insertOrder, [addr, payopt, area, totalPrice], (err, data) => {
-			if (err) {
-				return next(err);
-			}
+		var promo_per = 1; // defoult no promo
+		var promo_amt = 0; // default no promo
+		var d = new Date();
 
-			orderID = data.rows[0].orderid;
+		console.log(totalPrice);
 
-			for (i = 0; i < OrderInfo.length; i++) {
-				console.log(orderID);
-				caller.query(sql.query.insertFM, [OrderInfo[i].promoid, OrderInfo[i].amount, orderID, OrderInfo[i].restaurantid, OrderInfo[i].foodname], (err, data) => {
-					if (err) {
-						return next(err);
-					}
-					console.log("successfully added from menu");
-				})
-			}
-
-
-			caller.query(sql.query.insertPlace, [orderID, req.user.uid], (err, data) => {
+		if (promo_info !== '-') {
+			caller.query(sql.query.promoD, [promo_info], (err, data) => {
 				if (err) {
 					return next(err);
 				}
-				console.log("successfully added place");
-			})
-		});
-	}
+				promo_per = data.rows[0].discperc;
+				promo_amt = data.rows[0].discamt;
 
-	 res.redirect('/cust_orderInfo');
+				console.log(promo_per);
+				console.log(promo_amt);
+
+				time = (d.toTimeString()).substring(0, 8);
+
+				// check for valid promo code
+				if (!dates.inRange(d, data.rows[0].startdate, data.rows[0].enddate)) {
+					console.log("datefail");
+					res.redirect('/cust_menu');// do nothing 
+				} else if (data.rows[0].endtime < time) {
+					// do nothing	
+					console.log("timefail");
+					res.redirect('/cust_menu');
+				}
+				else {
+					if (promo_amt == null) {
+						promo_per = 1 - promo_per;
+						console.log(promo_per);
+						totalPrice *= promo_per;
+					} else if (promo_per == null) {
+						totalPrice -= promo_amt;
+					}
+				}
+				totalPrice += 4;
+
+				caller.query(sql.query.insertOrder, [addr, payopt, area, totalPrice], (err, data) => {
+					if (err) {
+						return next(err);
+					}
+					orderID = data.rows[0].orderid;
+
+					for (i = 0; i < OrderInfo.length; i++) {
+						console.log(orderID);
+						caller.query(sql.query.insertFM, [OrderInfo[i].amount, orderID, OrderInfo[i].restaurantid, OrderInfo[i].foodname], (err, data) => {
+							if (err) {
+								return next(err);
+							}
+							console.log("successfully added from menu");
+						})
+					}
+
+
+					caller.query(sql.query.insertPlace, [promo_info, orderID, req.user.uid], (err, data) => {
+						if (err) {
+							return next(err);
+						}
+						console.log("successfully added place");
+						OrderInfo = [];
+						totalPrice = 0;
+						res.redirect('/cust_orderInfo');
+					})
+				});
+			});
+		} else {
+			promo_info = null;
+			totalPrice += 4;
+
+			caller.query(sql.query.insertOrder, [addr, payopt, area, totalPrice], (err, data) => {
+				if (err) {
+					return next(err);
+				}
+				orderID = data.rows[0].orderid;
+				var uid = req.user.uid;
+
+				for (i = 0; i < OrderInfo.length; i++) {
+					console.log(orderID);
+					caller.query(sql.query.insertFM, [OrderInfo[i].amount, orderID, OrderInfo[i].restaurantid, OrderInfo[i].foodname], (err, data) => {
+						if (err) {
+							return next(err);
+						}
+						console.log("successfully added from menu");
+					})
+				}
+
+				caller.query(sql.query.insertPlace, [promo_info, orderID, uid], (err, data) => {
+					if (err) {
+						return next(err);
+					}
+					console.log("successfully added place");
+					OrderInfo = [];
+					totalPrice = 0;
+					res.redirect('/cust_orderInfo');
+				})
+			});
+		}
+	}
 });
 
 
