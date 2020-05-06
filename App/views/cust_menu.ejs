@@ -7,49 +7,49 @@
 
 
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<style>
-		body {
-			font-family: Arial;
-		}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial;
+    }
 
-		/* Style the tab */
-		.tab {
-			overflow: hidden;
-			border: 1px solid #ccc;
-			background-color: #f1f1f1;
-		}
+    /* Style the tab */
+    .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+    }
 
-		/* Style the buttons inside the tab */
-		.tab button {
-			background-color: inherit;
-			float: left;
-			border: none;
-			outline: none;
-			cursor: pointer;
-			padding: 14px 16px;
-			transition: 0.3s;
-			font-size: 17px;
-		}
+    /* Style the buttons inside the tab */
+    .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
+      font-size: 17px;
+    }
 
-		/* Change background color of buttons on hover */
-		.tab button:hover {
-			background-color: #ddd;
-		}
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+      background-color: #ddd;
+    }
 
-		/* Create an active/current tablink class */
-		.tab button.active {
-			background-color: #ccc;
-		}
+    /* Create an active/current tablink class */
+    .tab button.active {
+      background-color: #ccc;
+    }
 
-		/* Style the tab content */
-		.tabcontent {
-			display: none;
-			padding: 6px 12px;
-			border: 1px solid #ccc;
-			border-top: none;
-		}
-	</style>
+    /* Style the tab content */
+    .tabcontent {
+      display: none;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-top: none;
+    }
+  </style>
 </head>
 
 <body>
@@ -72,10 +72,12 @@
     <div class="tab">
       <button class="tablinks" onclick="openCust(event, 'Reviews')">Reviews</button>
       <button class="tablinks" onclick="openCust(event, 'Menu')">Menu</button>
+      <button class="tablinks" onclick="openCust(event, 'Promo')">Promo</button>
       <button class="tablinks" onclick="openCust(event, 'Order')">Order</button>
     </div>
     <div id="Reviews" class="tabcontent">
-      <h3>Average Rating : </h3><p><%= avgRating%></p>
+      <h3>Average Rating : </h3>
+      <p><%= avgRating%></p>
       <table class="table">
         <thead>
           <tr>
@@ -99,71 +101,136 @@
     </div>
 
     <div id="Menu" class="tabcontent">
-      <label  for="myInput"><strong>Input FoodName: </strong></label>
+      <label for="myInput"><strong>Input FoodName: </strong></label>
       <input type="text" id="myInput" onkeyup="myFunction()" title="Search for food" size="50">
       <br>
       <table class="table" id='myTable'>
-          <thead>
-              <tr>
-                <th scope="col">Food Name</th>
-                <th scope="col">Category</th>
-                <th scope="col">Price</th>
-                <th scope="col">Limit</th>
-              </tr>
-          </thead>
-          <tbody>
-            <% for(var i=0; i < menuInfo.length; i++) { %>
-              <tr>
-                <td><%= menuInfo[i].foodname%></td>
-                <td><%= menuInfo[i].category%></td>
-                <td><%= menuInfo[i].price%></td>
-                <td><%= menuInfo[i].dailylimit%></td>
-              </tr>
-              <% } %>
-          </tbody>
+        <thead>
+          <tr>
+            <th scope="col">Food Name</th>
+            <th scope="col">Category</th>
+            <th scope="col">Price</th>
+            <th scope="col">Limit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(var i=0; i < menuInfo.length; i++) { %>
+          <tr>
+            <td><%= menuInfo[i].foodname%></td>
+            <td><%= menuInfo[i].category%></td>
+            <td><%= menuInfo[i].price%></td>
+            <td><%= menuInfo[i].dailylimit%></td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="Promo" class="tabcontent">
+      <table class="table" id='currPromo'>
+        <thead>
+          <tr>
+            <th scope="col">Promotion Code</th>
+            <th scope="col">StartDate</th>
+            <th scope="col">EndDate</th>
+            <th scope="col">StartTime</th>
+            <th scope="col">EndTime</th>
+            <th scope="col">Discount Percent</th>
+            <th scope="col">Discount Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(var i=0; i < promoInfo.length; i++) { %>
+          <tr>
+            <td><%= promoInfo[i].promoid%></td>
+            <td><%= promoInfo[i].startdate%></td>
+            <td><%= promoInfo[i].enddate%></td>
+            <td><%= promoInfo[i].starttime%></td>
+            <td><%= promoInfo[i].endtime%></td>
+            <td><%= promoInfo[i].discperc%></td>
+            <td><%= promoInfo[i].discamt%></td>
+          </tr>
+          <% } %>
+        </tbody>
       </table>
     </div>
 
 
     <div id="Order" class="tabcontent">
       <div class="col-auto my-1">
-      <form id="addOrder" action="/cust_menu/addOrder" role="form" method="post">
-        <label for="order"><strong>Add Order</strong></label>
-        <table class="table" id='orderInfo'>
-          <thead>
+        <form id="addOrder" action="/cust_menu/addOrder" role="form" method="post">
+          <label for="order"><strong>Add Order</strong></label>
+          <table class="table" id='orderInfo'>
+            <thead>
               <tr>
                 <th scope="col">Food Name</th>
                 <th scope="col">Price</th>
                 <th scope="col">Amount</th>
+                <th scope="col">Promo Code</th>
               </tr>
-          </thead>
-          <tbody>
-            <% for(var i=0; i < orderInfo.length; i++) { %>
+            </thead>
+            <tbody>
+              <% for(var i=0; i < orderInfo.length; i++) { %>
               <tr>
                 <td><%= orderInfo[i].foodname%></td>
                 <td><%= orderInfo[i].price%></td>
                 <td><%= orderInfo[i].amount%></td>
+                <td><%= orderInfo[i].promoid%></td>
               </tr>
               <% } %>
-          </tbody>
-      </table>
+            </tbody>
+          </table>
 
-        <select class="custom-select mr-sm-2" id="orderItem" name="orderItem">
-          <% for(var i=0; i< menuInfo.length; i++) { %>
-          <option value="<%= menuInfo[i].foodname%>"><%= menuInfo[i].foodname%></option>
-          <% } %>
-        </select>
-        <select class="custom-select mr-sm-2" id="orderAmount" name="orderAmount">
-          <% for(var i=1; i< 6; i++) { %>
-          <option value="<%=i%>"><%=i%></option>
-          <% } %>
-        </select>
-        <button type="submit" class="btn btn-primary">Add</button>
-        <button> </button>
-      </form>
-    </div>
-    </div>
+          <select class="custom-select mr-sm-2" id="orderItem" name="orderItem">
+            <% for(var i=0; i< menuInfo.length; i++) { %>
+            <option value="<%= menuInfo[i].foodname%>"><%= menuInfo[i].foodname%></option>
+            <% } %>
+          </select>
+          <br />
+          <select class="custom-select mr-sm-2" id="orderAmount" name="orderAmount">
+            <% for(var i=1; i< 6; i++) { %>
+            <option value="<%=i%>"><%=i%></option>
+            <% } %>
+          </select>
+          <div class="form-group">
+            <input type="text" class="form-control" id="promo" name="promo" value="-">
+          </div>
+          <br />
+          <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+        <br />
+        <h3>Total Price: </h3>
+        <p><%= totalPrice%> + 4 (delivery fee)</p>
+        <h3>Current Reward Points: </h3>
+        <p><%= rewardPts%></p>
+        <h3>Minimum Threshold: </h3>
+        <p><%= minThreshold%></p>
+        <br>
 
+        <form id="cfmOrder" action="/cust_menu/cfmOrder" role="form" method="post">
+
+          <select class="custom-select mr-sm-2" id="pastAddr" name="pastAddr">
+            <option value="null">Add your own addresss</option>>
+            <% for(var i=0; i< addrInfo.length; i++) { %>
+            <option value="<%= addrInfo[i].location%>"><%= addrInfo[i].location%></option>
+            <% } %>
+          </select>
+          <input type="text" class="form-control" id="newAddr" name="newAddr" value="New Address">
+          <select class="custom-select mr-sm-2" id="paytype" name="paytype">
+            <% for(var i=0; i< paymentInfo.length; i++) { %>
+            <option value="<%= paymentInfo[i].payoption%>"><%= paymentInfo[i].payoption%></option>
+            <% } %>
+          </select>
+          <select class="custom-select mr-sm-2" id="area" name="area">
+            <option value="N">North</option>
+            <option value="S">South</option>
+            <option value="E">East</option>
+            <option value="W">West</option>
+          </select>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
 </body>
 
 </html>
@@ -184,23 +251,23 @@
     evt.currentTarget.className += " active";
   }
 
-    function myFunction() {
-      var input, filter, table, tr, td, i;
-      input = document.getElementById("myInput");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("myTable");
-      tr = table.getElementsByTagName("tr");
-      for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[0];
-        if (td) {
-          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-            tr[i].style.display = "";
-          } else {
-            tr[i].style.display = "none";
-          }
-        }       
+  function myFunction() {
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("myTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      if (td) {
+        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
       }
     }
+  }
 </script>
 
 
