@@ -29,5 +29,13 @@ router.post('/go_rest',function(req,res,next){
 		
 });
 
+router.post('/go_orderInfo',function(req,res,next){
+
+	var type = req.body.goOrderInfo;
+	console.log(type);
+		res.redirect('/cust_orderInfo');
+		
+});
+
 router.get('/', passport.authMiddleware(), loadPage);
 module.exports = router;
