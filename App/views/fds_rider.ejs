@@ -48,7 +48,8 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th scope="col">riderID</th>
+                      <th scope="col">RiderID</th>
+                      <th scope="col">Type</th>
                       <th scope="col">Hours Worked</th>
                       <th scope="col">Total Orders</th>
                       <th scope="col">Salary</th>
@@ -61,6 +62,7 @@
                     <% for (var i = 0; i < riderSummary.length; i++) { %>
                     <tr>
                       <td><%= riderSummary[i].uid%></td>
+                      <td><%= riderSummary[i].type%></td>
                       <td><%= riderSummary[i].totalhours%></td>
                       <td><%= riderSummary[i].numcompleted%></td>
                       <td><%= riderSummary[i].monthsalary%></td>
