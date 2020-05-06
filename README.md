@@ -47,6 +47,10 @@ testrider, testrest, testcust, testfds
 	* Username: desmond
 	* Password: 123abc
 
+* Customer
+	* Username: queen
+	* Password: 123456
+	
 6. Sql Statements used throughout the application is complied under /App/db/dbsql.js
 
 
