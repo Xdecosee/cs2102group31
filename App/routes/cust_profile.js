@@ -47,7 +47,6 @@ function reviewInfo(req, res, next) {
 }
 
 function loadPage(req, res, next) {
-	console.log(cardDetails);
 	res.render('cust_profile', {
 		username: req.user.username,
 		name: req.user.name,
@@ -64,15 +63,6 @@ router.post('/updatecard', function(req, res, next) {
 	
 	var cardInput  = String(req.body.cardDetails);
 	cardDetails = cardInput;
-
-	caller.query(sql.query.updateUserCard,[custId,cardInput], (err, data) => {
-		console.log(custId);
-		console.log(cardDetails);
-		if(err) {
-			console.log("Error in updating user card");
-			//console.log(err);
-		} 
-	});
 	caller.query(sql.query.updateCustomerCard,[custId,cardInput], (err, data) => {
 		if(err) {
 			console.error("Error in updating cust card");

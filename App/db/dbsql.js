@@ -174,7 +174,7 @@ sql.query = {
     addRestReview : 'UPDATE Place SET review = $1, star = $2 where orderid = $3',
     addRiderReview : 'UPDATE Delivers SET rating = $1 where orderid = $2',
     orderStatus : 'select * from place join orders using(orderid) where uid = $1 order by orderid desc limit 1',
-
+    
 }
 
 module.exports = sql;
