@@ -54,9 +54,10 @@ sql.query = {
                         'FROM Restpromo R INNER JOIN Promotion P on R.promoID = P.promoID ' +
                         'WHERE P.discPerc IS NOT NULL  AND R.restID = $1), ' +
                         'OrderInfo As ( ' +
-                        'SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
-                        'FROM Promotion P INNER JOIN FromMenu FM on P.promoID = FM.promoID ' +
-                        'WHERE P.discPerc IS NOT NULL AND FM.restaurantID = $2 ' +
+                        'SELECT DISTINCT P.promoID, COUNT(DISTINCT FM.orderID) as totalOrders ' +
+                        'FROM Restpromo R INNER JOIN Promotion P on R.promoID = P.promoID ' +
+                        'INNER JOIN Place FM on P.promoID = FM.promoID ' +
+                        'WHERE P.discPerc IS NOT NULL AND R.restID = $2 ' +
                         'GROUP BY P.promoID ) ' + 
                         'SELECT DISTINCT PI.promoID, discPerc * 100 as discPerc, totalOrders, ' + 
                         'to_char(startDT, \'YYYY-MM-DD HH24:MI:SS\') as startDT, to_char(endDT, \'YYYY-MM-DD HH24:MI:SS\') as endDT, ' +
@@ -73,9 +74,10 @@ sql.query = {
                         'FROM Restpromo R INNER JOIN Promotion P on R.promoID = P.promoID ' +
                         'WHERE P.discAmt IS NOT NULL  AND R.restID = $1), ' +
                         'OrderInfo As ( ' +
-                        'SELECT DISTINCT P.promoID, COUNT(DISTINCT orderID) as totalOrders ' +
-                        'FROM Promotion P INNER JOIN FromMenu FM on P.promoID = FM.promoID ' +
-                        'WHERE P.discAmt IS NOT NULL AND FM.restaurantID = $2 ' +
+                        'SELECT DISTINCT P.promoID, COUNT(DISTINCT FM.orderID) as totalOrders ' +
+                        'FROM Restpromo R INNER JOIN Promotion P on R.promoID = P.promoID ' +
+                        'INNER JOIN Place FM on P.promoID = FM.promoID ' +
+                        'WHERE P.discAmt IS NOT NULL AND R.restID = $2 ' +
                         'GROUP BY P.promoID ) ' + 
                         'SELECT DISTINCT PI.promoID, discAmt, totalOrders, ' +
                         'to_char(startDT, \'YYYY-MM-DD HH24:MI:SS\') as startDT, to_char(endDT, \'YYYY-MM-DD HH24:MI:SS\') as endDT,' +
