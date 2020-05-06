@@ -1433,10 +1433,10 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER riders_trigger
 AFTER INSERT ON DeliveryRiders 
 FOR EACH ROW
-EXECUTE PROCEDURE check_riders();
+EXECUTE FUNCTION check_riders();
 
 /*check whether order placed during operational hours*/
-CREATE OR REPLACE FUNCTION check_operational_hours() --after operating hours, insertion continuessss
+CREATE OR REPLACE FUNCTION check_operational_hours()
 RETURNS TRIGGER AS $$
 DECLARE currHour NUMERIC;
 DECLARE openingHour NUMERIC;
@@ -1469,9 +1469,9 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER operating_trigger
 BEFORE INSERT ON Place
 FOR EACH ROW
-EXECUTE PROCEDURE check_operational_hours();
+EXECUTE FUNCTION check_operational_hours();
 
-/*check availability*/ --problem
+/*check availability*/
 CREATE OR REPLACE FUNCTION check_availability()
 RETURNS TRIGGER AS $$
 DECLARE currAvailability INTEGER;
@@ -1538,7 +1538,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER availability_trigger
 AFTER INSERT ON FromMenu
 FOR EACH ROW
-EXECUTE PROCEDURE check_availability();
+EXECUTE FUNCTION check_availability();
 
 
 /*Update reward point after order completion*/
@@ -1568,7 +1568,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER reward_trigger
 AFTER UPDATE of orderStatus ON Orders
 FOR EACH ROW
-EXECUTE PROCEDURE update_rewards();
+EXECUTE FUNCTION update_rewards();
 
 
 /*Update delivery rider number of complete orders after order completion*/
@@ -1608,7 +1608,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER bonus_trigger
 AFTER UPDATE of orderStatus ON Orders
 FOR EACH ROW
-EXECUTE PROCEDURE update_bonus(); 
+EXECUTE FUNCTION update_bonus(); 
 
 /*ensure one hour shift, check overlap*/
 CREATE OR REPLACE FUNCTION check_shift()
@@ -1638,7 +1638,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER add_shift_trigger
 BEFORE INSERT ON WorkingDays
 FOR EACH ROW
-EXECUTE PROCEDURE check_shift();
+EXECUTE FUNCTION check_shift();
 
 /* Check that the hour inserted must be >= 10h or <=48h*/
 CREATE OR REPLACE FUNCTION check_hours()
@@ -1668,4 +1668,4 @@ CREATE CONSTRAINT TRIGGER work_hours_trigger
 AFTER UPDATE OR INSERT ON WorkingDays
 DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW
-EXECUTE PROCEDURE check_hours();
+EXECUTE FUNCTION check_hours();
