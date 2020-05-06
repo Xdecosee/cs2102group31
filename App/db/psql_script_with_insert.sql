@@ -213,239 +213,6 @@ CREATE TABLE Delivers (
     FOREIGN KEY (uid) REFERENCES DeliveryRiders(uid) ON DELETE CASCADE
 );
 
-
-/*check availability*/ --problem
-CREATE OR REPLACE FUNCTION check_availability()
-RETURNS TRIGGER AS $$
-DECLARE currAvailability INTEGER;
-DECLARE qtyOrdered INTEGER;
-
-BEGIN
-    qtyOrdered := NEW.quantity;
-
-    SELECT dailyLimit into currAvailability 
-    FROM Food 
-    WHERE Food.foodname = NEW.foodName
-    AND Food.restaurantID = NEW.restaurantID;
-
-    IF NEW.quantity > currAvailability THEN
-        RAISE NOTICE 'Exceed Daily Limit';
-        UPDATE Orders SET orderStatus = 'Failed' WHERE Orders.orderID = NEW.orderID;
-        RETURN NULL; -- abort inserted row
-    ELSE 
-        UPDATE Orders SET orderStatus = 'Confirmed' WHERE Orders.orderID = NEW.orderID;
-        UPDATE Food SET dailyLimit = dailyLimit - qtyOrdered WHERE Food.foodname = NEW.foodName AND Food.restaurantID = NEW.restaurantID;
-        
-        RAISE NOTICE 'Order Confirmed';
-        RETURN NEW;
-    END IF;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER availability_trigger
-BEFORE INSERT ON FromMenu
-FOR EACH ROW
-EXECUTE PROCEDURE check_availability();
-
-
-/*Update reward point after order completion*/
-CREATE OR REPLACE FUNCTION update_rewards()
-RETURNS TRIGGER AS $$
-DECLARE currStatus VARCHAR(50);
-DECLARE customerId INTEGER;
-
-BEGIN 
-    currStatus := NEW.orderStatus;
-
-    SELECT uid INTO customerId
-    FROM Place
-    WHERE NEW.orderid = Place.orderid;
-
-    IF currStatus = 'Completed' THEN
-        UPDATE Customers 
-        SET rewardPts = rewardPts + TRUNC(NEW.cost)
-        WHERE customerId = Customers.uid;
-    END IF;
-    RETURN NULL;
-
-
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER reward_trigger
-AFTER UPDATE of orderStatus ON Orders
-FOR EACH ROW
-EXECUTE PROCEDURE update_rewards();
-
-
-/*Update delivery rider number of complete orders after order completion*/
-CREATE OR REPLACE FUNCTION update_bonus()
-RETURNS TRIGGER AS $$
-DECLARE currStatus VARCHAR(50);
-DECLARE riderId Integer;
-DECLARE riderType VARCHAR(255);
-
-BEGIN
-    currStatus := NEW.orderStatus;
-
-    SELECT uid INTO riderId
-    FROM Delivers
-    WHERE NEW.orderid = Delivers.orderid;
-
-    SELECT type INTO riderType
-    FROM DeliveryRiders
-    WHERE riderId = DeliveryRiders.uid;
-
-    IF (currStatus = 'Completed') THEN
-        IF (riderType = 'FullTime') THEN
-            UPDATE WorkingWeeks
-            SET numCompleted = numCompleted + 1
-            WHERE riderId = WorkingWeeks.uid;
-        ELSIF (riderType = 'PartTime') THEN
-            UPDATE WorkingDays 
-            SET numCompleted = numCompleted + 1
-            WHERE riderId = WorkingDays.uid;
-        END IF;
-    END IF;
-    RETURN NULL;
-
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER bonus_trigger
-AFTER UPDATE of orderStatus ON Orders
-FOR EACH ROW
-EXECUTE PROCEDURE update_bonus(); 
-
-
-/*ISA check for Promotion*/
--- CREATE OR REPLACE FUNCTION check_promotion()
--- RETURNS TRIGGER AS $$
--- DECLARE count NUMERIC;
-
--- BEGIN
---     IF (NEW.type = 'FDSpromo') THEN
---         SELECT COUNT(*) INTO count 
---         FROM Restpromo 
---         WHERE NEW.promoID = Restpromo.promoID;
---         IF (count > 0) THEN 
---             RETURN NULL;
---         ELSE
---             INSERT INTO FDSpromo VALUES (NEW.promoID);
---             RAISE NOTICE 'FDSpromo added';
---             RETURN NEW;
---         END IF;
-
---     ELSIF (NEW.type = 'Restpromo') THEN
---         SELECT COUNT(*) INTO count 
---         FROM FDSpromo
---         WHERE NEW.promoID = FDSpromo.promoID;
-
---         IF (count > 0) THEN 
---             RETURN NULL;
---         ELSE
---             INSERT INTO Restpromo VALUES (NEW.promoID, NEW.restaurantID);
---             RAISE NOTICE 'Restpromo added';
---             RETURN NEW;
---         END IF;
---     ELSE RETURN NEW;
---     END IF;
--- END;
--- $$ LANGUAGE plpgsql;
-
--- CREATE TRIGGER promo_trigger
--- AFTER INSERT ON Promotion
--- FOR EACH ROW
--- EXECUTE PROCEDURE check_promotion();
-
-
-/*Check restaurant staff account creation*/
-/*CREATE OR REPLACE FUNCTION check_reststaff()
-RETURNS TRIGGER AS $$
-DECLARE count NUMERIC;
-
-BEGIN
-    SELECT COUNT(*) INTO count 
-    FROM RestaurantStaff
-    WHERE RestaurantStaff.restaurantID = NEW.restaurantID;
-
-    IF (count < 0) THEN
-        RAISE NOTICE 'No Restaurant Staff Account Created'; 
-        RETURN NULL; -- abort inserted row
-    ELSE
-        RAISE NOTICE 'Restaurant Staff available';
-        RETURN NEW;
-    END IF;
-
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER add_rest_trigger
-BEFORE INSERT ON Restaurants
-FOR EACH ROW
-EXECUTE PROCEDURE check_reststaff();*/
-
-/*ensure one hour shift, check overlap*/
-CREATE OR REPLACE FUNCTION check_shift()
-RETURNS TRIGGER AS $$
-DECLARE currShiftEnd NUMERIC;
-DECLARE newShiftStart NUMERIC;
-
-BEGIN
-    IF EXISTS(
-          SELECT 1 
-          FROM workingDays W 
-          WHERE NEW.uid = W.uid
-          AND NEW.WorkDate = w.workDate
-          AND ((W.intervalStart <= NEW.intervalStart AND NEW.intervalStart<(W.intervalEnd + INTERVAL'1 hour'))
-          OR (W.intervalStart<(NEW.intervalEnd + INTERVAL'1 hour') AND NEW.intervalEnd<=W.intervalEnd))
-          )
-    THEN
-        RAISE EXCEPTION 'Overlap in Time or 1 hour break not enforced';
-    ELSE 
-        RAISE NOTICE 'Successfully Inserted';
-        RETURN NEW;
-    END IF;
-
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER add_shift_trigger
-BEFORE INSERT ON WorkingDays
-FOR EACH ROW
-EXECUTE PROCEDURE check_shift();
-
-/* Check that the hour inserted must be >= 10h or <=48h*/
-CREATE OR REPLACE FUNCTION check_hours()
-RETURNS TRIGGER AS $$
-DECLARE hour_in INTEGER;
-
-
-BEGIN
-    SELECT sum(EXTRACT(HOUR FROM w.intervalEnd) - EXTRACT(HOUR FROM w.intervalStart)) INTO hour_in
-    FROM workingDays W
-    WHERE EXTRACT(WEEK FROM w.WorkDate) = EXTRACT(WEEK FROM NEW.WorkDate)
-    AND NEW.uid = W.uid;
-
-    IF (hour_in) < 10 THEN
-        RAISE EXCEPTION 'Insufficient hours for the week (<10h)';
-    ELSIF (hour_in) >48 THEN 
-        RAISE EXCEPTION '<Exceeded hours for the week (>48h)';
-    ELSE
-        RAISE NOTICE 'Succesfully Inserted';
-        RETURN NULL;
-    END IF;
-END;
-$$ LANGUAGE plpgsql;
-        
-        
-CREATE CONSTRAINT TRIGGER work_hours_trigger
-AFTER UPDATE OR INSERT ON WorkingDays
-DEFERRABLE INITIALLY DEFERRED
-FOR EACH ROW
-EXECUTE PROCEDURE check_hours();
-
-
 /* Insert Data for 12 Customers*/
 INSERT INTO Users (name, username, password, type) VALUES ('Alano', 'asunock0', 'SuKnMdGlSZv', 'Customers');
 INSERT INTO Users (name, username, password, type) VALUES ('Ugo', 'uhumphery5', 'zzWtpV6x1W5','Customers');
@@ -851,7 +618,7 @@ INSERT INTO Restpromo(promoID, restID) VALUES(10,5);
 /* Insert Data into Payment Option */
 INSERT INTO PaymentOption(payOption) VALUES ('Cash');
 INSERT INTO PaymentOption(payOption) VALUES ('Credit');
-INSERT INTO PaymentOption(payOption) VALUES ('RewardPts');
+
 
 -- deliveryduration is in integer?
 /* Insert Data into orders and fromMenu think of how to make it happen*/ 
@@ -1499,23 +1266,74 @@ CREATE VIEW IndiRiderShed AS(
 	FROM AllDate A Join WorkingDays WD ON (A.ddate = WD.workDate)
 	UNION 
 	SELECT distinct A.ddate as ddate,WW.uid as uid,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND W.shiftID = 1) as t10,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2)) as t11,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t12,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t13,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t14,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =3 OR W.shiftID =4)) as t15,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =4)) as t16,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t17,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t18,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t19,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 3 OR W.shiftID =4)) as t20,
-		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND (W.shiftID = 4)) as t21
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND W.shiftID = 1) as t10,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 1 OR W.shiftID =2)) as t11,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t12,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t13,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t14,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 1 OR W.shiftID =3 OR W.shiftID =4)) as t15,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =4)) as t16,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t17,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t18,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t19,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 3 OR W.shiftID =4)) as t20,
+		(SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = A.ddate AND WW.uid=W.uid AND (W.shiftID = 4)) as t21
 	FROM AllDate A Join WorkingWeeks WW ON (A.ddate = WW.workDate)
     UNION
     SELECT 	distinct A.ddate, 0 as uid, 0 as t10, 0 as t11,0 as t12,0 as t13,0 as t14,0 as t15,0 as t16,0 as t17,0 as t18,0 as t19,0 as t20,0 as t21
 	FROM AllDate A 
 );
+
+/* Deliery rider Summary in another form */
+create view allocate as(
+SELECT uid, ddate, TIME'10:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t10=1
+UNION
+SELECT uid, ddate, TIME'11:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t11=1
+UNION
+SELECT uid, ddate, TIME'12:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t12=1
+UNION
+SELECT uid, ddate, TIME'13:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t13=1
+UNION
+SELECT uid, ddate, TIME'14:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t14=1
+UNION
+SELECT uid, ddate, TIME'15:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t15=1
+UNION
+SELECT uid, ddate, TIME'16:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t16=1
+UNION
+SELECT uid, ddate, TIME'17:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t17=1
+UNION
+SELECT uid, ddate, TIME'18:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t18=1
+UNION
+SELECT uid, ddate, TIME'19:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t19=1
+UNION
+SELECT uid, ddate, TIME'20:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t20=1
+UNION
+SELECT uid, ddate, TIME'21:00:00' as worktime
+FROM IndiRiderShed
+WHERE uid !=0 and t21=1);
+
 
 /*Leave this trigger at the bottom to prevent interference with manual insert statements*/
 CREATE OR REPLACE FUNCTION check_riders()
@@ -1592,5 +1410,201 @@ BEFORE INSERT ON Place
 FOR EACH ROW
 EXECUTE PROCEDURE check_operational_hours();
 
+/*check availability*/ --problem
+CREATE OR REPLACE FUNCTION check_availability()
+RETURNS TRIGGER AS $$
+DECLARE currAvailability INTEGER;
+DECLARE qtyOrdered INTEGER;
+DECLARE oDate Date;
+DECLARE oTime INTEGER;
+DECLARE riderID INTEGER;
+DECLARE checker INTEGER;
+
+BEGIN
+    qtyOrdered := NEW.quantity;
+
+    SELECT dailyLimit into currAvailability 
+    FROM Food 
+    WHERE Food.foodname = NEW.foodName
+    AND Food.restaurantID = NEW.restaurantID;
+
+    SELECT EXTRACT(HOUR FROM O.timeOrderPlace) INTO oTime
+    FROM Orders O 
+    WHERE O.orderID = NEW.orderID;
+
+    SELECT O.date INTO oDate
+    FROM Orders O 
+    WHERE O.orderID = NEW.orderID;
+
+    SELECT A.uid INTO riderID
+    FROM allocate A 
+    WHERE A.ddate = oDate
+    AND EXTRACT(HOUR FROM A.worktime) = oTime
+    AND A.uid NOT IN (
+        SELECT D.uid
+        FROM Delivers D JOIN Orders O USING (orderID)
+        WHERE O.date = oDate 
+        AND (O.orderStatus = 'Confirmed' OR O.orderStatus = 'Pending')
+        AND orderID != NEW.orderID
+    )
+    LIMIT 1;
+
+    SELECT 1 INTO checker
+    FROM Delivers DD 
+    WHERE DD.orderID = NEW.orderID;
+
+    IF NEW.quantity > currAvailability THEN
+        UPDATE Orders SET orderStatus = 'Failed' WHERE Orders.orderID = NEW.orderID;
+        RAISE EXCEPTION 'Exceed Daily Limit';
+    ELSIF riderID IS NULL THEN
+        UPDATE Orders SET orderStatus = 'Failed' WHERE Orders.orderID = NEW.orderID;
+        RAISE EXCEPTION 'No Rider Available';
+    ELSE
+        UPDATE Orders SET orderStatus = 'Confirmed' WHERE Orders.orderID = NEW.orderID;
+        UPDATE Food SET dailyLimit = dailyLimit - qtyOrdered WHERE Food.foodname = NEW.foodName AND Food.restaurantID = NEW.restaurantID;
+        
+        IF checker  IS NULL THEN
+            INSERT INTO Delivers(orderID,uid) VALUES (NEW.orderID, riderID );
+            RAISE NOTICE 'Driver Assigned';
+        END IF;
+
+        RAISE NOTICE 'Order Confirmed';
+        RETURN NULL;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER availability_trigger
+AFTER INSERT ON FromMenu
+FOR EACH ROW
+EXECUTE PROCEDURE check_availability();
 
 
+/*Update reward point after order completion*/
+CREATE OR REPLACE FUNCTION update_rewards()
+RETURNS TRIGGER AS $$
+DECLARE currStatus VARCHAR(50);
+DECLARE customerId INTEGER;
+
+BEGIN 
+    currStatus := NEW.orderStatus;
+
+    SELECT uid INTO customerId
+    FROM Place
+    WHERE NEW.orderid = Place.orderid;
+
+    IF currStatus = 'Completed' THEN
+        UPDATE Customers 
+        SET rewardPts = rewardPts + TRUNC(NEW.cost)
+        WHERE customerId = Customers.uid;
+    END IF;
+    RETURN NULL;
+
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER reward_trigger
+AFTER UPDATE of orderStatus ON Orders
+FOR EACH ROW
+EXECUTE PROCEDURE update_rewards();
+
+
+/*Update delivery rider number of complete orders after order completion*/
+CREATE OR REPLACE FUNCTION update_bonus()
+RETURNS TRIGGER AS $$
+DECLARE currStatus VARCHAR(50);
+DECLARE riderId Integer;
+DECLARE riderType VARCHAR(255);
+
+BEGIN
+    currStatus := NEW.orderStatus;
+
+    SELECT uid INTO riderId
+    FROM Delivers
+    WHERE NEW.orderid = Delivers.orderid;
+
+    SELECT type INTO riderType
+    FROM DeliveryRiders
+    WHERE riderId = DeliveryRiders.uid;
+
+    IF (currStatus = 'Completed') THEN
+        IF (riderType = 'FullTime') THEN
+            UPDATE WorkingWeeks
+            SET numCompleted = numCompleted + 1
+            WHERE riderId = WorkingWeeks.uid;
+        ELSIF (riderType = 'PartTime') THEN
+            UPDATE WorkingDays 
+            SET numCompleted = numCompleted + 1
+            WHERE riderId = WorkingDays.uid;
+        END IF;
+    END IF;
+    RETURN NULL;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER bonus_trigger
+AFTER UPDATE of orderStatus ON Orders
+FOR EACH ROW
+EXECUTE PROCEDURE update_bonus(); 
+
+/*ensure one hour shift, check overlap*/
+CREATE OR REPLACE FUNCTION check_shift()
+RETURNS TRIGGER AS $$
+DECLARE currShiftEnd NUMERIC;
+DECLARE newShiftStart NUMERIC;
+
+BEGIN
+    IF EXISTS(
+          SELECT 1 
+          FROM workingDays W 
+          WHERE NEW.uid = W.uid
+          AND NEW.WorkDate = w.workDate
+          AND ((W.intervalStart <= NEW.intervalStart AND NEW.intervalStart<(W.intervalEnd + INTERVAL'1 hour'))
+          OR (W.intervalStart<(NEW.intervalEnd + INTERVAL'1 hour') AND NEW.intervalEnd<=W.intervalEnd))
+          )
+    THEN
+        RAISE EXCEPTION 'Overlap in Time or 1 hour break not enforced';
+    ELSE 
+        RAISE NOTICE 'Successfully Inserted';
+        RETURN NEW;
+    END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER add_shift_trigger
+BEFORE INSERT ON WorkingDays
+FOR EACH ROW
+EXECUTE PROCEDURE check_shift();
+
+/* Check that the hour inserted must be >= 10h or <=48h*/
+CREATE OR REPLACE FUNCTION check_hours()
+RETURNS TRIGGER AS $$
+DECLARE hour_in INTEGER;
+
+
+BEGIN
+    SELECT sum(EXTRACT(HOUR FROM w.intervalEnd) - EXTRACT(HOUR FROM w.intervalStart)) INTO hour_in
+    FROM workingDays W
+    WHERE EXTRACT(WEEK FROM w.WorkDate) = EXTRACT(WEEK FROM NEW.WorkDate)
+    AND NEW.uid = W.uid;
+
+    IF (hour_in) < 10 THEN
+        RAISE EXCEPTION 'Insufficient hours for the week (<10h)';
+    ELSIF (hour_in) >48 THEN 
+        RAISE EXCEPTION '<Exceeded hours for the week (>48h)';
+    ELSE
+        RAISE NOTICE 'Succesfully Inserted';
+        RETURN NULL;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+        
+        
+CREATE CONSTRAINT TRIGGER work_hours_trigger
+AFTER UPDATE OR INSERT ON WorkingDays
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW
+EXECUTE PROCEDURE check_hours();
