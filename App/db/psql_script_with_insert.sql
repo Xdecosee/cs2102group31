@@ -1415,7 +1415,7 @@ UPDATE food set dailyLimit = 50 where foodName = 'Aglio Olio' and RestaurantID =
 
 /*PARTTIME. Consolidate shows for each parttime rider, how many weeks they actually worked in a month (If they
 work one day in a week, it will be counted in totalWeeksWorked) and how many deliveries completed in a month */
-CREATE VIEW ConsolidateP AS (
+CREATE OR REPLACE VIEW ConsolidateP AS (
 SELECT distinct P1.uid as pUid, 
 P1.weeklyBasePay as pBasePay, 
 EXTRACT(YEAR FROM WD1.workDate) as pYear, 
@@ -1430,7 +1430,7 @@ GROUP BY P1.uid, EXTRACT(YEAR FROM WD1.workDate), EXTRACT(Month FROM WD1.workDat
 
 /*FULLTIME. ConsolidateF shows for each fulltime rider, how many months they actually worked (even if they worked one day in a month) 
 and how many deliveries completed in a month */
-CREATE VIEW ConsolidateF AS (
+CREATE OR REPLACE VIEW ConsolidateF AS (
 SELECT distinct F1.uid as fUid,
 F1.monthlyBasePay as fBasePay,
 EXTRACT(YEAR FROM WW1.workDate) as fYear,
@@ -1442,14 +1442,14 @@ WHERE WW1.numCompleted > 0  /**Filter out months without any worked days at all*
 GROUP BY F1.uid, EXTRACT(YEAR FROM WW1.workDate), EXTRACT(MONTH FROM WW1.workDate) 
 );
 
-CREATE VIEW workDetails AS(
+CREATE OR REPLACE VIEW workDetails AS(
 SELECT DISTINCT p.uid as uid,
 		EXTRACT(YEAR FROM WD.workDate) as year, 
         EXTRACT(Month FROM WD.workDate) as month, 
         sum(DATE_PART('hour', WD.intervalEnd - WD.intervalStart)) as totalHours,
 		sum(WD.numCompleted) as numCompleted
 FROM PartTime P INNER JOIN WorkingDays WD USING (uid) 
-WHERE WD.numCompleted > 0 
+-- WHERE WD.numCompleted > 0 
 GROUP BY P.uid, EXTRACT(YEAR FROM WD.workDate), EXTRACT(Month FROM WD.workDate)
 UNION
 SELECT distinct F.uid as uid,
@@ -1458,11 +1458,11 @@ SELECT distinct F.uid as uid,
 		count(shiftID) * 8 as totalHours,
 		sum(WW.numCompleted) as numCompleted
 FROM FullTime F INNER JOIN WorkingWeeks WW USING (uid) 
-WHERE WW.numCompleted > 0 
+-- WHERE WW.numCompleted > 0 
 GROUP BY F.uid, EXTRACT(YEAR FROM WW.workDate), EXTRACT(Month FROM WW.workDate)
 );
 
-CREATE VIEW driverSalary AS (
+CREATE OR REPLACE VIEW driverSalary AS (
 SELECT CP.puid as uid,
 	   CP.pYear as year, 
        CP.pMonth as month, 
@@ -1477,7 +1477,7 @@ FROM DeliveryRiders DR LEFT JOIN ConsolidateF CF on DR.uid = CF.fUid
 );
 
 /* To view individual schedule on a monthly basis */
-CREATE VIEW IndiRiderShed AS(
+CREATE OR REPLACE VIEW IndiRiderShed AS(
 	with Alldate as(
 		select generate_series(
            	(date '2019-01-01')::timestamp,
@@ -1520,7 +1520,7 @@ CREATE VIEW IndiRiderShed AS(
 );
 
 -- Rider's Schedule Overview
-CREATE VIEW Overview AS(
+CREATE OR REPLACE VIEW Overview AS(
 	with Alldate as(
 	select generate_series(
            (date '2019-01-01')::timestamp,
@@ -1546,12 +1546,38 @@ CREATE VIEW Overview AS(
 );
 
 -- Rider's Overall Review
-CREATE VIEW ReviewInfo AS (
+CREATE OR REPLACE VIEW ReviewInfo AS (
 SELECT distinct DR.uid, EXTRACT(Year FROM (O.date)) AS year, EXTRACT(Month FROM 
 (O.date)) as month, count(D.rating) as totalRatings, ROUND(avg(D.rating),1) as avgRatings,  
 to_char(avg(O.timeOrderDelivered - O.timeOrderPlace), 'HH24:MI:SS') as avgDuration
 FROM DeliveryRiders DR LEFT JOIN Delivers D on DR.uid = D.uid LEFT JOIN Orders O on D.orderID = O.orderID 
 GROUP BY DR.uid, year, month
+);
+
+CREATE OR REPLACE VIEW monthlyWorkingHours AS (
+SELECT W.uid, EXTRACT(year from W.workdate) as year, EXTRACT(month from W.workdate) as month, W.workdate, W.intervalstart, W.intervalend, WD.totalhours as monthlytotalhours 
+FROM workingdays W JOIN workdetails WD 
+ON W.uid = WD.uid 
+AND extract(year from W.workdate) = WD.year 
+AND extract(month from W.workdate) = WD.month
+);
+
+CREATE OR REPLACE VIEW weekSummary AS (
+SELECT DISTINCT p.uid as uid,
+EXTRACT(YEAR FROM WD.workDate) as year, 
+EXTRACT(Week FROM WD.workDate) as week, 
+SUM(DATE_PART('hour', WD.intervalEnd - WD.intervalStart)) as totalHours
+FROM PartTime P INNER JOIN WorkingDays WD USING (uid) 
+GROUP BY P.uid, EXTRACT(YEAR FROM WD.workDate),EXTRACT(Week FROM WD.workDate)
+);
+
+CREATE OR REPLACE VIEW PartTimeOverview AS (
+select T.uid as uid, 
+W.workDate as date, 
+W.intervalStart as start , 
+W.intervalEnd as end, 
+coalesce((SELECT totalHours From weekSummary S where S.uid = W.uid and EXTRACT(YEAR FROM W.workDate) = S.year AND EXTRACT(Week FROM W.workDate) = S.week),0) as weekhours
+FROM PartTime T LEFT JOIN WorkingDays W USING (uid) order by uid
 );
 
 /*Leave this trigger at the bottom to prevent interference with manual insert statements*/

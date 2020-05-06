@@ -1,21 +1,21 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_fds') %>
+<link rel='stylesheet' href='stylesheets/form.css'>
 
 <!DOCTYPE html>
 <html lang="en">
 
-
 <body>
 
-    <h1>FDS Manager Rider</h1>
+  <h1>FDS Manager Rider</h1>
 
-    <form id="month_form" action="/fds_rider/selectdate" role="form" method="post">
-      <div class="form-group row">
-        <input type="month" class="form-control" id="date" name="date">
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </div>
-    </form>
- 
+  <form id="month_form" action="/fds_rider/selectdate" role="form" method="post">
+    <div class="form-group row">
+      <input type="month" class="form-control" id="date" name="date">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+
   <h3>Delivery Rider Summary</h3>
   <table class="table">
     <thead>
@@ -83,6 +83,32 @@
       <% } %>
     </tbody>
   </table>
+
+  <form id="schedule_form" action="/fds_rider/selectName" role="form" method="post">
+    <fieldset class="scheduler-border">
+      <legend class="scheduler-border">Select Date</legend>
+      <label for="day1" style="margin-left:1.0em"><strong>Date:</strong></label>
+      <input type="date" id="day1" name="day1" required>
+      <label for="start1" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+      <input type="time" id="start1" name="start1" min="10:00" max="22:00" step="3600" required>
+      <label for="end1" style="margin-left:2.0em"><strong>End Time:</strong></label>
+      <input type="time" id="end1" name="end1" min="10:00" max="22:00" step="3600" required>
+      <p></p>
+      <button style="margin-left:1.0em" type="submit" class="btn btn-primary">Submit</button>
+    </fieldset>
+  </form>
+
+  <form id="assign" action="/fds_rider/assign" role="form" method="post">
+    <fieldset class="scheduler-border">
+      <legend class="scheduler-border">Select Rider's ID for Manual Allocation</legend>
+      <select class="custom-select mr-sm-2" id="assignR" name="assignR">
+        <% for(var i=0; i < rider.length; i++) { %>
+        <option value="<%= rider[i].uid%>"><%= rider[i].uid%></option>
+        <% } %>
+      </select>
+      <button style="margin-left:1.0em" type="submit" class="btn btn-primary">Submit</button>
+    </fieldset>
+  </form>
 
 
 </body>
