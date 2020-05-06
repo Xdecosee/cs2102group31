@@ -42,6 +42,10 @@ testrider, testrest, testcust, testfds
 * Part Time Delivery Rider
 	* Username: gtarrier9
 	* Password: G92FSUJuvL9e
+	
+* FDS Manager
+	* Username: desmond
+	* Password: 123abc
 
 6. Sql Statements used throughout the application is complied under /App/db/dbsql.js
 
