@@ -74,6 +74,7 @@ function riderName(req, res, next) {
 
 function loadPage(req, res, next) {
 	res.render('fds_rider', {
+		name: req.user.name,
 		riderSummary: req.riderSummary,
 		riderSchedule: req.riderSchedule,
 		rider : req.riderName
