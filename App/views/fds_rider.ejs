@@ -20,13 +20,15 @@
     </div>
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
       <div class="card-body">
-        <p>Select the month and year (e.g. May 2020) to view rider related summary information. </p>
-        <form id="month_form" action="/fds_rider/selectdate" role="form" method="post">
-          <div class="form-group row">
+        <fieldset class="scheduler-border">
+          <legend class="scheduler-border">Select Date</legend>
+          <p>Select the month and year (e.g. May 2020) to view rider related summary information. </p>
+          <form id="month_form" action="/fds_rider/selectdate" role="form" method="post">
             <input type="month" class="form-control" id="date" name="date">
+            </br>
             <button type="submit" class="btn btn-primary">Submit</button>
-          </div>
-        </form>
+          </form>
+        </fieldset>
 
         </br>
 
@@ -157,9 +159,9 @@
           </fieldset>
         </form>
         </br>
-        <form id="assign" action="/fds_rider/assign" role="form" method="post">
-          <fieldset class="scheduler-border">
-            <legend class="scheduler-border">Select Rider's ID for Manual Allocation</legend>
+        <fieldset class="scheduler-border">
+          <legend class="scheduler-border">Select Rider's ID for Manual Allocation</legend>
+          <form id="assign" action="/fds_rider/assign" role="form" method="post">
             <select class="custom-select mr-sm-2" id="assignR" name="assignR">
               <% for(var i=0; i < rider.length; i++) { %>
               <option value="<%= rider[i].uid%>"><%= rider[i].uid%></option>
@@ -167,8 +169,8 @@
             </select>
             <p></p>
             <button style="margin-left:1.0em" type="submit" class="btn btn-primary">Submit</button>
-          </fieldset>
-        </form>
+          </form>
+        </fieldset>
       </div>
     </div>
   </div>

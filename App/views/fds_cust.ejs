@@ -1,18 +1,23 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_fds') %>
+<link rel='stylesheet' href='stylesheets/form.css'>
 
 <h2>Welcome, <%=name%>!</h2>
 
 <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
   <div class="card-body">
+    <fieldset class="scheduler-border">
+      <legend class="scheduler-border">Select Date</legend>
 
-    <p>Select the month and year (e.g. May 2020) to view customer related summary information. </p>
-    <form id="month_form" action="/fds_cust/selectdate" role="form" method="post">
-      <div class="form-group">
-        <input type="month" class="form-control" id="date" name="date">
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </div>
-    </form>
+      <p>Select the month and year (e.g. May 2020) to view customer related summary information. </p>
+      <form id="month_form" action="/fds_cust/selectdate" role="form" method="post">
+        <div class="form-group">
+          <input type="month" class="form-control" id="date" name="date">
+          </br>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </fieldset>
 
     <div id="accordion2">
 
@@ -85,22 +90,20 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
-</div>
 
-<script src = "javascripts/fds.js"></script>
+<script src="javascripts/fds.js"></script>
 <script>
-	(function() {
-		window.addEventListener('load', function() {
-			var forms = [document.getElementById('month_form')];
-			var validation = Array.prototype.filter.call(forms, function(form) {
-				form.addEventListener('submit', checkMonth, false);
-			});
-		}, false);
-	})();
+  (function () {
+    window.addEventListener('load', function () {
+      var forms = [document.getElementById('month_form')];
+      var validation = Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', checkMonth, false);
+      });
+    }, false);
+  })();
 </script>
 
 <%- include('partials/footer') %>

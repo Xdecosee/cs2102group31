@@ -1,13 +1,11 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_fds') %>
-
-<!DOCTYPE html>
-<html lang="en">
+<link rel='stylesheet' href='stylesheets/form.css'>
 
 <h2>Welcome, <%=name%>!</h2>
+</br>
 
 <div id="accordion">
-
   <div class="card">
     <div class="card-header" id="headingOne">
       <h5 class="mb-0">
@@ -19,13 +17,17 @@
     </div>
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
       <div class="card-body">
+        <fieldset class="scheduler-border">
+          <legend class="scheduler-border">Select Date</legend>
         <p>Select the month and year (e.g. May 2020) to view restaurant related summary information. </p>
         <form id="month_form" action="/fds_rest/selectdate" role="form" method="post">
           <div class="form-group">
             <input type="month" class="form-control" id="date" name="date">
+          </br>
             <button type="submit" class="btn btn-primary">Submit</button>
           </div>
         </form>
+        </fieldset>
 
         </br>
         <div id="accordion2">
