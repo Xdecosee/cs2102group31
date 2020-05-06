@@ -157,8 +157,23 @@ sql.query = {
     restInfo: 'SELECT * FROM restaurants',
     restReview :'SELECT DISTINCT  to_char(O.date,\'DD-Mon-YYYY\') as date, R.name, P.review, P.star FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE R.name = $1',
     avgRating : 'SELECT Round(AVG(ALL p.star),2) as avg FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE R.name = $1',
-    menuInfo : 'SELECT distinct f.foodname, f.category, R.name, f.price, f.dailylimit from Restaurants R JOIN Food f using (restaurantid) where r.name = $1',
-    addfood: 'SELECT f.foodname, (f.price * $3) as price ,$3 as amount from food f join restaurants r using(restaurantid) where f.foodname = $1 and r.name = $2',
+    menuInfo : 'SELECT distinct f.foodname, f.category, R.name, f.price, f.dailylimit, r.restaurantid, r.minthreshold as minthreshold from Restaurants R JOIN Food f using (restaurantid) where r.name = $1',
+
+
+    addfood: 'SELECT r.restaurantid, f.foodname, (f.price * $3) as price ,$3 as amount, r.minthreshold as minthreshold from food f join restaurants r using(restaurantid) where f.foodname = $1 and r.name = $2',
+
+    paymentInfo : 'SELECT * from paymentoption',
+    promo : 'SELECT to_char(startdate,\'DD-Mon-YYYY\') as startdate,to_char(enddate,\'DD-Mon-YYYY\') as enddate, starttime, endtime, promoid, discperc, discamt from promotion left join restpromo using (promoid) where type = \'FDSpromo\' or restid = $1',
+    promoD : 'SELECT * from promotion left join restpromo using (promoid) where promoid = $1',
+    addrInfo : 'Select location from orders join place using (orderid) where uid = $1 order by date desc LIMIT 5',
+    insertOrder : 'INSERT INTO Orders(location,payOption,area,cost) VALUES ($1 ,$2 ,$3, $4) RETURNING orderid',
+    insertPlace : 'INSERT INTO Place(promoid,orderid, uid) VALUES ($1 ,$2, $3)',
+    insertFM : 'INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES ($1,$2,$3,$4)',
+    payReward : 'UPDATE Customers SET rewardpts = $2 where uid = $1',
+    addRestReview : 'UPDATE Place SET review = $1, star = $2 where orderid = $3',
+    addRiderReview : 'UPDATE Delivers SET rating = $1 where orderid = $2',
+    orderStatus : 'select * from place join orders using(orderid) where uid = $1 order by orderid desc limit 1',
+    
 }
 
 module.exports = sql;

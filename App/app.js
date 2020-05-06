@@ -44,9 +44,11 @@ app.use(passport.session())
 var mainloginRouter = require('./routes/main_login');
 
 var mainSignUpRouter = require('./routes/main_signup');
+
 var custHomeRouter = require('./routes/cust_home');
 var custProfileRouter = require('./routes/cust_profile');
 var custMenuRouter = require('./routes/cust_menu');
+var custOrderRouter = require('./routes/cust_orderInfo');
 
 var fdsHomeRouter = require('./routes/fds_home');
 //fds
@@ -71,6 +73,7 @@ app.use('/main_signup', mainSignUpRouter);
 app.use('/cust_home', custHomeRouter);
 app.use('/cust_menu', custMenuRouter);
 app.use('/cust_profile', custProfileRouter);
+app.use('/cust_orderInfo', custOrderRouter);
 app.use('/fds_home', fdsHomeRouter);
 app.use('/rest_home', restHomeRouter);
 app.use('/rest_menu', restMenuRouter);
