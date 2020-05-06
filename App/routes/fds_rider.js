@@ -25,7 +25,7 @@ function riderSummary(req, res, next) {
 
 	} else if (queryMonth == 0 || queryYear == 0) {
 		req.riderSummary = {};
-		next();
+		//next();
 	}
 	caller.query(sql.query.riderSummary, [queryYear, queryMonth], (err, data) => {
 		if (err) {

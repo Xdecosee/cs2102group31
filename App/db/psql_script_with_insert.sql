@@ -1436,7 +1436,7 @@ FOR EACH ROW
 EXECUTE FUNCTION check_riders();
 
 /*check whether order placed during operational hours*/
-CREATE OR REPLACE FUNCTION check_operational_hours()
+CREATE OR REPLACE FUNCTION check_operational_hours() 
 RETURNS TRIGGER AS $$
 DECLARE currHour NUMERIC;
 DECLARE openingHour NUMERIC;
