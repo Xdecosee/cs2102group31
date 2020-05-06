@@ -9,6 +9,7 @@ const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
 
+
 function loadPage(req, res, next) {
     var title = null;
     var type = null;
@@ -56,39 +57,98 @@ router.post('/signup/(:type)', function(req, res, next) {
     var password = req.body.password;
 
     if(type == 'Customers'){
-        caller.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
-            if(err) {
-                return next(new Error('Sign Up Failed! Perhaps try another username?'));
+
+        caller.pool.connect((err, client, done) => {
+
+            const shouldAbort = err => {
+                if (err) {
+                    console.log("Error in transaction!");
+                    client.query('ROLLBACK', err => {
+                        if (err) {
+                            console.log("Error in rollback!");
+                            return next(err);
+                        }
+                        done()
+                        res.redirect('/?signup=' + encodeURIComponent('fail'));
+                    })
+                }
+                
+               return !!err;
             }
 
-            uid = data.rows[0].uid;
-
-            caller.query(sql.query.signupCustomer,[uid], (err, data) => {
-                if(err) {
-                    return next(new Error('Sign Up Fatal Failure!'));
-                }
-
-                res.redirect('/?signup=' + encodeURIComponent('success'));
-            });   
-        });   
+            client.query('BEGIN', err => {
+                if (shouldAbort(err)) return
+    
+                client.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
+                  if (shouldAbort(err)) return
+    
+                    uid = data.rows[0].uid;
+    
+                    client.query(sql.query.signupCustomer,[uid], (err, data) => {
+                        if (shouldAbort(err)) return
+                        client.query('COMMIT', err => {
+                            if (err) {
+                                console.log("Error in committing transaction");
+                                return next(err);
+                            }
+                            done()
+                            res.redirect('/?signup=' + encodeURIComponent('success'));
+                        })
+                       
+                    })
+    
+                })
+            })
+    
+         });
     }
 
     else if(type == 'FDSManagers'){
-        caller.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
-            if(err) {
-                return next(new Error('Sign Up Failed! Perhaps try another username?'));
+
+        caller.pool.connect((err, client, done) => {
+
+            const shouldAbort = err => {
+                if (err) {
+                    console.log("Error in transaction!");
+                    client.query('ROLLBACK', err => {
+                        if (err) {
+                            console.log("Error in rollback!");
+                            return next(err);
+                        }
+                        done()
+                        res.redirect('/?signup=' + encodeURIComponent('fail'));
+                    })
+                }
+                
+               return !!err;
             }
 
-            uid = data.rows[0].uid;
+            client.query('BEGIN', err => {
+                if (shouldAbort(err)) return
+    
+                client.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
+                  if (shouldAbort(err)) return
+    
+                    uid = data.rows[0].uid;
+    
+                    client.query(sql.query.signupFDS,[uid], (err, data) => {
+                        if (shouldAbort(err)) return
+                        client.query('COMMIT', err => {
+                            if (err) {
+                                console.log("Error in committing transaction");
+                                return next(err);
+                            }
+                            done()
+                            res.redirect('/?signup=' + encodeURIComponent('success'));
+                        })
+                       
+                    })
+    
+                })
+            })
+    
+         });
 
-            caller.query(sql.query.signupFDS,[uid], (err, data) => {
-                if(err) {
-                    return next(new Error('Sign Up Fatal Failure!'));
-                }
-
-                res.redirect('/?signup=' + encodeURIComponent('success'));
-            });   
-        });   
     }
 
     else if(type == 'RestaurantStaff'){
@@ -100,30 +160,57 @@ router.post('/signup/(:type)', function(req, res, next) {
         var restaurantid = null;
         var uid = null;
 
-        caller.query(sql.query.signupRest,[restaurant,location, threshold], (err, data) => {
-            if(err) {
-                return next(new Error('Sign Up Fatal Failure!'));
+        caller.pool.connect((err, client, done) => {
+
+            const shouldAbort = err => {
+                if (err) {
+                    console.log("Error in transaction!");
+                    client.query('ROLLBACK', err => {
+                        if (err) {
+                            console.log("Error in rollback!");
+                            return next(err);
+                        }
+                        done()
+                        res.redirect('/?signup=' + encodeURIComponent('fail') + '&rest=' + encodeURIComponent('fail'));
+                    })
+                }
+                
+               return !!err;
             }
 
-            restaurantid = data.rows[0].restaurantid;
+            client.query('BEGIN', err => {
+                if (shouldAbort(err)) return
+    
+                client.query(sql.query.signupRest,[restaurant,location, threshold], (err, data) => {
+                  if (shouldAbort(err)) return
+    
+                    restaurantid = data.rows[0].restaurantid;
+    
+                    client.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
+                        if (shouldAbort(err)) return
 
-            caller.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
-                if(err) {
-                    return next(new Error('Sign Up Failed! Perhaps try another username?'));
-                }
+                        uid = data.rows[0].uid;
 
-                uid = data.rows[0].uid;
+                        client.query(sql.query.signupRestStaff,[uid, restaurantid], (err, data) => {
+                            if (shouldAbort(err)) return
 
-                caller.query(sql.query.signupRestStaff,[uid, restaurantid], (err, data) => {
-                    if(err) {
-                        return next(new Error('Sign Up Fatal Failure!'));
-                    }
-
-                    res.redirect('/?signup=' + encodeURIComponent('success'));
-                });   
-
-            });   
-        });   
+                            client.query('COMMIT', err => {
+                                if (err) {
+                                    console.log("Error in committing transaction");
+                                    return next(err);
+                                }
+                                done()
+                                res.redirect('/?signup=' + encodeURIComponent('success'));
+                            })
+                        })
+                       
+                    })
+    
+                })
+            })
+    
+         });
+                 
     }
     
     else if(type == 'DeliveryRiders'){
@@ -141,24 +228,49 @@ router.post('/signup/(:type)', function(req, res, next) {
             res.redirect('/main_signup?user=rider');
         }
 
-        caller.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
-            if(err) {
-                return next(new Error('Sign Up Failed! Perhaps try another username?'));
+        caller.pool.connect((err, client, done) => {
+
+            const shouldAbort = err => {
+                if (err) {
+                    console.log("Error in transaction!");
+                    client.query('ROLLBACK', err => {
+                        if (err) {
+                            console.log("Error in rollback!");
+                            return next(err);
+                        }
+                        done()
+                        res.redirect('/?signup=' + encodeURIComponent('fail'));
+                    })
+                }
+                
+               return !!err;
             }
 
-            uid = data.rows[0].uid;
-
-            caller.query(sql.query.signupRider,[uid, ridertype], (err, data) => {
-                if(err) {
-                    return next(new Error('Sign Up Fatal Failure!'));
-                }
-
-                res.redirect('/?signup=' + encodeURIComponent('success'));
-            });   
-
-        });   
-       
-
+            client.query('BEGIN', err => {
+                if (shouldAbort(err)) return
+    
+                client.query(sql.query.signupUserWithId,[name, username, password, type], (err, data) => {
+                  if (shouldAbort(err)) return
+    
+                    uid = data.rows[0].uid;
+    
+                    client.query(sql.query.signupRider,[uid, ridertype], (err, data) => {
+                        if (shouldAbort(err)) return
+                        client.query('COMMIT', err => {
+                            if (err) {
+                                console.log("Error in committing transaction");
+                                return next(err);
+                            }
+                            done()
+                            res.redirect('/?signup=' + encodeURIComponent('success'));
+                        })
+                       
+                    })
+    
+                })
+            })
+    
+         });
           
     }
 

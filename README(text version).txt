@@ -29,23 +29,25 @@ For example. DATABASE_URL=postgres://postgres:12345@localhost:5432/postgres
 4. As no two users should have the same username, here are some usernames available use for sign up:
 testrider, testrest, testcust, testfds 
 
-5. The prepopulated data from psql script is solely for developers to test their pages. Hence, it may be incompelete or inaccurate e.g. not every rider has a existing schedule. Nonetheless, you may see a part of the testing/sample data through the following accounts. To fully test the program logic, it is recommended to sign up and use brand new accounts:
+5. The prepopulated data from psql script is solely for developers to test their pages. Hence, it may be incompelete or inaccurate e.g. not every rider has a existing schedule. 
+Nonetheless, you may see a part of the testing/sample data through the following accounts. 
+To fully test the program logic, it is recommended to sign up and use brand new accounts.
 
-* Restaurant Staff
-	* Username: minestrone
-	* Password: 12345
+Restaurant Staff
+Username: minestrone
+Password: 12345
 
-* Full Time Delivery Rider
-	* Username: aveldens3
-	* Password: cdqUwd81YzX
+Full Time Delivery Rider
+Username: aveldens3
+Password: cdqUwd81YzX
 
-* Part Time Delivery Rider
-	* Username: gtarrier9
-	* Password: G92FSUJuvL9e
-	
-* FDS Manager
-	* Username: desmond
-	* Password: 123abc
+Part Time Delivery Rider
+Username: gtarrier9
+Password: G92FSUJuvL9e
+
+FDS Manager
+Username: desmond
+Password: 123abc
 
 6. Sql Statements used throughout the application is complied under /App/db/dbsql.js
 

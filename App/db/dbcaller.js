@@ -7,5 +7,9 @@ const pool = new Pool({
 module.exports = {
   query: (text, params, callback) => {
     return pool.query(text, params, callback);
-  }
+  },
+  
+  //Not sure how to convert to getClient to use for transactions
+  pool: pool
+  
 };

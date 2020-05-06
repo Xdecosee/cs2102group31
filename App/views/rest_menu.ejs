@@ -1,44 +1,158 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_rest') %>
-<h1>Restaurant Menu</h1>
+<h2>Restaurant Menu</h2>
 
-<h2>Menu Details</h2>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="col">Food</th>
-            <th scope="col">Price</th>
-            <th scope="col">Category</th>
-            <th scope="col">Daily Limit</th>
-            <th scope="col">Avaliablity</th>
-		</tr>
-	</thead>
-	<tbody>
-		<% for(var i=0; i< menuInfo.length; i++) { %>
-		<tr>
-			<td><%= menuInfo[i].foodname%></td>
-            <td><%= menuInfo[i].price%></td>
-            <td><%= menuInfo[i].category%></td>
-            <td><%= menuInfo[i].dailylimit%></td>
-            <td><%= menuInfo[i].availability ? 'yes' : 'no' %></td>
-		</tr>
-		<% } %>
-	</tbody>
-</table>
+<p> You can manage your menu here. It would be better to make price changes to the menu 
+	or remove menu item before or after operating hours.</p>
 
-<h2>Add New Food</h2>
-<form id="food_form" action="/rest_menu/insertfood" role="form" method="post">
-	<div class="form-group">
-		<label for="name">Food Name</label>
-		<input type="text" class="form-control" id="foodname" name="foodname"  aria-describedby="foodHelp" placeholder="Enter food name">
-		<small id="foodHelp" class="form-text text-muted">Name should not exceed 100 chars</small>
+
+<div id="accordion">
+	<div class="card">
+		<div class="card-header" id="headingOne">
+		<h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+			Menu Details
+			</button>
+		</h5>
+		</div>
+
+	
+	
+		<div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+			<div class="card-body">
+
+				<p> The daily limit here indicates the number of orders can still be made for a food currently. It will decrease each time a customer 
+					make an order. Once the daily limit reaches 0 for a food, customers will not be able 
+					to make orders for that food. </p>
+
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Food</th>
+							<th scope="col">Price</th>
+							<th scope="col">Category</th>
+							<th scope="col">Daily Limit</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% for(var i=0; i< menuInfo.length; i++) { %>
+						<tr>
+							<td><%= menuInfo[i].foodname%></td>
+							<td><%= menuInfo[i].price%></td>
+							<td><%= menuInfo[i].category%></td>
+							<td><%= menuInfo[i].dailylimit%></td>
+						</tr>
+						<% } %>
+					</tbody>
+				</table>			
+			</div>
+		</div>
 	</div>
-	<div class="form-group">
-		<label for="username">Price</label>
-		<input type="text" class="form-control" id="price" name="price">
+	<div class="card">
+		<div class="card-header" id="headingTwo">
+			<h5 class="mb-0">
+				<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+					Add Food
+				</button>
+			</h5>
+		</div>
+		<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+			<div class="card-body">
+				<form id="food_form" action="/rest_menu/insertfood" role="form" method="post">
+					<div class="form-group">
+						<label for="name">Food Name:</label>
+						<input type="text" class="form-control" id="foodname" name="foodname">
+					</div>
+					<div class="form-group">
+						<label for="price">Price: </label>
+						<input type="text" class="form-control" id="price" name="price" aria-describedby="priceHelp">
+						<small id="priceHelp" class="form-text text-muted"> Price should be up to two decimal points and more than 0.
+						</small>
+					</div>
+					<div class="form-group">
+						<label for="category">Category: </label>
+						<select id="category" name="category" class="form-control">
+							<% for(var i = 0; i < categories.length; i++) { %>
+								<option value='<%= categories[i].category%>'><%= categories[i].category%></option>
+							  <% } %>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="limit">Daily Limit: </label>
+						<input type="number" min="0" class="form-control" id="limit" name="limit">
+					</div>
+					<button type="submit" class="btn btn-primary">Add Food</button>
+				</form>				
+			</div>
+		</div>
 	</div>
-	<button type="submit" class="btn btn-primary">Submit</button>
-</form>
+	<div class="card">
+		<div class="card-header" id="headingThree">
+			<h5 class="mb-0">
+				<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+					Update Food
+				</button>
+			</h5>
+		</div>
+		<div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+			<div class="card-body">
+				<p>This section allows you to update a food's price, category and limit. </p>
+				<form id="update_form" action="/rest_menu/updatepage" role="form" method="post">
+					<div class="form-group">
+						<label for="update"> Select a food to update: </label>
+						<select id="update" name="update" class="form-control">
+							<% for(var i=0; i< menuInfo.length; i++) { %>
+								<option value='<%= menuInfo[i].foodname%>'><%= menuInfo[i].foodname%></option>
+							  <% } %>
+						</select>
+					</div>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-header" id="headingFour">
+			<h5 class="mb-0">
+				<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+					Archive Food
+				</button>
+			</h5>
+		</div>
+		<div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+			<div class="card-body">
+				<p>This section allows you to remove food items from your menu by archiving
+					or restore food items from the archives into your menu.</p>
+				<form id="archive_form" action="/rest_menu/archive" role="form" method="post">
+					<div class="form-group">
+						<label for="archive"> Select a food to archive: </label>
+						<select id="archive" name="archive" class="form-control">
+							<% for(var i=0; i< menuInfo.length; i++) { %>
+								<option value='<%= menuInfo[i].foodname%>'><%= menuInfo[i].foodname%></option>
+							  <% } %>
+						</select>
+					</div>
+					<button type="submit" class="btn btn-primary">Archive Food</button>
+				</form>
+				
+				</br>
+				
+				<form id="restore_form" action="/rest_menu/restore" role="form" method="post">
+					<div class="form-group">
+						<label for="restore"> Select a food to restore: </label>
+						<select id="restore" name="restore" class="form-control">
+							<% for(var i = 0; i < archiveInfo.length; i++) { %>
+								<option value='<%= archiveInfo[i].foodname%>'><%= archiveInfo[i].foodname%></option>
+							  <% } %>
+						</select>
+					</div>
+					<button type="submit" class="btn btn-primary">Restore Food</button>
+				</form>				
+			</div>
+		</div>
+	</div>
+</div>
+
 
 <script src = "javascripts/rest.js"></script>
 <script>
@@ -48,8 +162,27 @@
 			var validation = Array.prototype.filter.call(forms, function(form) {
 				form.addEventListener('submit', checkFood, false);
 			});
+
+
+			const queryString = window.location.search;
+        	const urlParams = new URLSearchParams(queryString);
+			const success = urlParams.get('success');
+
+       		if(success != null) {
+				if(success == "update"){
+					alert('Food updated!');
+				} else if(success == "restore"){
+					alert('Food restored!');
+				} else if(success == "archive"){
+					alert('Food archived!');
+			 	} else if(success == "insert"){
+					alert('Food added!');
+				}  
+			}
+
 		}, false);
 	})();
 </script>
+
 
 <%- include('partials/footer') %>

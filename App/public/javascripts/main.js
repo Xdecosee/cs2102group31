@@ -51,7 +51,7 @@ function checkR(){
 		return false;
 	}
 
-	if( !threshold.match(twodecimal) || threshold <= 0.00) {
+	if( !threshold.match(twodecimal) || threshold < 0.00) {
 		alert("min threshold format invalid!");
 		event.preventDefault();
 		event.stopPropagation();
