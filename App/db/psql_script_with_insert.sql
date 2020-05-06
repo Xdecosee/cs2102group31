@@ -824,7 +824,7 @@ INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Sushi', 29.9
 INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Tempura', 19.7, 6, 'Japanese Cuisine');
 INSERT INTO Food (foodName, price, RestaurantID, category) VALUES ('Char Siew Ramen', 8.5, 6, 'Japanese Cuisine');
 
-/* Insert Data for Promo.*/
+/* Insert Data for Promo. Need to have start date and time????*/
 INSERT INTO Promotion (startDate,endDate,discAmt,type) VALUES ('2020-02-01','2020-02-28',5,'FDSpromo');
 INSERT INTO Promotion (startDate,endDate,discPerc,type) VALUES ('2020-03-01','2020-05-30',0.2,'FDSpromo'); 
 INSERT INTO Promotion (startDate,endDate,discAmt,type) VALUES ('2020-06-01','2020-06-30',5,'FDSpromo');
@@ -858,14 +858,14 @@ INSERT INTO PaymentOption(payOption) VALUES ('Credit');
 /* Order 1: Confirmed */
 INSERT INTO Orders(location,date,payOption,area) VALUES ('81 Goodland Road','2020-04-20','Cash','N'); /* let cost be initially deffered*/
 
-INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,5,1,3,'Tteokbokki');
-INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,3,1,3,'Kimchi Fried Rice');   
+INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (5,1,3,'Tteokbokki');
+INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (3,1,3,'Kimchi Fried Rice');   
 
 /* Insert data into place */
 INSERT INTO Place (uid,orderID,review,star,promoid) VALUES (1,1,'no comments',5,5);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 1) WHERE orderID = 1; /*Food costs*/
-UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 1 LIMIT 1)) WHERE orderID = 1; /*For percentage promo*/
+UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 1 LIMIT 1)) WHERE orderID = 1; /*For percentage promo*/
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 1 LIMIT 1) WHERE orderID = 1; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 1;
@@ -877,15 +877,15 @@ UPDATE Orders SET timeOrderDelivered = '11:45:00'  WHERE orderID = 1;
 
 /*Order 2: Completed by .... */ 
 INSERT INTO Orders(location,date,payOption,area) VALUES ('346 Dennis Trail','2020-01-08','Credit','S'); /* let cost be initially deffered*/
-INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (6,1,2,4,'Steam Egg');
-INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (6,1,2,4,'Sweet and Sour Pork');   
-INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (6,3,2,4,'Yang Zhou Fried Rice');
+INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (1,2,4,'Steam Egg');
+INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (1,2,4,'Sweet and Sour Pork');   
+INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (3,2,4,'Yang Zhou Fried Rice');
         
 /* Insert data into place */
 INSERT INTO Place (uid,orderID,review,star) VALUES (3,2,'Nice food',4);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 2) WHERE orderID = 2; /*Food costs*/
-UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 2 LIMIT 1)) WHERE orderID = 2; /*For percentage promo*/
+UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 2 LIMIT 1)) WHERE orderID = 2; /*For percentage promo*/
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 2 LIMIT 1) WHERE orderID = 2; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 2;
@@ -896,14 +896,14 @@ UPDATE Orders SET timeArriveRest = '11:15:00' WHERE orderID = 2;
 /* Order 3: Confirmed */
 --partial order completion possible (quantity < availQty)
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Canberra Road','Cash','S'); 
-INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,4,3,3,'Tteokbokki');
-INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,3,3,3,'Kimchi Fried Rice');  
+INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (4,3,3,'Tteokbokki');
+INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (3,3,3,'Kimchi Fried Rice');  
 
 /* Insert data into place */
 INSERT INTO Place (uid,orderID,review,star,promoid) VALUES (7,3,'Tastes great',5,5);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 3) WHERE orderID = 3; /*Food costs*/
-UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 3 LIMIT 1)) WHERE orderID = 3; /*For percentage promo*/
+UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 3 LIMIT 1)) WHERE orderID = 3; /*For percentage promo*/
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 3 LIMIT 1) WHERE orderID = 3; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 3;
@@ -915,14 +915,14 @@ UPDATE Orders SET timeOrderDelivered = '13:45:00'  WHERE orderID = 3;
 
 /* Order 4: Confirmed */
 INSERT INTO Orders(location,payOption,area) VALUES ('311 Canberra Road','Cash','N'); 
-INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,4,4,3,'Tteokbokki');
-INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES (5,4,4,3,'Kimchi Fried Rice');  
+INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (4,4,3,'Tteokbokki');
+INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (4,4,3,'Kimchi Fried Rice');  
 
 /* Insert data into place */
 INSERT INTO Place (uid,orderID,review,star,promoid) VALUES (8,4,'Tastes great',5,5);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 4) WHERE orderID = 4; /*Food costs*/
-UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 4 LIMIT 1)) WHERE orderID = 4; /*For percentage promo*/
+UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 4 LIMIT 1)) WHERE orderID = 4; /*For percentage promo*/
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 4 LIMIT 1) WHERE orderID = 4; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 4;
@@ -942,7 +942,7 @@ INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (1,5,6,'Char
 INSERT INTO Place (uid,orderID,review,star) VALUES (2,5,'Food slightly cold when arrived',1);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 5) WHERE orderID = 5; /*Food costs*/
-UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 5 LIMIT 1)) WHERE orderID = 5; /*For percentage promo*/
+UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 5 LIMIT 1)) WHERE orderID = 5; /*For percentage promo*/
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 5 LIMIT 1) WHERE orderID = 5; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 5;
@@ -963,7 +963,7 @@ INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (1,6,6,'Char
 INSERT INTO Place (uid,orderID,review,star) VALUES (8,6,'Taste great',4);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 6) WHERE orderID = 6; /*Food costs*/
-UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 6 LIMIT 1)) WHERE orderID = 6; /*For percentage promo*/
+UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 6 LIMIT 1)) WHERE orderID = 6; /*For percentage promo*/
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 6 LIMIT 1) WHERE orderID = 6; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 6;
@@ -984,7 +984,7 @@ INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (1,7,6,'Char
 INSERT INTO Place (uid,orderID,review,star) VALUES (11,7,'Taste great',4);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 7) WHERE orderID = 7; /*Food costs*/
-UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 7 LIMIT 1)) WHERE orderID = 7; /*For percentage promo*/
+UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 7 LIMIT 1)) WHERE orderID = 7; /*For percentage promo*/
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 7 LIMIT 1) WHERE orderID = 7; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Confirmed' WHERE orderID = 7;
@@ -1001,7 +1001,7 @@ INSERT INTO FromMenu(quantity,orderID,restaurantID,foodName) VALUES (1,8,6,'Char
 INSERT INTO Place (uid,orderID,review,star) VALUES (1,8,'Great Sushi',4);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 8) WHERE orderID = 8; /*Food costs*/
-UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 8 LIMIT 1)) WHERE orderID = 8; /*For percentage promo*/
+UPDATE Orders SET cost = cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 8 LIMIT 1)) WHERE orderID = 8; /*For percentage promo*/
 UPDATE Orders SET cost = cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 8 LIMIT 1) WHERE orderID = 8; /*For amt promo*/
 
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 8;
@@ -1065,13 +1065,13 @@ UPDATE Orders SET timeDepartFromRest = '13:00:00' WHERE orderID = 12;
 
 /*Order 13: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(10, 1, 13, 5, 'Steak');
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(10, 1, 13, 5, 'Creamy Pasta');
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(10, 1, 13, 5, 'Tomato Pasta');
-INSERT INTO Place (uid,orderID) VALUES (6,13);
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 13, 5, 'Steak');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 13, 5, 'Creamy Pasta');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 13, 5, 'Tomato Pasta');
+INSERT INTO Place (uid,orderID, promoid) VALUES (6,13,10);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 13) WHERE orderID = 13; /*Food costs*/
-UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 13 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 13; /*For percentage promo*/
+UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 13 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 13; /*For percentage promo*/
 
 UPDATE Orders SET date = '2019-12-25' WHERE orderID = 13;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 13;
@@ -1086,12 +1086,12 @@ UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeO
 
 /*Order 14: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(10, 1, 14, 5, 'Steak');
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(10, 1, 14, 5, 'Creamy Pasta');
-INSERT INTO Place (uid,orderID) VALUES (6,14);
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 14, 5, 'Steak');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 14, 5, 'Creamy Pasta');
+INSERT INTO Place (uid,orderID,promoid) VALUES (6,14,10);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 14) WHERE orderID = 14; /*Food costs*/
-UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 14 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 14; /*For percentage promo*/
+UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 14 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 14; /*For percentage promo*/
 
 UPDATE Orders SET date = '2019-12-26' WHERE orderID = 14;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 14;
@@ -1125,12 +1125,12 @@ UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeO
 
 /*Order 16: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(7, 1, 16, 5, 'Aglio Olio');
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(7, 1, 16, 5, 'Creamy Pasta');
-INSERT INTO Place (uid,orderID) VALUES (6,16);
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 16, 5, 'Aglio Olio');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 16, 5, 'Creamy Pasta');
+INSERT INTO Place (uid,orderID,promoID) VALUES (6,16,7);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 16) WHERE orderID = 16; /*Food costs*/
-UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 16 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 16; /*For percentage promo*/
+UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 16 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 16; /*For percentage promo*/
 
 UPDATE Orders SET date = '2020-03-10' WHERE orderID = 16;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 16;
@@ -1214,13 +1214,13 @@ UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeO
 
 /*Order 20: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(8, 1, 20, 5, 'Minestrone Soup');
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(8, 1, 20, 5, 'Onion Soup');
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(8, 1, 20, 5, 'Mushroom Soup');
-INSERT INTO Place (uid,orderID) VALUES (6,20);
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 20, 5, 'Minestrone Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 20, 5, 'Onion Soup');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 20, 5, 'Mushroom Soup');
+INSERT INTO Place (uid,orderID,promoID) VALUES (6,20,8);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 20) WHERE orderID = 20; /*Food costs*/
-UPDATE Orders SET cost = ROUND(cost-(SELECT COALESCE(P.discAmt,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 20 LIMIT 1)::NUMERIC, 2) WHERE orderID = 20; /*For amt promo*/
+UPDATE Orders SET cost = ROUND(cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 20 LIMIT 1)::NUMERIC, 2) WHERE orderID = 20; /*For amt promo*/
 
 UPDATE Orders SET date = '2020-01-01' WHERE orderID = 20;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 20;
@@ -1253,11 +1253,11 @@ UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeO
 
 /*Order 22: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-50','Cash','E'); 
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(9, 1, 22, 5, 'Minestrone Soup');
-INSERT INTO Place (uid,orderID) VALUES (6,22);
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 22, 5, 'Minestrone Soup');
+INSERT INTO Place (uid,orderID,promoID) VALUES (6,22,9);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 22) WHERE orderID = 22; /*Food costs*/
-UPDATE Orders SET cost = ROUND(cost-(SELECT COALESCE(P.discAmt,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 22 LIMIT 1)::NUMERIC, 2) WHERE orderID = 22; /*For amt promo*/
+UPDATE Orders SET cost = ROUND(cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 22 LIMIT 1)::NUMERIC, 2) WHERE orderID = 22; /*For amt promo*/
 
 UPDATE Orders SET date = '2020-01-30' WHERE orderID = 22;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 22;
@@ -1271,12 +1271,12 @@ UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeO
 
 /* Order 23: Completed */
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-51','Cash','E'); 
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(7, 1, 23, 5, 'Aglio Olio');
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(7, 1, 23, 5, 'Creamy Pasta');
-INSERT INTO Place (uid,orderID) VALUES (6, 23);
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 23, 5, 'Aglio Olio');
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 23, 5, 'Creamy Pasta');
+INSERT INTO Place (uid,orderID,promoID) VALUES (6, 23, 7);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 23) WHERE orderID = 23; /*Food costs*/
-UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 23 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 23; /*For percentage promo*/
+UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 23 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 23; /*For percentage promo*/
 
 UPDATE Orders SET date = '2020-03-10' WHERE orderID = 23;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 23;
@@ -1290,11 +1290,11 @@ UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeO
 
 /*Order 24: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-51','Cash','E'); 
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(8, 1, 24, 5, 'Minestrone Soup');
-INSERT INTO Place (uid,orderID) VALUES (6,24);
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 24, 5, 'Minestrone Soup');
+INSERT INTO Place (uid,orderID,promoID) VALUES (6,24,8);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 24) WHERE orderID = 24; /*Food costs*/
-UPDATE Orders SET cost = ROUND(cost-(SELECT COALESCE(P.discAmt,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 24 LIMIT 1)::NUMERIC, 2) WHERE orderID = 24; /*For amt promo*/
+UPDATE Orders SET cost = ROUND(cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 24 LIMIT 1)::NUMERIC, 2) WHERE orderID = 24; /*For amt promo*/
 
 UPDATE Orders SET date = '2020-01-01' WHERE orderID = 24;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 24;
@@ -1309,11 +1309,11 @@ UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeO
 
 /*Order 25: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-52','Cash','E'); 
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(8, 1, 25, 5, 'Minestrone Soup');
-INSERT INTO Place (uid,orderID) VALUES (6,25);
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 25, 5, 'Minestrone Soup');
+INSERT INTO Place (uid,orderID,promoID) VALUES (6,25,8);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 25) WHERE orderID = 25; /*Food costs*/
-UPDATE Orders SET cost = ROUND(cost-(SELECT COALESCE(P.discAmt,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 25 LIMIT 1)::NUMERIC, 2) WHERE orderID = 25; /*For amt promo*/
+UPDATE Orders SET cost = ROUND(cost-(SELECT COALESCE(P.discAmt,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 25 LIMIT 1)::NUMERIC, 2) WHERE orderID = 25; /*For amt promo*/
 
 UPDATE Orders SET date = '2020-01-01' WHERE orderID = 25;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 25;
@@ -1327,11 +1327,11 @@ UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeO
 
 /*Order 26: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-52','Cash','E'); 
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(10, 1, 26, 5, 'Steak');
-INSERT INTO Place (uid,orderID) VALUES (6,26);
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 26, 5, 'Steak');
+INSERT INTO Place (uid,orderID,promoID) VALUES (6,26,10);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 26) WHERE orderID = 26; /*Food costs*/
-UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 26 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 26; /*For percentage promo*/
+UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 26 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 26; /*For percentage promo*/
 
 UPDATE Orders SET date = '2019-12-25' WHERE orderID = 26;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 26;
@@ -1346,11 +1346,11 @@ UPDATE Orders SET deliveryduration = (SELECT to_char((timeOrderDelivered - timeO
 
 /*Order 27: Completed*/
 INSERT INTO Orders(location,payOption,area) VALUES ('333 Pasir Ris Rd #05-52','Cash','E'); 
-INSERT INTO FromMenu(promoID, quantity, orderID, restaurantID, foodName) VALUES(10, 1, 27, 5, 'Creamy Pasta');
-INSERT INTO Place (uid,orderID) VALUES (6,27);
+INSERT INTO FromMenu(quantity, orderID, restaurantID, foodName) VALUES(1, 27, 5, 'Creamy Pasta');
+INSERT INTO Place (uid,orderID,promoID) VALUES (6,27,10);
 
 UPDATE Orders SET cost = (SELECT sum(M.quantity*F.price) FROM FromMenu M JOIN Food F USING (restaurantID,foodName) WHERE M.orderID = 27) WHERE orderID = 27; /*Food costs*/
-UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM FromMenu M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 27 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 27; /*For percentage promo*/
+UPDATE Orders SET cost = ROUND(cost*(1-(SELECT COALESCE(P.discPerc,0) FROM Place M LEFT JOIN Promotion P USING (promoID) WHERE M.orderID = 27 LIMIT 1))::NUMERIC, 2 ) WHERE orderID = 27; /*For percentage promo*/
 
 UPDATE Orders SET date = '2019-12-26' WHERE orderID = 27;
 UPDATE Orders SET orderStatus = 'Completed' WHERE orderID = 27;
