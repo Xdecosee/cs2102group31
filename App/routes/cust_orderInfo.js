@@ -46,12 +46,18 @@ router.post('/addRestReview', function (req, res, next) {
 });
 
 router.post('/addRiderReview', function (req, res, next) {
-	var star = req.body.riderRating;
-	// to prevent cust from adding order from different rest...
+	var star = Number(req.body.riderRating);
+	orderID = Number(orderID);
+	// to prevent cust from adding order from different rest..
+	console.log(orderID);
+	console.log(star);
+
 	caller.query(sql.query.addRiderReview, [star, orderID], (err, data) => {
 		if (err) {
+			console.log("i was here");
 			return next(err);
 		}
+
 	});
 	res.redirect('/cust_orderInfo');
 });
