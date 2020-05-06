@@ -1,118 +1,233 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_fds') %>
+<link rel='stylesheet' href='stylesheets/form.css'>
 
-<!DOCTYPE html>
-<html lang="en">
+<h2>Welcome, <%=name%>!</h2>
+</br>
 
-<head>
-  <title>Bootstrap Example</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-</head>
-
-<body>
-
-  <div class="container">
-    <h1>FDS Manager Resturant</h1>
-    <p>Welcome, <%= name%>!</p>
-    <h2>Summary Information</h2>
-    <form id="month_form" action="/fds_rest/selectMonth" role="form" method="POST">
-      <div class="form-group">
-        <label for="month">Select month:</label>
-        <select class="form-control" id="month" name="month">
-          <option value="1">January</option>
-          <option value="2">February</option>
-          <option value="3">March</option>
-          <option value="4">April</option>
-          <option value="5">May</option>
-          <option value="6">June</option>
-          <option value="7">July</option>
-          <option value="8">August</option>
-          <option value="9">September</option>
-          <option value="10">October</option>
-          <option value="11">November</option>
-          <option value="12">December</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-    <p>Total Number of Orders: <%= numOrder%></p>
-    <p>Total Cost of Order: <%= costOrder%></p>
-  </div>
-
-  <div class="container">
-    <h2>Area Information</h2>
-    <form id="area_form" action="/fds_rest/selectArea" role="form" method="POST">
-      <div class="form-group">
-        <label for="area">Select area:</label>
-        <select class="form-control" id="area" name="area">
-          <option value="N">North</option>
-          <option value="S">South</option>
-          <option value="E">East</option>
-          <option value="W">West</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Area</th>
-          <th scope="col">Hour</th>
-          <th scope="col">Total Order</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(var i=0; i< areaInfo.length; i++) { %>
-          <tr>
-            <td><%= areaInfo[i].area%></td>
-                  <td><%= areaInfo[i].hour%></td>
-                  <!--IMPT: convert to small letters for the attribute name. -->
-                  <!--In db, we may put minThreshold, but convert it to minthreshold to retrieve values-->
-                  <td><%= areaInfo[i].num%></td>
-          </tr>
-          <% } %>
-      </tbody>
-    </table>
-
-  </div>
-
-
-  <div class="container">
-    <h2>Available Categories</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Categories</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(var i=0; i< catInfo.length; i++) { %>
-          <tr>
-            <td><%= catInfo[i].category%></td>
-          </tr>
-          <% } %>
-      </tbody>
-    </table>
-
-
-    <form id="cat_form" action="/fds_rest/add_cat" role="form" method="POST">
-      <div class="form-group">
-        <label >Add new catergory:</label>
-        <input class="form-control" type="text" name="category"/>
+<div id="accordion">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
+          aria-controls="collapseOne">
+          Summary Information
+        </button>
+      </h5>
     </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        <fieldset class="scheduler-border">
+          <legend class="scheduler-border">Select Date</legend>
+        <p>Select the month and year (e.g. May 2020) to view restaurant related summary information. </p>
+        <form id="month_form" action="/fds_rest/selectdate" role="form" method="post">
+          <div class="form-group">
+            <input type="month" class="form-control" id="date" name="date">
+          </br>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+        </fieldset>
+
+        </br>
+        <div id="accordion2">
+          <div class="card">
+            <div class="card-header" id="subheadingTwo">
+              <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseTwo" aria-expanded="true"
+                  aria-controls="subcollapseTwo">
+                  Restaurants' Summary
+                </button>
+              </h5>
+            </div>
+            <div id="subcollapseTwo" class="collapse show" aria-labelledby="subheadingTwo" data-parent="#accordion2">
+              <div class="card-body">
+                <p> Shows the total number of orders and total cost of orders for all restaurants.</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Year</th>
+                      <th scope="col">Month</th>
+                      <th scope="col">Total Number of Orders</th>
+                      <th scope="col">Total Cost of Orders</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for (var i = 0; i < fdsAllRestInfo.length; i++) { %>
+                    <tr>
+                      <td><%= fdsAllRestInfo[i].year%></td>
+                      <td><%= fdsAllRestInfo[i].month%></td>
+                      <td><%= fdsAllRestInfo[i].totalorders%></td>
+                      <td><%= fdsAllRestInfo[i].totalcost%></td>
+                      <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          </br>
+
+          <div class="card">
+            <div class="card-header" id="subheadingThree">
+              <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseThree" aria-expanded="true"
+                  aria-controls="subcollapseThree">
+                  Each Restaurant
+                </button>
+              </h5>
+            </div>
+            <div id="subcollapseThree" class="collapse show" aria-labelledby="subheadingThree"
+              data-parent="#accordion2">
+              <div class="card-body">
+                <p> Shows the total number of orders and total cost of orders for each restaurant based on the
+                  selected date.</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Year</th>
+                      <th scope="col">Month</th>
+                      <th scope="col">Resturant's ID</th>
+                      <th scope="col">Total Number of Orders</th>
+                      <th scope="col">Total Cost of Orders</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for (var i = 0; i < fdsEachRestInfo.length; i++) { %>
+                    <tr>
+                      <td><%= fdsEachRestInfo[i].year%></td>
+                      <td><%= fdsEachRestInfo[i].month%></td>
+                      <td><%= fdsEachRestInfo[i].restaurantid%></td>
+                      <td><%= fdsEachRestInfo[i].totalorders%></td>
+                      <td><%= fdsEachRestInfo[i].totalcost%></td>
+                      <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
+          aria-controls="collapseTwo">
+          Area Information
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+        <form id="area_form" action="/fds_rest/selectArea" role="form" method="POST">
+          <div class="form-group">
+            <label for="area">Select delivery location:</label>
+            <select class="form-control" id="area" name="area">
+              <option value="N">North</option>
+              <option value="S">South</option>
+              <option value="E">East</option>
+              <option value="W">West</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        </br>
+        <p> Shows the total number of orders based on the selected delivery location area.</p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Area</th>
+              <th scope="col">Hour</th>
+              <th scope="col">Total Order</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(var i=0; i< areaInfo.length; i++) { %>
+            <tr>
+              <td><%= areaInfo[i].area%></td>
+              <td><%= areaInfo[i].hour%></td>
+              <td><%= areaInfo[i].num%></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
+  <div class="card">
+    <div class="card-header" id="headingThree">
+		  <h5 class="mb-0">
+			<button class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+				Categories Information
+			</button>
+		  </h5>
+		</div>
+		<div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+    <div class="card-body">
+      <div id="accordion2">
+        <div class="card">
+          <div class="card-header" id="subheadingTwo">
+            <h5 class="mb-0">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseTwo" aria-expanded="true"
+                aria-controls="subcollapseTwo">
+                View Available Categories
+              </button>
+            </h5>
+          </div>
+          <div id="subcollapseTwo" class="collapse show" aria-labelledby="subheadingTwo" data-parent="#accordion2">
+            <div class="card-body">
+              <p> Shows the current categories for all restaurants.</p>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Categories</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for(var i=0; i< catInfo.length; i++) { %>
+                  <tr>
+                    <td><%= catInfo[i].category%></td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </br>
+      <div class="card">
+        <div class="card-header" id="subheadingThree">
+          <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseThree" aria-expanded="true"
+              aria-controls="subcollapseThree">
+              Add Category
+            </button>
+          </h5>
+        </div>
+        <div id="subcollapseThree" class="collapse show" aria-labelledby="subheadingThree"
+          data-parent="#accordion2">
+          <div class="card-body">
+            <form id="cat_form" action="/fds_rest/add_cat" role="form" method="POST">
+              <div class="form-group">
+                <label>Add new category:</label>
+                <input class="form-control" type="text" name="category" />
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
 
-</body>
 
+
+    </div>
+    </div>
+  </div>
+</div>
 </html>
 
 

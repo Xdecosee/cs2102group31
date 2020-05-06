@@ -1,56 +1,181 @@
 <%- include('partials/header') %>
 <%- include('partials/navbar_fds') %>
+<link rel='stylesheet' href='stylesheets/form.css'>
 
 <!DOCTYPE html>
 <html lang="en">
 
+<h2>Welcome, <%=name%>!</h2>
 
-<body>
+<div id="accordion">
 
-  <div class="container">
-    <h1>FDS Manager Rider</h1>
-  </div>
-
-  <form id="month_form" action="/fds_rider/selectdate" role="form" method="post">
-    <div class="form-group row">
-      <input type="month" class="form-control" id="date" name="date">
-      <button type="submit" class="btn btn-primary">Submit</button>
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
+          aria-controls="collapseOne">
+          Summary Information
+        </button>
+      </h5>
     </div>
-  </form>
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        <fieldset class="scheduler-border">
+          <legend class="scheduler-border">Select Date</legend>
+          <p>Select the month and year (e.g. May 2020) to view rider related summary information. </p>
+          <form id="month_form" action="/fds_rider/selectdate" role="form" method="post">
+            <input type="month" class="form-control" id="date" name="date">
+            </br>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </fieldset>
 
-  <h3>Delivery Rider Summary</h3>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="col">riderID</th>
-			<th scope="col">Hours Worked</th>
-      <th scope="col">Total Orders</th>
-      <th scope="col">Salary</th>
-      <th scope="col">Average Delivery Time</th>
-      <th scope="col">Number of Ratings</th>
-      <th scope="col">Average Ratings</th>
-		</tr>
-	</thead>
-	<tbody>
-		<% for (var i = 0; i < riderSummary.length; i++) { %>
-		<tr>
-			<td><%= riderSummary[i].uid%></td>
-			<td><%= riderSummary[i].totalhours%></td>
-			<td><%= riderSummary[i].totalorders%></td>
-      <td><%= riderSummary[i].monthsalary%></td>
-      <td><%= riderSummary[i].avgduration%></td>
-      <td><%= riderSummary[i].totalratings%></td>
-      <td><%= riderSummary[i].avgratings%></td>
-		</tr>
-		<% } %>
-	</tbody>
-</table>
+        </br>
 
+        <div id="accordion2">
+          <div class="card">
+            <div class="card-header" id="subheadingTwo">
+              <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseTwo" aria-expanded="true"
+                  aria-controls="subcollapseTwo">
+                  Delivery Riders' Summary
+                </button>
+              </h5>
+            </div>
+            <div id="subcollapseTwo" class="collapse show" aria-labelledby="subheadingTwo" data-parent="#accordion2">
+              <div class="card-body">
+                <p> Shows the summary information for all delivery riders.</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">riderID</th>
+                      <th scope="col">Hours Worked</th>
+                      <th scope="col">Total Orders</th>
+                      <th scope="col">Salary</th>
+                      <th scope="col">Average Delivery Time</th>
+                      <th scope="col">Number of Ratings</th>
+                      <th scope="col">Average Ratings</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for (var i = 0; i < riderSummary.length; i++) { %>
+                    <tr>
+                      <td><%= riderSummary[i].uid%></td>
+                      <td><%= riderSummary[i].totalhours%></td>
+                      <td><%= riderSummary[i].numcompleted%></td>
+                      <td><%= riderSummary[i].monthsalary%></td>
+                      <td><%= riderSummary[i].avgduration%></td>
+                      <td><%= riderSummary[i].totalratings%></td>
+                      <td><%= riderSummary[i].avgratings%></td>
+                    </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 
-</body>
+          </br>
+          <div class="card">
+            <div class="card-header" id="subheadingThree">
+              <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#subcollapseThree" aria-expanded="true"
+                  aria-controls="subcollapseThree">
+                  Current Working Schedule
+                </button>
+              </h5>
+            </div>
+            <div id="subcollapseThree" class="collapse show" aria-labelledby="subheadingThree"
+              data-parent="#accordion2">
+              <div class="card-body">
+                <p> Shows the number of riders working at each timeslot.</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Date</th>
+                      <th scope="col">10:00</th>
+                      <th scope="col">11:00</th>
+                      <th scope="col">12:00</th>
+                      <th scope="col">13:00</th>
+                      <th scope="col">14:00</th>
+                      <th scope="col">15:00</th>
+                      <th scope="col">16:00</th>
+                      <th scope="col">17:00</th>
+                      <th scope="col">18:00</th>
+                      <th scope="col">19:00</th>
+                      <th scope="col">20:00</th>
+                      <th scope="col">21:00</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for (var i = 0; i < riderSchedule.length; i++) { %>
+                    <tr>
+                      <td><%= riderSchedule[i].ddate%></td>
+                      <td><%= riderSchedule[i].t10%></td>
+                      <td><%= riderSchedule[i].t11%></td>
+                      <td><%= riderSchedule[i].t12%></td>
+                      <td><%= riderSchedule[i].t13%></td>
+                      <td><%= riderSchedule[i].t14%></td>
+                      <td><%= riderSchedule[i].t15%></td>
+                      <td><%= riderSchedule[i].t16%></td>
+                      <td><%= riderSchedule[i].t17%></td>
+                      <td><%= riderSchedule[i].t18%></td>
+                      <td><%= riderSchedule[i].t19%></td>
+                      <td><%= riderSchedule[i].t20%></td>
+                      <td><%= riderSchedule[i].t21%></td>
+                    </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
+          aria-controls="collapseTwo">
+          Manual Allocation
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+        <form id="schedule_form" action="/fds_rider/selectName" role="form" method="post">
+          <fieldset class="scheduler-border">
+            <legend class="scheduler-border">Select Date</legend>
+            <label for="day1" style="margin-left:1.0em"><strong>Date:</strong></label>
+            <input type="date" id="day1" name="day1" required>
+            <label for="start1" style="margin-left:2.0em"><strong>Start Time:</strong></label>
+            <input type="time" id="start1" name="start1" min="10:00" max="22:00" step="3600" required>
+            <label for="end1" style="margin-left:2.0em"><strong>End Time:</strong></label>
+            <input type="time" id="end1" name="end1" min="10:00" max="22:00" step="3600" required>
+            <p></p>
+            <button style="margin-left:1.0em" type="submit" class="btn btn-primary">Submit</button>
+          </fieldset>
+        </form>
+        </br>
+        <fieldset class="scheduler-border">
+          <legend class="scheduler-border">Select Rider's ID for Manual Allocation</legend>
+          <form id="assign" action="/fds_rider/assign" role="form" method="post">
+            <select class="custom-select mr-sm-2" id="assignR" name="assignR">
+              <% for(var i=0; i < rider.length; i++) { %>
+              <option value="<%= rider[i].uid%>"><%= rider[i].uid%></option>
+              <% } %>
+            </select>
+            <p></p>
+            <button style="margin-left:1.0em" type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+</div>
 
 </html>
-
-
 
 <%- include('partials/footer') %>

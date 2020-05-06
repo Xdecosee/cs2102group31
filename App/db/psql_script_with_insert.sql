@@ -1181,7 +1181,7 @@ UPDATE food set dailyLimit = 50 where foodName = 'Aglio Olio' and RestaurantID =
 
 /*PARTTIME. Consolidate shows for each parttime rider, how many weeks they actually worked in a month (If they
 work one day in a week, it will be counted in totalWeeksWorked) and how many deliveries completed in a month */
-CREATE VIEW ConsolidateP AS (
+CREATE OR REPLACE VIEW ConsolidateP AS (
 SELECT distinct P1.uid as pUid, 
 P1.weeklyBasePay as pBasePay, 
 EXTRACT(YEAR FROM WD1.workDate) as pYear, 
@@ -1196,7 +1196,7 @@ GROUP BY P1.uid, EXTRACT(YEAR FROM WD1.workDate), EXTRACT(Month FROM WD1.workDat
 
 /*FULLTIME. ConsolidateF shows for each fulltime rider, how many months they actually worked (even if they worked one day in a month) 
 and how many deliveries completed in a month */
-CREATE VIEW ConsolidateF AS (
+CREATE OR REPLACE VIEW ConsolidateF AS (
 SELECT distinct F1.uid as fUid,
 F1.monthlyBasePay as fBasePay,
 EXTRACT(YEAR FROM WW1.workDate) as fYear,
@@ -1208,14 +1208,14 @@ WHERE WW1.numCompleted > 0  /**Filter out months without any worked days at all*
 GROUP BY F1.uid, EXTRACT(YEAR FROM WW1.workDate), EXTRACT(MONTH FROM WW1.workDate) 
 );
 
-CREATE VIEW workDetails AS(
+CREATE OR REPLACE VIEW workDetails AS(
 SELECT DISTINCT p.uid as uid,
 		EXTRACT(YEAR FROM WD.workDate) as year, 
         EXTRACT(Month FROM WD.workDate) as month, 
         sum(DATE_PART('hour', WD.intervalEnd - WD.intervalStart)) as totalHours,
 		sum(WD.numCompleted) as numCompleted
 FROM PartTime P INNER JOIN WorkingDays WD USING (uid) 
-WHERE WD.numCompleted > 0 
+-- WHERE WD.numCompleted > 0 
 GROUP BY P.uid, EXTRACT(YEAR FROM WD.workDate), EXTRACT(Month FROM WD.workDate)
 UNION
 SELECT distinct F.uid as uid,
@@ -1224,11 +1224,11 @@ SELECT distinct F.uid as uid,
 		count(shiftID) * 8 as totalHours,
 		sum(WW.numCompleted) as numCompleted
 FROM FullTime F INNER JOIN WorkingWeeks WW USING (uid) 
-WHERE WW.numCompleted > 0 
+-- WHERE WW.numCompleted > 0 
 GROUP BY F.uid, EXTRACT(YEAR FROM WW.workDate), EXTRACT(Month FROM WW.workDate)
 );
 
-CREATE VIEW driverSalary AS (
+CREATE OR REPLACE VIEW driverSalary AS (
 SELECT CP.puid as uid,
 	   CP.pYear as year, 
        CP.pMonth as month, 
@@ -1243,7 +1243,7 @@ FROM DeliveryRiders DR LEFT JOIN ConsolidateF CF on DR.uid = CF.fUid
 );
 
 /* To view individual schedule on a monthly basis */
-CREATE VIEW IndiRiderShed AS(
+CREATE OR REPLACE VIEW IndiRiderShed AS(
 	with Alldate as(
 		select generate_series(
            	(date '2019-01-01')::timestamp,
@@ -1283,6 +1283,67 @@ CREATE VIEW IndiRiderShed AS(
     UNION
     SELECT 	distinct A.ddate, 0 as uid, 0 as t10, 0 as t11,0 as t12,0 as t13,0 as t14,0 as t15,0 as t16,0 as t17,0 as t18,0 as t19,0 as t20,0 as t21
 	FROM AllDate A 
+);
+
+-- Rider's Schedule Overview
+CREATE OR REPLACE VIEW Overview AS(
+	with Alldate as(
+	select generate_series(
+           (date '2019-01-01')::timestamp,
+           (date '2022-12-31')::timestamp,
+           interval '1 day'
+         ) as ddate
+	)
+
+	SELECT ddate as ddate,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='10:00:00' AND W.intervalEnd>'10:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND W.shiftID = 1) as t10,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='11:00:00' AND W.intervalEnd>'11:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2)) as t11,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='12:00:00' AND W.intervalEnd>'12:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t12,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='13:00:00' AND W.intervalEnd>'13:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t13,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='14:00:00' AND W.intervalEnd>'14:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t14,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='15:00:00' AND W.intervalEnd>'15:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =3 OR W.shiftID =4)) as t15,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='16:00:00' AND W.intervalEnd>'16:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =4)) as t16,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='17:00:00' AND W.intervalEnd>'17:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3)) as t17,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='18:00:00' AND W.intervalEnd>'18:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 1 OR W.shiftID =2 OR W.shiftID =3 OR W.shiftID =4)) as t18,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='19:00:00' AND W.intervalEnd>'19:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 2 OR W.shiftID =3 OR W.shiftID =4)) as t19,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='20:00:00' AND W.intervalEnd>'20:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 3 OR W.shiftID =4)) as t20,
+		(SELECT count(*) FROM WorkingDays W WHERE W.intervalStart<='21:00:00' AND W.intervalEnd>'21:00:00' and W.workDate = D.ddate) +  (SELECT count(*) FROM WorkingWeeks W WHERE W.workDate = D.ddate AND (W.shiftID = 4)) as t21
+	FROM AllDate D	
+);
+
+-- Rider's Overall Review
+CREATE OR REPLACE VIEW ReviewInfo AS (
+SELECT distinct DR.uid, EXTRACT(Year FROM (O.date)) AS year, EXTRACT(Month FROM 
+(O.date)) as month, count(D.rating) as totalRatings, ROUND(avg(D.rating),1) as avgRatings,  
+to_char(avg(O.timeOrderDelivered - O.timeOrderPlace), 'HH24:MI:SS') as avgDuration
+FROM DeliveryRiders DR LEFT JOIN Delivers D on DR.uid = D.uid LEFT JOIN Orders O on D.orderID = O.orderID 
+GROUP BY DR.uid, year, month
+);
+
+CREATE OR REPLACE VIEW monthlyWorkingHours AS (
+SELECT W.uid, EXTRACT(year from W.workdate) as year, EXTRACT(month from W.workdate) as month, W.workdate, W.intervalstart, W.intervalend, WD.totalhours as monthlytotalhours 
+FROM workingdays W JOIN workdetails WD 
+ON W.uid = WD.uid 
+AND extract(year from W.workdate) = WD.year 
+AND extract(month from W.workdate) = WD.month
+);
+
+CREATE OR REPLACE VIEW weekSummary AS (
+SELECT DISTINCT p.uid as uid,
+EXTRACT(YEAR FROM WD.workDate) as year, 
+EXTRACT(Week FROM WD.workDate) as week, 
+SUM(DATE_PART('hour', WD.intervalEnd - WD.intervalStart)) as totalHours
+FROM PartTime P INNER JOIN WorkingDays WD USING (uid) 
+GROUP BY P.uid, EXTRACT(YEAR FROM WD.workDate),EXTRACT(Week FROM WD.workDate)
+);
+
+CREATE OR REPLACE VIEW PartTimeOverview AS (
+select T.uid as uid, 
+W.workDate as date, 
+W.intervalStart as start , 
+W.intervalEnd as end, 
+coalesce((SELECT totalHours From weekSummary S where S.uid = W.uid and EXTRACT(YEAR FROM W.workDate) = S.year AND EXTRACT(Week FROM W.workDate) = S.week),0) as weekhours
+FROM PartTime T LEFT JOIN WorkingDays W USING (uid) order by uid
 );
 
 /* Deliery rider Summary in another form */
@@ -1334,7 +1395,6 @@ UNION
 SELECT uid, ddate, TIME'21:00:00' as worktime
 FROM IndiRiderShed
 WHERE uid !=0 and t21=1);
-
 
 /*Leave this trigger at the bottom to prevent interference with manual insert statements*/
 CREATE OR REPLACE FUNCTION check_riders()
