@@ -17,7 +17,14 @@ function orderStatus(req, res, next) {
 			return next(err);
 		}
 		req.orderStatus = data.rows;
-		orderID = data.rows[0].orderid;
+		console.log(data.rows.length);
+		console.log(data);
+		if (data.rows.length == 0) {
+			req.orderStatus = [{}];
+			console.log("i was here");
+		} else {
+			orderID = data.rows[0].orderid;
+		}
 		return next();
 	});
 }
@@ -26,7 +33,7 @@ function loadPage(req, res, next) {
 	res.render('cust_orderInfo', {
 		username: req.user.username,
 		name: req.user.name,
-		status : req.orderStatus
+		status: req.orderStatus
 	});
 }
 
@@ -37,7 +44,7 @@ router.post('/addRestReview', function (req, res, next) {
 	console.log(review);
 	var star = req.body.restRating;
 	// to prevent cust from adding order from different rest...
-	caller.query(sql.query.addRestReview, [review,star, orderID], (err, data) => {
+	caller.query(sql.query.addRestReview, [review, star, orderID], (err, data) => {
 		if (err) {
 			return next(err);
 		}
