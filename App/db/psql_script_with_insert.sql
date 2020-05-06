@@ -97,14 +97,12 @@ CREATE TABLE Orders (
 );
 
 CREATE TABLE FromMenu (
-	promoID     INT,
 	quantity        INTEGER      NOT NULL,
 	orderID         INT         NOT NULL,
 	restaurantID    INTEGER         NOT NULL,
 	foodName        VARCHAR(100)    NOT NULL,
     hide            BOOLEAN         DEFAULT FALSE NOT NULL,
 	PRIMARY KEY (restaurantID,foodName,orderID),
-	FOREIGN KEY (promoID) REFERENCES Restpromo (promoID),
 	FOREIGN KEY (orderID) REFERENCES Orders (orderID),
 	FOREIGN KEY (restaurantID, foodName) REFERENCES Food (restaurantID, foodName) ON DELETE CASCADE
 );
