@@ -22,7 +22,7 @@ function fdsAllRestInfo(req, res, next) {
 
 	} else if (queryMonth == 0 || queryYear == 0) {
 		req.fdsAllRestInfo = {};
-		next();
+		//next();
 	}
 	console.log(queryYear);
 	console.log(queryMonth);
@@ -74,40 +74,6 @@ function loadPage(req, res, next) {
 		catInfo: req.catInfo
 	});
 }
-
-// router.post('/selectMonth', function (req, res, next) {
-// 	//from <form> in ejs file
-// 	var index = req.body.month;
-
-// 	caller.query(sql.query.totalOrders, [index], (err, data) => {
-// 		if (err){
-// 			next(err);
-// 		}
-// 		if (data.rows[0] == null) {
-// 			console.log("order: 0");
-// 			numOrder = 0;
-// 		} else {
-// 			console.log("order: " + data.rows[0].num);
-// 			numOrder = data.rows[0].num;
-// 		}
-// 	});
-
-
-// 	caller.query(sql.query.totalCost, [index], (err, data) => {
-// 		if (err){
-// 			next(err);
-// 		}
-// 		if (data.rows[0] == null) {
-// 			console.log("cost : 0");
-// 			costOrder = 0;
-// 		} else {
-// 			console.log("cost: " + data.rows[0].num);
-// 			costOrder = data.rows[0].num;
-// 		}
-// 	});
-
-// 	res.redirect('/fds_rest');
-// });
 
 router.post('/selectArea', function (req, res, next) {
 	var area = req.body.area;
