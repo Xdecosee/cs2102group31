@@ -166,7 +166,6 @@
                 <th scope="col">Food Name</th>
                 <th scope="col">Price</th>
                 <th scope="col">Amount</th>
-                <th scope="col">Promo Code</th>
               </tr>
             </thead>
             <tbody>
@@ -175,58 +174,60 @@
                 <td><%= orderInfo[i].foodname%></td>
                 <td><%= orderInfo[i].price%></td>
                 <td><%= orderInfo[i].amount%></td>
-                <td><%= orderInfo[i].promoid%></td>
               </tr>
               <% } %>
             </tbody>
           </table>
 
+          <label for="orderItem">Food Name</label>
           <select class="custom-select mr-sm-2" id="orderItem" name="orderItem">
             <% for(var i=0; i< menuInfo.length; i++) { %>
             <option value="<%= menuInfo[i].foodname%>"><%= menuInfo[i].foodname%></option>
             <% } %>
           </select>
-          <br />
+         <label for="orderAmount">Amount</label>
           <select class="custom-select mr-sm-2" id="orderAmount" name="orderAmount">
             <% for(var i=1; i< 6; i++) { %>
             <option value="<%=i%>"><%=i%></option>
             <% } %>
           </select>
-          <div class="form-group">
-            <input type="text" class="form-control" id="promo" name="promo" value="-">
-          </div>
-          <br />
-          <button type="submit" class="btn btn-primary">Add</button>
+      <p></p>
+          <button type="submit" class="btn btn-primary">Add to Cart</button>
         </form>
         <br />
-        <h3>Total Price: </h3>
-        <p><%= totalPrice%> + 4 (delivery fee)</p>
-        <h3>Current Reward Points: </h3>
-        <p><%= rewardPts%></p>
-        <h3>Minimum Threshold: </h3>
-        <p><%= minThreshold%></p>
-        <br>
+        <h4>Total Price: $<%= totalPrice%> + $4 (delivery fee)</h4>
+        <h4>Current Reward Points: <%= rewardPts%> points</h4>
+        <h4>Minimum Threshold: $<%= minThreshold%></h4>
+        
+        <p></p>
 
+        <label for="cfmOrder">Order Payment Details</label>
         <form id="cfmOrder" action="/cust_menu/cfmOrder" role="form" method="post">
 
           <select class="custom-select mr-sm-2" id="pastAddr" name="pastAddr">
-            <option value="null">Add your own addresss</option>>
+            <option value="null">Add your own addresss</option>
             <% for(var i=0; i< addrInfo.length; i++) { %>
             <option value="<%= addrInfo[i].location%>"><%= addrInfo[i].location%></option>
             <% } %>
           </select>
           <input type="text" class="form-control" id="newAddr" name="newAddr" value="New Address">
-          <select class="custom-select mr-sm-2" id="paytype" name="paytype">
-            <% for(var i=0; i< paymentInfo.length; i++) { %>
-            <option value="<%= paymentInfo[i].payoption%>"><%= paymentInfo[i].payoption%></option>
-            <% } %>
-          </select>
           <select class="custom-select mr-sm-2" id="area" name="area">
             <option value="N">North</option>
             <option value="S">South</option>
             <option value="E">East</option>
             <option value="W">West</option>
           </select>
+
+          <label for="paytype">Payment Type</label>
+          <select class="custom-select mr-sm-2" id="paytype" name="paytype">
+            <% for(var i=0; i< paymentInfo.length; i++) { %>
+            <option value="<%= paymentInfo[i].payoption%>"><%= paymentInfo[i].payoption%></option>
+            <% } %>
+          </select>
+          <div class="from-group">
+            <label for="promo">Promo Code</label>
+          <input type="text" class = "form-control" id="promo" name ="promo" value="-">
+          </div>
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>
