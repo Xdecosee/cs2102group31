@@ -8,78 +8,52 @@ const passport = require('passport');
 const sql = require('../db/dbsql');
 const caller = require('../db/dbcaller');
 
-var custId = null;
-var rewardPts = null;
-var cardDetails = null;
+var orderID = null;
 
 
 function orderStatus(req, res, next) {
-	caller.query(sql.query.orderStatus, [custId], (err, data) => {
+	caller.query(sql.query.orderStatus, [req.user.uid], (err, data) => {
 		if (err) {
 			return next(err);
 		}
-		req.orderInfo = data.rows;
-		return next();
-	});
-}
-
-
-function foodOrder(req, res, next) {
-	caller.query(sql.query.foodOrder, [custId], (err, data) => {
-		if (err) {
-			return next(err);
-		}
-		req.foodOrder = data.rows;
+		req.orderStatus = data.rows;
+		orderID = data.rows[0].orderid;
 		return next();
 	});
 }
 
 function loadPage(req, res, next) {
-	console.log(cardDetails);
-	res.render('cust_profile', {
+	res.render('cust_orderInfo', {
 		username: req.user.username,
 		name: req.user.name,
-		rewardPts: rewardPts,
-		cardDetails: cardDetails,
-		orderInfo: req.orderInfo,
-		reviewInfo: req.reviewInfo
+		status : req.orderStatus
 	});
 }
 
-router.get('/', passport.authMiddleware(), loadPage);
+router.get('/', passport.authMiddleware(), orderStatus, loadPage);
 
-router.post('/restReview', function(req, res, next) {
-	
-	var cardInput  = String(req.body.cardDetails);
-	cardDetails = cardInput;
-
-	caller.query(sql.query.updateUserCard,[custId,cardInput], (err, data) => {
-		console.log(custId);
-		console.log(cardDetails);
-		if(err) {
-			console.log("Error in updating user card");
-			//console.log(err);
-		} 
+router.post('/addRestReview', function (req, res, next) {
+	var review = req.body.restcomment;
+	console.log(review);
+	var star = req.body.restRating;
+	// to prevent cust from adding order from different rest...
+	caller.query(sql.query.addRestReview, [review,star, orderID], (err, data) => {
+		if (err) {
+			return next(err);
+		}
 	});
-	
 	res.redirect('/cust_orderInfo');
 });
 
-router.post('/restReview', function(req, res, next) {
-	
-	var cardInput  = String(req.body.cardDetails);
-	cardDetails = cardInput;
-
-	caller.query(sql.query.updateUserCard,[custId,cardInput], (err, data) => {
-		console.log(custId);
-		console.log(cardDetails);
-		if(err) {
-			console.log("Error in updating user card");
-			//console.log(err);
-		} 
+router.post('/addRiderReview', function (req, res, next) {
+	var star = req.body.riderRating;
+	// to prevent cust from adding order from different rest...
+	caller.query(sql.query.addRiderReview, [star, orderID], (err, data) => {
+		if (err) {
+			return next(err);
+		}
 	});
-	
-	res.redirect('/cust_home');
+	res.redirect('/cust_orderInfo');
 });
 
 module.exports = router;

@@ -68,46 +68,92 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Amatic SC", sans-serif}
 
 <body>
 
-	<h2>Profile Page</h2>
+	<h2>Most Recent Order</h2>
 	<p>Hello,<%= username%>!</p>
+	<h4>Deliver to : <%= status[0].location%></h4>
+	<h4>Order ID : <%= status[0].orderid%></h4>
+	<h4>Total Cost : <%= status[0].cost%></h4>
+	<h4>Choice of Payment : <%= status[0].payoption%></h4>
 
 	<div class="tab">
-		<button class="tablinks" onclick="openCust(event, 'Account Information')">Account Information</button>
-		<button class="tablinks" onclick="openCust(event, 'Past Reviews')">Past Reviews</button>
-		<button class="tablinks" onclick="openCust(event, 'Past Orders')">Past Orders</button>
+		<button class="tablinks" onclick="openCust(event, 'Order Status')">Order Status</button>
+		<button class="tablinks" onclick="openCust(event, 'Add Restaurant Review')">Add Restaurant Review</button>
+		<button class="tablinks" onclick="openCust(event, 'Add Rider Review')">Add Rider Rating</button>
 	</div>
 	<!-- Customer Information -->
-	<div id="Account Information" class="tabcontent">
-		<h3><b>Name</b></h3>
-		<p><%= name%></p>
+	<div id="Order Status" class="tabcontent">
+		<table class="table" id='currPromo'>
+			<thead>
+				<tr>
+					<th scope="col">Status</th>
+					<th scope="col">Order Time</th>
+					<th scope="col">GoingRest</th>
+					<th scope="col">GotFood</th>
+					<th scope="col">Depature</th>
+					<th scope="col">Arrive</th>
+					<th scope="col">Total Time</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% for(var i=0; i < 1; i++) { %>
+				<tr>
+					<td><%= status[i].orderstatus%></td>
+					<td><%= status[i].timeorderplace%></td>
+					<td><%= status[i].timedeparttorest%></td>
+					<td><%= status[i].timearriverest%></td>
+					<td><%= status[i].timedepartfromrest%></td>
+					<td><%= status[i].timeorderdelivered%></td>
+					<td><%= status[i].deliveryduration%></td>
+				</tr>
+				<% } %>
+			</tbody>
+		</table>
+	</div>
 
-		<h3>Card Details</h3>
-		<p><%= cardDetails%></p>
 
-		<h3>Reward Points</h3>
-		<p><%= rewardPts%></p>
-		<h5>Add Card Details</h5>
-		<form id="card_form" action="/cust_home/updatecard" role="form" method="post">
+	<div id="Add Restaurant Review" class="tabcontent">
+		<form id="addRestReview" action="/cust_orderInfo/addRestReview" role="form" method="post">
 			<div class="form-group">
-				<label for="name">Card Details:</label>
-				<input type="text" class="form-control" id="cardDetails" name="cardDetails">
+				<label for="restcomment">Restaurant Review:</label>
+				<textarea type="text" class="form-control" rows="5" id="restcomment" name="restcomment"></textarea>
 				<p></p>
+				<label for="restRating">Input Rating:</label>
+				<select class="form-control" id="restRating" name="restRating">
+					<option>5</option>
+					<option>4</option>
+					<option>3</option>
+					<option>2</option>
+					<option>1</option>
+				</select>
+				<p></p>
+				<button type="submit" class="btn btn-primary">Post</button>
 			</div>
-			<button type="submit" class="btn btn-primary">Submit</button>
 		</form>
+
 	</div>
 
+	<div id="Add Rider Review" class="tabcontent">
+		<form id="addRiderReview" action="/cust_orderInfo/addRiderReview" role="form" method="post">
+			<div class="form-group">
+				<label for="restRating">Input Rating:</label>
+				<select class="form-control" id="restRating" name="restRating">
+					<option>5</option>
+					<option>4</option>
+					<option>3</option>
+					<option>2</option>
+					<option>1</option>
+				</select>
+				<p></p>
+				<button type="submit" class="btn btn-primary">Post</button>
+			</div>
+		</form>
 
-	<div id="Restaurant Reviews" class="tabcontent">
-		
 	</div>
 
-	<!-- Past Orders -->
-	<div id="Past Orders" class="tabcontent">
-		
 	</div>
-<!-- End page content -->
+	<!-- End page content -->
 </body>
+
 </html>
 
 <!-- JS script for the tabs -->

@@ -153,7 +153,10 @@ sql.query = {
     insertOrder : 'INSERT INTO Orders(location,payOption,area,cost) VALUES ($1 ,$2 ,$3, $4) RETURNING orderid',
     insertPlace : 'INSERT INTO Place(orderid, uid) VALUES ($1 ,$2)',
     insertFM : 'INSERT INTO FromMenu(promoID,quantity,orderID,restaurantID,foodName) VALUES ($1,$2,$3,$4,$5)',
-    payReward : 'UPDATE Customers SET rewardpts = 2 where uid = $2',
+    payReward : 'UPDATE Customers SET rewardpts = $2 where uid = $1',
+    addRestReview : 'UPDATE Place SET review = $1, star = $2 where orderid = $3',
+    addRiderReview : 'UPDATE Delivers SET rating = $1 where orderid = $2',
+    orderStatus : 'select * from place join orders using(orderid) where uid = $1 order by orderid desc limit 1',
 
 }
 

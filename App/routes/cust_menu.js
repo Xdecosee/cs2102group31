@@ -274,9 +274,12 @@ router.post('/cfmOrder', function (req, res, next) {
 			addr = req.body.pastAddr;
 		}
 
-		if (paytype == "RewardPts") {
-			console.log ("I pay by rewardpts")
-			caller.query(sql.query.payReward, [totalPrice, req.user.uid, rewardPts], (err, data) => {
+		if (payopt == "RewardPts") {
+			console.log ("I pay by rewardpts");
+			console.log (totalPrice);
+			console.log (rewardPts);
+			var newpts = Math.round(rewardPts - totalPrice);
+			caller.query(sql.query.payReward, [req.user.uid, newpts], (err, data) => {
 				if (err) {
 					return next(err);
 				}
@@ -308,15 +311,10 @@ router.post('/cfmOrder', function (req, res, next) {
 				}
 				console.log("successfully added place");
 			})
-
-
 		});
-
 	}
 
-
-
-	// res.redirect('/cust_orderInfo');
+	 res.redirect('/cust_orderInfo');
 });
 
 
