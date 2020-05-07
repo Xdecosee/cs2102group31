@@ -4,6 +4,19 @@ function emptyValues(str) {
     }
 }
 
+function checkMonth(event) {
+
+	var date = document.getElementById('date').value;
+
+	if(emptyValues(date)){
+		alert("Please select a month!");
+		event.preventDefault();
+		event.stopPropagation();
+		return false;
+	}
+
+}
+
 function checkPromo(event) {
     //new date().getTime() for comparison between dates 
     var start = new Date(document.getElementById('startdate').value).getTime();
