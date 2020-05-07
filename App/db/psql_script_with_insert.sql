@@ -449,6 +449,11 @@ INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted)
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-21', '11:00', '15:00', 11);
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-04-21', '16:00', '20:00', 12);
 
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-05-12', '11:00', '15:00', 10);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-05-13', '16:00', '20:00', 8);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-05-14', '11:00', '15:00', 11);
+INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(42, '2020-05-15', '16:00', '20:00', 12);
+
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-08', '11:00', '15:00', 10); /*Include others*/
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-08', '16:00', '20:00', 12);
 INSERT INTO WorkingDays(uid, workDate, intervalStart, intervalEnd, numCompleted) VALUES(43, '2020-01-09', '11:00', '15:00', 11);
@@ -523,6 +528,11 @@ INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2020-
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2020-04-22', 2, 15);
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2020-04-23', 2, 12);
 INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2020-04-24', 2, 17);
+
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2019-12-13', 1, 13);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2019-12-25', 1, 15);
+INSERT INTO WorkingWeeks(uid, workDate, shiftID, numCompleted) VALUES(23, '2019-12-26', 1, 16);
+
 
 /* Insert Data for restaurants */
 INSERT INTO Restaurants (name, location, minThreshold) VALUES ('Noma', '456 Madhouse Road #11-26 Singapore 123456', 5);

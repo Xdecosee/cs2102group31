@@ -109,13 +109,10 @@ router.post('/updateOrder', function(req, res, next) {
 				console.error("Error in updating order");
 			} else {
 				caller.query(sql.query.statusUpdate,[orderid], (err, data) => {
-					console.log('twy');
 					if(err) {
-						console.log('tri');
 						console.error("Error in updating order");
 					} else {
 						caller.query(sql.query.durationUpate,[orderid], (err, data) => {
-							console.log('fwooop');
 							if(err) {
 								console.error("Error in updating order");
 							} else {
