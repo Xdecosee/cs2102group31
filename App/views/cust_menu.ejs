@@ -292,7 +292,10 @@
         const rewardPts = urlParams.get('RewardPts');
         const minthreshold = urlParams.get('minthreshold');
         const nopromo = urlParams.get('nosuch');
-        const cardfail = urlParams.get('cardfail')
+        const cardfail = urlParams.get('cardfail');
+        const norider = urlParams.get('norider');
+        const noAvail = urlParams.get('noAvail');
+        
 
         if(rewardPts != null && rewardPts.localeCompare('fail') == 0){
             alert('Insufficient reward points!');
@@ -306,6 +309,13 @@
         if(cardfail != null && cardfail.localeCompare('fail') == 0){
             alert('Please add card details in profile page.');
         }
+        if(norider != null && norider.localeCompare('fail') == 0){
+            alert('Please try again later all riders are busy currently.');
+        }
+        if(noAvail != null && noAvail.localeCompare('fail') == 0){
+            alert('Order out of stock.');
+        }
+
       }, false);
     })();
 </script>

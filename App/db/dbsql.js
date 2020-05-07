@@ -175,7 +175,9 @@ sql.query = {
     addRestReview : 'UPDATE Place SET review = $1, star = $2 where orderid = $3',
     addRiderReview : 'UPDATE Delivers SET rating = $1 where orderid = $2',
     orderStatus : 'select * from place join orders using(orderid) where uid = $1 order by orderid desc limit 1',
-    
+
+    isAvailible : 'Select a.uid from allocate A where date(a.ddate) = date(current_timestamp) and extract(hour from a.worktime) = extract(hour from current_timestamp) and a.uid not in (select d.uid from delivers d join orders o using (orderid) where date(o.date) = date(current_timestamp) and (o.orderstatus = \'Confirmed\' or O.orderstatus = \'Pending\') and orderid != $1) limit 1',
+    checkavail : 'SELECT distinct f.dailylimit from Restaurants R JOIN Food f using (restaurantid) where r.name = $2 and f.foodname = $1 and f.archive = \'f\'',
 }
 
 module.exports = sql;

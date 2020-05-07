@@ -1516,10 +1516,12 @@ BEGIN
 
     IF NEW.quantity > currAvailability THEN
         UPDATE Orders SET orderStatus = 'Failed' WHERE Orders.orderID = NEW.orderID;
-        RAISE EXCEPTION 'Exceed Daily Limit';
+        RAISE NOTICE 'Exceed Daily Limit';
+        RETURN NULL;
     ELSIF riderID IS NULL THEN
         UPDATE Orders SET orderStatus = 'Failed' WHERE Orders.orderID = NEW.orderID;
-        RAISE EXCEPTION 'No Rider Available';
+        RAISE NOTICE 'No Rider Available';
+        RETURN NULL;
     ELSE
         UPDATE Orders SET orderStatus = 'Confirmed' WHERE Orders.orderID = NEW.orderID;
         UPDATE Food SET dailyLimit = dailyLimit - qtyOrdered WHERE Food.foodname = NEW.foodName AND Food.restaurantID = NEW.restaurantID;
