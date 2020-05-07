@@ -10,32 +10,35 @@ const caller = require('../db/dbcaller');
 
 var promoId = null;
 
-function promoInfo(req, res, next) {
-	caller.query(sql.query.promoInfo, (err, data) => {
+function currentPromoInfo(req, res, next) {
+	caller.query(sql.query.currentPromoInfo, (err, data) => {
 		if (err) {
 			return next(err);
 		}
-		req.promoInfo = data.rows;
+		req.currentPromoInfo = data.rows;
+		return next();
+	});
+}
+
+function expiredPromoInfo(req, res, next) {
+	caller.query(sql.query.expiredPromoInfo, (err, data) => {
+		if (err) {
+			return next(err);
+		}
+		req.expiredPromoInfo = data.rows;
 		return next();
 	});
 }
 
 function loadPage(req, res, next) {
 	res.render('fds_promo', {
-		promoInfo: req.promoInfo
+		name: req.user.name,
+		currentPromoInfo: req.currentPromoInfo,
+		expiredPromoInfo: req.expiredPromoInfo
 	});
 }
 
-// function insertPromo(req, res, next) {
-// 	caller.query(sql.query.fdsInsertPromo, [promoid], (err, data) => {
-// 		if (err) {
-// 			console.log("Error in adding FDS promotion!");
-// 			console.log(err);
-// 		}
-// 	});
-// }
-
-router.get('/', passport.authMiddleware(), promoInfo, loadPage);
+router.get('/', passport.authMiddleware(), currentPromoInfo, expiredPromoInfo, loadPage);
 
 router.post('/insertpromo', function (req, res, next) {
 
@@ -46,17 +49,21 @@ router.post('/insertpromo', function (req, res, next) {
 	var selectedquery = null;
 
 	if (type == "percentage") {
-		selectedquery = sql.query.fdsPercPromo;
+		selectedquery = sql.query.fdsPercentPromo;
 	} else if (type == "fixed") {
 		selectedquery = sql.query.fdsAmtPromo;
 	} else {
 		res.redirect('/fds_promo');
 	}
 
+	console.log(startDate);
+	console.log(endDate);
+	console.log(discount);
+
 	caller.query(selectedquery, [startDate, endDate, discount], (err, data) => {
 		if (err) {
-			console.log("Error in adding fds promotion!");
-			console.log(err);
+			console.log("Error in adding FDS promotion!");
+			return next(err);
 		}
 		else {
 			promoId = data.rows[0].promoid;
@@ -64,8 +71,8 @@ router.post('/insertpromo', function (req, res, next) {
 			console.log(promoId);
 			caller.query(sql.query.fdsInsertPromo, [promoId], (err, data) => {
 				if (err) {
-					console.log("Error in adding FDS promotion!");
-					console.log(err);
+					console.log("Error in inserting into promotion!");
+					return next(err);
 				}
 			});
 			res.redirect('/fds_promo');
