@@ -164,7 +164,6 @@ sql.query = {
 
     paymentInfo : 'SELECT * from paymentoption',
   
-   // SELECT P.promoID, to_char(P.startdate,\'DD-Mon-YYYY\') as startdate, to_char(P.enddate,\'DD-Mon-YYYY\') as enddate, ROUND((P.discperc * 100),0) as discperc, P.discamt, P.type, RP.restid FROM Promotion P left join restpromo RP on RP.promoid = P.promoid WHERE (P.enddate - current_date >= 0)
     promo : 'SELECT P.promoID, to_char(P.startdate,\'DD-Mon-YYYY\') as startdate, to_char(P.enddate,\'DD-Mon-YYYY\') as enddate, ROUND((P.discperc * 100),0) as discperc, P.discamt, P.type, RP.restid FROM Promotion P left join restpromo RP on RP.promoid = P.promoid WHERE (P.enddate - current_date >= 0) and (type = \'FDSpromo\' or restid = $1)',
     promoD : 'SELECT * from promotion left join restpromo using (promoid) where promoid = $1',
     addrInfo : 'Select location from orders join place using (orderid) where uid = $1 order by date desc LIMIT 5',
