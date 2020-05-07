@@ -618,7 +618,7 @@ INSERT INTO Restpromo(promoID, restID) VALUES(10,5);
 /* Insert Data into Payment Option */
 INSERT INTO PaymentOption(payOption) VALUES ('Cash');
 INSERT INTO PaymentOption(payOption) VALUES ('Credit');
-INSERT INTO PaymentOption(payOption) VALUES ('RewardPts');					      I
+INSERT INTO PaymentOption(payOption) VALUES ('RewardPts');					      
 
 
 -- deliveryduration is in integer?
