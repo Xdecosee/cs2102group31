@@ -64,8 +64,11 @@
           <p></p>
           <button type="submit" class="btn btn-primary">Search</button>
         </form>
-      </div>
-    </fieldset>
+      </fieldset>
+
+    <fieldset class="scheduler-border">
+      <legend class="scheduler-border"><%= restDisplay%></legend>
+
     <div class="tab">
       <button class="tablinks" onclick="openCust(event, 'Reviews')">Reviews</button>
       <button class="tablinks" onclick="openCust(event, 'Menu')">Menu</button>
@@ -73,6 +76,7 @@
       <button class="tablinks" onclick="openCust(event, 'Order')">Order</button>
     </div>
     <div id="Reviews" class="tabcontent">
+      <p></p>
       <h3>Average Rating : </h3>
       <p><%= avgRating%></p>
       <table class="table">
@@ -98,9 +102,10 @@
     </div>
 
     <div id="Menu" class="tabcontent">
+      <p></p>
       <label for="myInput"><strong>Input FoodName: </strong></label>
       <input type="text" id="myInput" onkeyup="myFunction()" title="Search for food" size="50">
-      <br>
+    <p></p>
       <table class="table" id='myTable'>
         <thead>
           <tr>
@@ -154,12 +159,12 @@
 
 
     <div id="Order" class="tabcontent">
-
+<p></p>
       <fieldset class="scheduler-border">
         <legend class="scheduler-border">Add to cart</legend>
         <div class="col-auto my-1">
           <form id="addOrder" action="/cust_menu/addOrder" role="form" method="post">
-            <label for="order"><strong>Add Order</strong></label>
+            
             <table class="table" id='orderInfo'>
               <thead>
                 <tr>
@@ -201,7 +206,7 @@
       <fieldset class="scheduler-border">
         <legend class="scheduler-border">Checkout cart</legend>
         <h5><b>Total Price:</b> $<%= totalPrice%> + $4 (delivery fee)</h4>
-        <h5><b>Current Reward Points:</b> <%= rewardPts%> points</h4>
+        <h5><b>Current Reward Points:</b> <%= rewardPts%> points*</h4>
         <h5><b>Minimum Threshold:</b> $<%= minThreshold%></h4>
 
         <p></p>
@@ -228,6 +233,7 @@
             <option value="<%= paymentInfo[i].payoption%>"><%= paymentInfo[i].payoption%></option>
             <% } %>
           </select>
+          <p>* Note 1 Reward point = $0.10</p>
           <div class="from-group">
             <label for="promo">Promo Code</label>
             <input type="text" class="form-control" id="promo" name="promo" value="-">
@@ -239,6 +245,8 @@
       </fieldset>
     </div>
   </div>
+
+</fieldset>
 </body>
 
 </html>
@@ -276,6 +284,40 @@
       }
     }
   }
+
+  (function() {
+      window.addEventListener('load', function() {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const rewardPts = urlParams.get('RewardPts');
+        const minthreshold = urlParams.get('minthreshold');
+        const nopromo = urlParams.get('nosuch');
+        const cardfail = urlParams.get('cardfail');
+        const norider = urlParams.get('norider');
+        const noAvail = urlParams.get('noAvail');
+        
+
+        if(rewardPts != null && rewardPts.localeCompare('fail') == 0){
+            alert('Insufficient reward points!');
+        }
+        if(minthreshold != null && minthreshold.localeCompare('fail') == 0){
+            alert('Insufficient order cost!');
+        }
+        if(nopromo != null && nopromo.localeCompare('fail') == 0){
+            alert('Invalid promo code!');
+        }
+        if(cardfail != null && cardfail.localeCompare('fail') == 0){
+            alert('Please add card details in profile page.');
+        }
+        if(norider != null && norider.localeCompare('fail') == 0){
+            alert('Please try again later all riders are busy currently.');
+        }
+        if(noAvail != null && noAvail.localeCompare('fail') == 0){
+            alert('Order out of stock.');
+        }
+
+      }, false);
+    })();
 </script>
 
 

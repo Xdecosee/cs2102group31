@@ -14,6 +14,10 @@ var OrderInfo = [];
 var totalPrice = 0;
 var minThreshold = 0;
 var rewardPts = null;
+var restDisplay = "Please Choose A Restaurant";
+
+var cardDetails = null;
+var isRiderAvailible = false;
 
 var dates = {
 	convert: function (d) {
@@ -150,6 +154,16 @@ function addrInfo(req, res, next) {
 	});
 }
 
+function custInfo(req, res, next) {
+	caller.query(sql.query.custInfo, [req.user.uid], (err, data) => {
+		if (err) {
+			return next(err);
+		}
+		cardDetails = data.rows[0].carddetails;
+		return next();
+	});
+}
+
 function loadPage(req, res, next) {
 	res.render('cust_menu', {
 		restInfo: req.restInfo,
@@ -162,11 +176,12 @@ function loadPage(req, res, next) {
 		minThreshold: minThreshold,
 		promoInfo: req.promoInfo,
 		addrInfo: req.addrInfo,
-		rewardPts: rewardPts
+		rewardPts: rewardPts,
+		restDisplay: restDisplay
 	});
 }
 
-router.get('/', passport.authMiddleware(), custInfo, restInfo, avgRating, reviewInfo, menuInfo, paymentInfo, promoInfo, addrInfo, loadPage);
+router.get('/', passport.authMiddleware(), custInfo, restInfo, avgRating, reviewInfo, menuInfo, paymentInfo, promoInfo, addrInfo, custInfo, loadPage);
 
 router.post('/getRest', function (req, res, next) {
 	restId = req.body.restName;
@@ -174,6 +189,7 @@ router.post('/getRest', function (req, res, next) {
 	// to prevent cust from adding order from different rest...
 	OrderInfo = [];
 	totalPrice = 0;
+	restDisplay = req.body.restName;
 
 	caller.query(sql.query.menuInfo, [restId], (err, data) => {
 		if (err) {
@@ -191,15 +207,28 @@ router.post('/getRest', function (req, res, next) {
 
 router.post('/addOrder', function (req, res, next) {
 
-	caller.query(sql.query.addfood, [req.body.orderItem, restId, req.body.orderAmount], (err, data) => {
+	caller.query(sql.query.checkavail, [req.body.orderItem, restId], (err, data) => {
+
+		console.log(data.rows[0].dailylimit);
+		console.log(req.body.orderAmount);
+
 		if (err) {
 			return next(err);
+		} else if (data.rows[0].dailylimit < req.body.orderAmount) {
+			return res.redirect('/cust_menu?noAvail=' + encodeURIComponent('fail'));
+		} else {
+
+			caller.query(sql.query.addfood, [req.body.orderItem, restId, req.body.orderAmount], (err, data) => {
+				if (err) {
+					return next(err);
+				}
+				OrderInfo.push(data.rows[0]);
+				totalPrice += Number(data.rows[0].price);
+				console.log(totalPrice);
+			});
 		}
-		OrderInfo.push(data.rows[0]);
-		totalPrice += Number(data.rows[0].price);
-		console.log(totalPrice);
-	});
-	res.redirect('/cust_menu');
+		res.redirect('/cust_menu');
+	})
 });
 
 // this one is kinda complicated -.- 
@@ -210,11 +239,18 @@ router.post('/cfmOrder', function (req, res, next) {
 	var orderID = null;
 	var promo_info = req.body.promo;
 
+	console.log("i can enter cfmOrder");
 
 	if (minThreshold > totalPrice) {
-		res.redirect('/cust_menu');//do nothing 
-	} else if (payopt == "RewardPts" && totalPrice > rewardPts) {
-		res.redirect('/cust_menu');//do nothing
+		console.log("doesnt hit min threshold");
+		res.redirect('/cust_menu?minthreshold=' + encodeURIComponent('fail'));
+
+	} else if (payopt == "RewardPts" && totalPrice > rewardPts * 0.1) {
+		console.log("not enough rewardpts");
+		res.redirect('/cust_menu?RewardPts=' + encodeURIComponent('fail'));
+	} else if (payopt == "Credit" && cardDetails == null) {
+		console.log("no card details");
+		res.redirect('/cust_menu?cardfail=' + encodeURIComponent('fail'));
 	} else {
 
 		if (req.body.pastAddr == "null") {
@@ -244,7 +280,11 @@ router.post('/cfmOrder', function (req, res, next) {
 		if (promo_info !== '-') {
 			caller.query(sql.query.promoD, [promo_info], (err, data) => {
 				if (err) {
-					return next(err);
+					console.log("no such promo code");
+					return res.redirect('/cust_menu?nosuchpromo=' + encodeURIComponent('fail'));
+				}
+				if (data.rows.length == 0) {
+					return res.redirect('/cust_menu?nosuchpromo=' + encodeURIComponent('fail'));
 				}
 				promo_per = data.rows[0].discperc;
 				promo_amt = data.rows[0].discamt;
@@ -257,11 +297,11 @@ router.post('/cfmOrder', function (req, res, next) {
 				// check for valid promo code
 				if (!dates.inRange(d, data.rows[0].startdate, data.rows[0].enddate)) {
 					console.log("datefail");
-					res.redirect('/cust_menu');// do nothing 
+					return res.redirect('/cust_menu?nosuchpromo=' + encodeURIComponent('fail'));
 				} else if (data.rows[0].endtime < time) {
 					// do nothing	
 					console.log("timefail");
-					res.redirect('/cust_menu');
+					return res.redirect('/cust_menu?nosuchpromo=' + encodeURIComponent('fail'));
 				}
 				else {
 					if (promo_amt == null) {
@@ -276,30 +316,47 @@ router.post('/cfmOrder', function (req, res, next) {
 
 				caller.query(sql.query.insertOrder, [addr, payopt, area, totalPrice], (err, data) => {
 					if (err) {
+						console.log("i fail in order");
 						return next(err);
 					}
 					orderID = data.rows[0].orderid;
+					console.log("i was at order");
 
-					for (i = 0; i < OrderInfo.length; i++) {
-						console.log(orderID);
-						caller.query(sql.query.insertFM, [OrderInfo[i].amount, orderID, OrderInfo[i].restaurantid, OrderInfo[i].foodname], (err, data) => {
-							if (err) {
-								return next(err);
-							}
-							console.log("successfully added from menu");
-						})
-					}
-
-
-					caller.query(sql.query.insertPlace, [promo_info, orderID, req.user.uid], (err, data) => {
+					caller.query(sql.query.isAvailible, [orderID], (err, data) => {
 						if (err) {
 							return next(err);
 						}
-						console.log("successfully added place");
-						OrderInfo = [];
-						totalPrice = 0;
-						res.redirect('/cust_orderInfo');
-					})
+						console.log("testing for availibity");
+						if (data.rows.length == 0) {
+							return res.redirect('/cust_menu?norider=' + encodeURIComponent('fail'));
+						} else {
+							console.log("got rider :>");
+
+							for (i = 0; i < OrderInfo.length; i++) {
+								console.log(orderID);
+								caller.query(sql.query.insertFM, [OrderInfo[i].amount, orderID, OrderInfo[i].restaurantid, OrderInfo[i].foodname], (err, data) => {
+									if (err) {
+										console.log("i fail in fm");
+										return next(err);
+									}
+									console.log("successfully added from menu");
+								})
+							}
+
+
+							caller.query(sql.query.insertPlace, [promo_info, orderID, req.user.uid], (err, data) => {
+								if (err) {
+									console.log("i fail in place");
+									return next(err);
+								}
+								console.log("successfully added place");
+								OrderInfo = [];
+								totalPrice = 0;
+								restDisplay = "Please Choose A Restaurant";
+								res.redirect('/cust_orderInfo');
+							})
+						}
+					});
 				});
 			});
 		} else {
@@ -313,25 +370,41 @@ router.post('/cfmOrder', function (req, res, next) {
 				orderID = data.rows[0].orderid;
 				var uid = req.user.uid;
 
-				for (i = 0; i < OrderInfo.length; i++) {
-					console.log(orderID);
-					caller.query(sql.query.insertFM, [OrderInfo[i].amount, orderID, OrderInfo[i].restaurantid, OrderInfo[i].foodname], (err, data) => {
-						if (err) {
-							return next(err);
-						}
-						console.log("successfully added from menu");
-					})
-				}
-
-				caller.query(sql.query.insertPlace, [promo_info, orderID, uid], (err, data) => {
+				caller.query(sql.query.isAvailible, [orderID], (err, data) => {
 					if (err) {
 						return next(err);
 					}
-					console.log("successfully added place");
-					OrderInfo = [];
-					totalPrice = 0;
-					res.redirect('/cust_orderInfo');
-				})
+					console.log("testing for availibity");
+					if (data.rows.length == 0) {
+						return res.redirect('/cust_menu?norider=' + encodeURIComponent('fail'));
+					} else {
+						console.log("got rider :>");
+
+						for (i = 0; i < OrderInfo.length; i++) {
+							console.log(orderID);
+							caller.query(sql.query.insertFM, [OrderInfo[i].amount, orderID, OrderInfo[i].restaurantid, OrderInfo[i].foodname], (err, data) => {
+								if (err) {
+									console.log("i fail in fm");
+									return next(err);
+								}
+								console.log("successfully added from menu");
+							})
+						}
+
+
+						caller.query(sql.query.insertPlace, [promo_info, orderID, req.user.uid], (err, data) => {
+							if (err) {
+								console.log("i fail in place");
+								return next(err);
+							}
+							console.log("successfully added place");
+							OrderInfo = [];
+							totalPrice = 0;
+							restDisplay = "Please Choose A Restaurant";
+							res.redirect('/cust_orderInfo');
+						})
+					}
+				});
 			});
 		}
 	}

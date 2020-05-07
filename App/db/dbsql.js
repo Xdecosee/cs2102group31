@@ -152,18 +152,20 @@ sql.query = {
     updateUserCard: 'UPDATE Users SET cardDetails = $2 WHERE uid = $1',
     updateCustomerCard: 'UPDATE Customers SET cardDetails = $2 WHERE uid = $1',
 
-    reviewInfo :'SELECT DISTINCT  to_char(O.date,\'DD-Mon-YYYY\') as date, P.review, P.star FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
+    reviewInfo :'SELECT DISTINCT  to_char(O.date,\'DD-Mon-YYYY\') as date, P.review, P.star, R.name FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
     orderInfo:'SELECT  to_char(O.date,\'DD-Mon-YYYY\') as date, R.name, F.foodName, F.quantity FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu F USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE P.uid = $1',
     restInfo: 'SELECT * FROM restaurants',
     restReview :'SELECT DISTINCT  to_char(O.date,\'DD-Mon-YYYY\') as date, R.name, P.review, P.star FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE R.name = $1',
     avgRating : 'SELECT Round(AVG(ALL p.star),2) as avg FROM Place P JOIN Orders O USING (orderID) JOIN FromMenu USING (orderID) JOIN Restaurants R USING (restaurantID) WHERE R.name = $1',
-    menuInfo : 'SELECT distinct f.foodname, f.category, R.name, f.price, f.dailylimit, r.restaurantid, r.minthreshold as minthreshold from Restaurants R JOIN Food f using (restaurantid) where r.name = $1',
+    menuInfo : 'SELECT distinct f.foodname, f.category, R.name, f.price, f.dailylimit, r.restaurantid, r.minthreshold as minthreshold from Restaurants R JOIN Food f using (restaurantid) where r.name = $1 and f.archive = \'f\'',
 
 
     addfood: 'SELECT r.restaurantid, f.foodname, (f.price * $3) as price ,$3 as amount, r.minthreshold as minthreshold from food f join restaurants r using(restaurantid) where f.foodname = $1 and r.name = $2',
 
     paymentInfo : 'SELECT * from paymentoption',
-    promo : 'SELECT to_char(startdate,\'DD-Mon-YYYY\') as startdate,to_char(enddate,\'DD-Mon-YYYY\') as enddate, starttime, endtime, promoid, discperc, discamt from promotion left join restpromo using (promoid) where type = \'FDSpromo\' or restid = $1',
+  
+   // SELECT P.promoID, to_char(P.startdate,\'DD-Mon-YYYY\') as startdate, to_char(P.enddate,\'DD-Mon-YYYY\') as enddate, ROUND((P.discperc * 100),0) as discperc, P.discamt, P.type, RP.restid FROM Promotion P left join restpromo RP on RP.promoid = P.promoid WHERE (P.enddate - current_date >= 0)
+    promo : 'SELECT P.promoID, to_char(P.startdate,\'DD-Mon-YYYY\') as startdate, to_char(P.enddate,\'DD-Mon-YYYY\') as enddate, ROUND((P.discperc * 100),0) as discperc, P.discamt, P.type, RP.restid FROM Promotion P left join restpromo RP on RP.promoid = P.promoid WHERE (P.enddate - current_date >= 0) and (type = \'FDSpromo\' or restid = $1)',
     promoD : 'SELECT * from promotion left join restpromo using (promoid) where promoid = $1',
     addrInfo : 'Select location from orders join place using (orderid) where uid = $1 order by date desc LIMIT 5',
     insertOrder : 'INSERT INTO Orders(location,payOption,area,cost) VALUES ($1 ,$2 ,$3, $4) RETURNING orderid',
@@ -173,7 +175,9 @@ sql.query = {
     addRestReview : 'UPDATE Place SET review = $1, star = $2 where orderid = $3',
     addRiderReview : 'UPDATE Delivers SET rating = $1 where orderid = $2',
     orderStatus : 'select * from place join orders using(orderid) where uid = $1 order by orderid desc limit 1',
-    
+
+    isAvailible : 'Select a.uid from allocate A where date(a.ddate) = date(current_timestamp) and extract(hour from a.worktime) = extract(hour from current_timestamp) and a.uid not in (select d.uid from delivers d join orders o using (orderid) where date(o.date) = date(current_timestamp) and (o.orderstatus = \'Confirmed\' or O.orderstatus = \'Pending\') and orderid != $1) limit 1',
+    checkavail : 'SELECT distinct f.dailylimit from Restaurants R JOIN Food f using (restaurantid) where r.name = $2 and f.foodname = $1 and f.archive = \'f\'',
 }
 
 module.exports = sql;
