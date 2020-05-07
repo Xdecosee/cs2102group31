@@ -13,11 +13,10 @@ id_rest = 0;
 var OrderInfo = [];
 var totalPrice = 0;
 var minThreshold = 0;
-var rewardPts = null;
+var rewardPts = 0;
 var restDisplay = "Please Choose A Restaurant";
 
 var cardDetails = null;
-var isRiderAvailible = false;
 
 var dates = {
 	convert: function (d) {
@@ -176,7 +175,7 @@ function loadPage(req, res, next) {
 		minThreshold: minThreshold,
 		promoInfo: req.promoInfo,
 		addrInfo: req.addrInfo,
-		rewardPts: rewardPts,
+		rewardPts : rewardPts,
 		restDisplay: restDisplay
 	});
 }
