@@ -111,52 +111,6 @@
     </div>
   </div>
   
-  <div class="card">
-    <div class="card-header" id="headingTwo">
-      <h5 class="mb-0">
-        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
-          aria-controls="collapseTwo">
-          Area Information
-        </button>
-      </h5>
-    </div>
-    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
-      <div class="card-body">
-        <form id="area_form" action="/fds_rest/selectArea" role="form" method="POST">
-          <div class="form-group">
-            <label for="area">Select delivery location:</label>
-            <select class="form-control" id="area" name="area">
-              <option value="N">North</option>
-              <option value="S">South</option>
-              <option value="E">East</option>
-              <option value="W">West</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-        </br>
-        <p> Shows the total number of orders based on the selected delivery location area.</p>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Area</th>
-              <th scope="col">Hour</th>
-              <th scope="col">Total Order</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% for(var i=0; i< areaInfo.length; i++) { %>
-            <tr>
-              <td><%= areaInfo[i].area%></td>
-              <td><%= areaInfo[i].hour%></td>
-              <td><%= areaInfo[i].num%></td>
-            </tr>
-            <% } %>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 
   <div class="card">
     <div class="card-header" id="headingThree">
@@ -228,6 +182,17 @@
     </div>
   </div>
 </div>
+<script src = "javascripts/fds.js"></script>
+<script>
+  (function() {
+    window.addEventListener('load', function() {
+      var forms = [document.getElementById('month_form')];
+      var validation = Array.prototype.filter.call(forms, function(form) {
+        form.addEventListener('submit', checkMonth, false);
+      });
+    }, false);
+  })();
+</script>
 </html>
 
 
