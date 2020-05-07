@@ -205,9 +205,9 @@
 
       <fieldset class="scheduler-border">
         <legend class="scheduler-border">Checkout cart</legend>
-        <h5><b>Total Price:</b> $<%= totalPrice%> + $4 (delivery fee)</h4>
-        <h5><b>Current Reward Points:</b> <%= rewardPts%> points*</h4>
-        <h5><b>Minimum Threshold:</b> $<%= minThreshold%></h4>
+        <h5><b>Total Price:</b> $<%= totalPrice%> + $4 (delivery fee)</h5>
+        <h5><b>Current Reward Points:</b> <%= rewardPtss%> points*</h5>
+        <h5><b>Minimum Threshold:</b> $<%= minThreshold%></h5>
 
         <p></p>
 
@@ -291,7 +291,7 @@
         const urlParams = new URLSearchParams(queryString);
         const rewardPts = urlParams.get('RewardPts');
         const minthreshold = urlParams.get('minthreshold');
-        const nopromo = urlParams.get('nosuch');
+        const nopromo = urlParams.get('nosuchpromo');
         const cardfail = urlParams.get('cardfail');
         const norider = urlParams.get('norider');
         const noAvail = urlParams.get('noAvail');

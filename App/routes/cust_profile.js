@@ -17,6 +17,7 @@ function custInfo(req, res, next) {
 		if (err) {
 			return next(err);
 		}
+		console.log(data.rows[0].uid);
 		req.custInfo = data.rows;
 		custId = data.rows[0].uid;
 		rewardPts = data.rows[0].rewardpts;

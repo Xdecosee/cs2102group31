@@ -75,7 +75,12 @@ function custInfo(req, res, next) {
 		if (err) {
 			return next(err);
 		}
+		req.custInfo = data.rows;
+		custId = data.rows[0].uid;
 		rewardPts = data.rows[0].rewardpts;
+		console.log(custId);
+		console.log(data.rows[0].rewardpts);
+		cardDetails = data.rows[0].carddetails;
 		return next();
 	});
 }
@@ -153,15 +158,6 @@ function addrInfo(req, res, next) {
 	});
 }
 
-function custInfo(req, res, next) {
-	caller.query(sql.query.custInfo, [req.user.uid], (err, data) => {
-		if (err) {
-			return next(err);
-		}
-		cardDetails = data.rows[0].carddetails;
-		return next();
-	});
-}
 
 function loadPage(req, res, next) {
 	res.render('cust_menu', {
@@ -175,12 +171,12 @@ function loadPage(req, res, next) {
 		minThreshold: minThreshold,
 		promoInfo: req.promoInfo,
 		addrInfo: req.addrInfo,
-		rewardPts : rewardPts,
+		rewardPtss : rewardPts,
 		restDisplay: restDisplay
 	});
 }
 
-router.get('/', passport.authMiddleware(), custInfo, restInfo, avgRating, reviewInfo, menuInfo, paymentInfo, promoInfo, addrInfo, custInfo, loadPage);
+router.get('/', passport.authMiddleware(), custInfo, restInfo, avgRating, reviewInfo, menuInfo, paymentInfo, promoInfo, addrInfo, loadPage);
 
 router.post('/getRest', function (req, res, next) {
 	restId = req.body.restName;
