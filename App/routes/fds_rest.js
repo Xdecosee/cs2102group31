@@ -70,27 +70,27 @@ function loadPage(req, res, next) {
 		name: req.user.name,
 		fdsAllRestInfo: req.fdsAllRestInfo,
 		fdsEachRestInfo: req.fdsEachRestInfo,
-		areaInfo: areaInfo,
+		//areaInfo: areaInfo,
 		catInfo: req.catInfo
 	});
 }
 
-router.post('/selectArea', function (req, res, next) {
-	var area = req.body.area;
-	caller.query(sql.query.viewArea, [area], (err, data) => {
-		if (err){
-			next(err);
-		}
-		if (data.rows[0] == null) {
-			console.log("area: null");
-			areaInfo = {};
-		} else {
-			console.log("area: " + data.rows[0].area);
-			areaInfo = data.rows;
-		}
-	});
-	res.redirect('/fds_rest');
-});
+// router.post('/selectArea', function (req, res, next) {
+// 	var area = req.body.area;
+// 	caller.query(sql.query.viewArea, [area], (err, data) => {
+// 		if (err){
+// 			next(err);
+// 		}
+// 		if (data.rows[0] == null) {
+// 			console.log("area: null");
+// 			areaInfo = {};
+// 		} else {
+// 			console.log("area: " + data.rows[0].area);
+// 			areaInfo = data.rows;
+// 		}
+// 	});
+// 	res.redirect('/fds_rest');
+// });
 
 router.post('/add_cat', function (req, res, next) {
 	var newCat = req.body.category;
