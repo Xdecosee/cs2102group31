@@ -618,7 +618,7 @@ INSERT INTO Restpromo(promoID, restID) VALUES(10,5);
 /* Insert Data into Payment Option */
 INSERT INTO PaymentOption(payOption) VALUES ('Cash');
 INSERT INTO PaymentOption(payOption) VALUES ('Credit');
-INSERT INTO PaymentOption(payOption) VALUES ('RewardPts');
+INSERT INTO PaymentOption(payOption) VALUES ('RewardPts');					      
 
 
 -- deliveryduration is in integer?
@@ -1665,7 +1665,7 @@ $$ LANGUAGE plpgsql;
         
         
 CREATE CONSTRAINT TRIGGER work_hours_trigger
-AFTER UPDATE OR INSERT ON WorkingDays
+AFTER INSERT ON WorkingDays
 DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW
 EXECUTE FUNCTION check_hours();
